@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>
+        OliverPai
+    </title>
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-reply replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            设计模式笔记
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <h1 id="设计模式"><a href="#设计模式" class="headerlink" title="设计模式"></a>设计模式</h1><h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li><p><a href="#uml">UML</a></p>
+<ul>
+<li><p><a href="#%E7%B1%BB%E5%9B%BE">类图</a></p>
+</li>
+<li><p><a href="#%E7%94%A8%E4%BE%8B%E5%9B%BE">用例图</a></p>
+</li>
+<li><p><a href="#%E6%97%B6%E5%BA%8F%E5%BA%8F%E5%88%97%E5%9B%BE">时序&#x2F;序列图</a></p>
+</li>
+</ul>
+</li>
+<li><p><a href="#%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1">面向对象</a></p>
+<ul>
+<li><p><a href="#%E5%9B%9B%E5%A4%A7%E7%89%B9%E6%80%A7">四大特性</a></p>
+</li>
+<li><p><a href="#%E5%9F%BA%E4%BA%8E%E6%8E%A5%E5%8F%A3%E8%80%8C%E9%9D%9E%E5%AE%9E%E7%8E%B0%E7%BC%96%E7%A8%8B">基于接口而非实现编程</a></p>
+</li>
+<li><p><a href="#%E5%A4%9A%E7%94%A8%E7%BB%84%E5%90%88%E5%B0%91%E7%94%A8%E7%BB%A7%E6%89%BF">多用组合少用继承</a></p>
+</li>
+</ul>
+</li>
+<li><p><a href="#%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99">设计原则</a></p>
+<ul>
+<li><p><a href="#%E5%8D%95%E4%B8%80%E8%81%8C%E8%B4%A3%E5%8E%9F%E5%88%99single-responsibility-principle-srp">单一职责原则（Single Responsibility Principle, SRP）</a></p>
+</li>
+<li><p><a href="#%E5%BC%80%E9%97%AD%E5%8E%9F%E5%88%99%E5%AF%B9%E6%89%A9%E5%B1%95%E5%BC%80%E6%94%BE%E4%BF%AE%E6%94%B9%E5%85%B3%E9%97%ADopen-closed-principle">开闭原则：对扩展开放、修改关闭（Open Closed Principle）</a></p>
+</li>
+<li><p><a href="#%E9%87%8C%E5%BC%8F%E6%9B%BF%E6%8D%A2%E5%8E%9F%E5%88%99liskov-substitution-principle">里式替换原则（Liskov Substitution Principle）</a></p>
+</li>
+<li><p><a href="#%E6%8E%A5%E5%8F%A3%E9%9A%94%E7%A6%BB%E5%8E%9F%E5%88%99interface-segregation-principle">接口隔离原则（Interface Segregation Principle）</a></p>
+</li>
+<li><p><a href="#%E4%BE%9D%E8%B5%96%E5%8F%8D%E8%BD%AC%E5%8E%9F%E5%88%99dependency-inversoin-principle">依赖反转原则（Dependency Inversoin Principle）</a></p>
+</li>
+<li><p><a href="#kiss%E5%8E%9F%E5%88%99">KISS原则</a></p>
+<ul>
+<li><a href="#yagni%E5%8E%9F%E5%88%99">YAGNI原则</a></li>
+</ul>
+</li>
+<li><p><a href="#dry%E5%8E%9F%E5%88%99dont-repeat-yourself">DRY原则（Don’t Repeat Yourself）</a></p>
+</li>
+<li><p><a href="#%E8%BF%AA%E7%B1%B3%E7%89%B9%E6%B3%95%E5%88%99law-of-demeter">迪米特法则（Law of Demeter）</a></p>
+</li>
+</ul>
+</li>
+<li><p><a href="#%E7%BC%96%E7%A8%8B%E8%A7%84%E8%8C%83">编程规范</a></p>
+</li>
+<li><p><a href="#%E4%BB%A3%E7%A0%81%E9%87%8D%E6%9E%84">代码重构</a></p>
+</li>
+<li><p><a href="#23%E7%A7%8D%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F">23种设计模式</a></p>
+<ul>
+<li><p><a href="#%E5%88%9B%E5%BB%BA%E5%9E%8B">创建型</a></p>
+<ul>
+<li><p><a href="#1-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F">1 单例模式</a></p>
+</li>
+<li><p><a href="#2-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F">2 工厂模式</a></p>
+<ul>
+<li><p><a href="#21-%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82">2.1 简单工厂</a></p>
+</li>
+<li><p><a href="#22-%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95">2.2 工厂方法</a></p>
+</li>
+<li><p><a href="#23-%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82">2.3 抽象工厂</a></p>
+</li>
+</ul>
+</li>
+<li><p><a href="#3-%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F">3 建造者模式</a></p>
+</li>
+<li><p><a href="#4-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F">4 原型模式</a></p>
+</li>
+</ul>
+</li>
+<li><p><a href="#%E7%BB%93%E6%9E%84%E5%9E%8B">结构型</a></p>
+<ul>
+<li><p><a href="#5-%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F">5 代理模式</a></p>
+</li>
+<li><p><a href="#6-%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F">6 桥接模式</a></p>
+</li>
+<li><p><a href="#7-%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F">7 装饰器模式</a></p>
+</li>
+<li><p><a href="#8-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F">8 适配器模式</a></p>
+</li>
+<li><p><a href="#9-%E9%97%A8%E9%9D%A2%E6%A8%A1%E5%BC%8F">9 门面模式</a></p>
+</li>
+<li><p><a href="#10-%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F">10 组合模式</a></p>
+</li>
+<li><p><a href="#11-%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F">11 享元模式</a></p>
+</li>
+</ul>
+</li>
+<li><p><a href="#%E8%A1%8C%E4%B8%BA%E5%9E%8B">行为型</a></p>
+<ul>
+<li><p><a href="#12-%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F">12 观察者模式</a></p>
+</li>
+<li><p><a href="#13-%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F">13 模板模式</a></p>
+</li>
+<li><p><a href="#14-%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F">14 策略模式</a></p>
+</li>
+<li><p><a href="#15-%E8%81%8C%E8%B4%A3%E9%93%BE%E6%A8%A1%E5%BC%8F">15 职责链模式</a></p>
+</li>
+<li><p><a href="#16-%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F">16 状态模式</a></p>
+</li>
+<li><p><a href="#17-%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F">17 迭代器模式</a></p>
+</li>
+<li><p><a href="#18-%E8%AE%BF%E9%97%AE%E8%80%85%E6%A8%A1%E5%BC%8F">18 访问者模式</a></p>
+</li>
+<li><p><a href="#19-%E5%A4%87%E5%BF%98%E5%BD%95%E6%A8%A1%E5%BC%8F">19 备忘录模式</a></p>
+</li>
+<li><p><a href="#20-%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F">20 命令模式</a></p>
+</li>
+<li><p><a href="#21-%E8%A7%A3%E9%87%8A%E5%99%A8%E6%A8%A1%E5%BC%8F">21 解释器模式</a></p>
+</li>
+<li><p><a href="#22-%E4%B8%AD%E4%BB%8B%E6%A8%A1%E5%BC%8F">22 中介模式</a></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="UML"><a href="#UML" class="headerlink" title="UML"></a>UML</h1><blockquote>
+<p>画图工具：draw.io</p>
+</blockquote>
+<h2 id="类图"><a href="#类图" class="headerlink" title="类图"></a>类图</h2><p>考虑给动物园建一个模。动物园里有很多动物，均可以属于动物类型，因此可以建立一个比较大的Animal类。每个该类的实例就是一个特定动物。可以通过属性以区分不同实例，因此加上name、id、age属性。属性名后面可以接上期望的基础类型，比如是整数，还是字符。同时加上方法来设置这些属性，或者描述实例的动作。比如添加<code>setName()</code>方法，（也可以给方法加上参数和返回类型<code>setName(var1, var2):string</code>）</p>
+<p>UML类图中对可见性的表达与C++中一致：减号表示private，加号表示public，#表示protected。此外，还有一个波浪线~表示package&#x2F;default，其含义是可以被同一package内的任何类所访问。</p>
+<ul>
+<li><p>继承关系（Inheritance）：</p>
+<p>现在Animal类中的方法和属性都是private的。动物也是有具体类型的，比如乌龟、水獭和懒猴。因此，再为这三个类型制定新的class，他们继承自Animal类，有动物的共有属性方法，又有自己的独特行为。同时，Animal类还需要是一个抽象类。抽象类可以用：加尖括号&lt;<Animal>&gt;或者斜体<em>Animal</em>来表示。<strong>继承用空心箭头来表示</strong>。</p>
+</li>
+<li><p>关联关系（Association）：</p>
+<p>比如水獭和海胆都属于动物，而水獭吃海胆，因此这两个类型之间出现了关联关系，关联行为就是eat。关联关系用一条普通直线就可以表示。</p>
+</li>
+<li><p>聚合关系（Aggregation）：</p>
+<p>聚合关系比较抽象，其描述整体与部分的关系。部分归属于整体，但二者并非强依赖，整体没了，部分依然可以在。</p>
+<p>动物除却具体类型外，也可以按纲目划分。比如可以有一个水生动物类，而乌龟也可以属于水生动物。但是二者的关系并非那么强烈，即使水生动物类在代码中没有了，乌龟类依然可以存在。因此二者属于聚合关系，可用<strong>空心菱形直线</strong>表示。</p>
+</li>
+<li><p>组合关系（Composition）：</p>
+<p>组合关系不同于聚合，其描述了比较强的依赖关系。比如有一个类A和类B，前者与后者强关联，有前者就会有后者，而且类A没了，类B也不复存在。此为组合关系，组合关系使用<strong>实心菱形直线</strong>表示。而且可以用数字表示，在这样的依赖关系中，每个类可以有几个实例。</p>
+<p>当是1对1的关系时，也可以注解当前为has a还是is a关系。</p>
+<p>比如在动物园中，每个懒猴都需要制定窝，一个猴可以有一个窝也可以有多个窝，当猴子不在了，与其绑定的窝也就拆毁了。</p>
+</li>
+</ul>
+<p>因此，整体的类图如下所示：</p>
+<h2 id="用例图"><a href="#用例图" class="headerlink" title="用例图"></a>用例图</h2><p>用例图可以分为四个主体：Systems、Actors、Use Cases、Relationships</p>
+<ul>
+<li><p>Systems：系统就是正在开发的东西，可以是app，可以是软件组件、网站等等。用一个长方形表示。比如下面的例子中，要开发一个银行应用，那么就画一个长方形，命名为Banking app</p>
+</li>
+<li><p>Actors：用户就是使用系统来达成目标的人或物（比如一个组织、或外部设备）。</p>
+<p>Actor在实际代码中要被视为类型。</p>
+<p>在此例子中，可以分析出有两个Actor。首先是顾客，其下载App并进行现金存取。而另一个则是银行自己，银行向app提供信息，比如交易流水或账户余额。</p>
+<blockquote>
+<p>📌需要注意的是：</p>
+<ol>
+<li>Actor永远是外部对象，也就是说要始终置于描述System的方框外。</li>
+<li>Actor的定义不要太具体，比如不要把Bank这个Actor命名为建行。</li>
+</ol>
+</blockquote>
+<p>既然存在多个Actor，那么就引申出了Primary Actors和Secondary Actors的概念。前者主动启用系统，而后者则较为被动。在本例中，顾客为Primary Actor，他们会拿出手机，打开app再进行相关操作。而银行则是Secondary Actor，银行只会在顾客采取行动之后再行动。比如顾客在app上查询账户余额，此事银行才会参与系统提供信息。</p>
+<p>Primary Actor放在System的左边，而Secondary Actor放在System的右边。</p>
+</li>
+<li><p>Use Cases：</p>
+<p>用例用于描述系统的若干功能，用椭圆表示。它们被放在System中，因为用例是系统内部的动作。本例中，银行app有这么几项功能：顾客登录、查账、转账、付款。</p>
+<blockquote>
+<p>📌不同于Actor，Use Case需要具体。比如转账写成了Transfer Funds，但如果仅写Transfer，就会让人摸不着头脑。</p>
+</blockquote>
+</li>
+<li><p>Relationships：</p>
+<p>Relationship反映了actor与use case之间，以及use case与use case之间的关系、交流或互动。</p>
+<ol>
+<li><p>关联（Association）：用于描述Actor与Use Case之间的交互</p>
+</li>
+<li><p>包含（Include）与扩展（Extend）：</p>
+<ul>
+<li><p>包含：包含关系显示了基本用例和包含用例之间的<strong>依赖关系</strong>。</p>
+<p>每次执行基本用例（Base Use Case）时，包含用例（Included Use Case）也会被执行。为了表示包含关系，需要由基本用例向包含用例拉一条&lt;<include>&gt;的线。</p>
+</li>
+<li><p>扩展：基本用例和扩展用例之间没有太严格的依赖关系。只有在执行基本用例，满足某些条件时，扩展用例才会被执行。因此可以理解为，<strong>扩展用例用于扩展基本用例的行为</strong>。为了表示扩展关系，需要由扩展用例向基本用例拉一条&lt;<extend>&gt;的线。</p>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">当顾客要登录app时，系统会验证顾客输入的密码，密码正确则登录成功，不正确则返回一条登录失败的信息。因此可以在系统中加上两个use case：验证密码、和打印登录错误信息。</span><br><span class="line"></span><br><span class="line">每次执行Log in用例，都必须执行Verify Password用例，因此，二者间存在包含关系，前者包含后者。</span><br><span class="line"></span><br><span class="line">而且，当执行Log in用例时，Display Login Error用例并不会总是执行，只有一种情况：密码错误时，才会得以执行。因此，二者间存在扩展关系。</span><br><span class="line"></span><br><span class="line">![](file://D:\Oliver-github_io\image\image_RpP07kD1aO.png)</span><br><span class="line"></span><br><span class="line">&gt; 📌多个基本用例可以同时与某一个用例，产生包含或扩展关系。</span><br><span class="line"></span><br><span class="line">当顾客要转账时，系统也需要首先查看账户是否有足够的余额。因此还需要添加验证余额是否充足的用例。同时，用户要付款时（make payment），也需要用到查询余额是否充足的用例。因此可以让这两个基本用例，同时指向一个包含用例。</span><br><span class="line"></span><br><span class="line">![](file://D:\Oliver-github_io\image\image_-KR9nU6U_j.png)</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><p>泛化（Generalization）：</p>
+<p>泛化，也可称为继承（inheritance），与面向对象中类的继承很相似。子用例（Specialized Use Cases）继承父用例（General Use Cases）的行为，但同时又可以添加自身的独特行为。从子用例向父用例拉一个下面这样的箭头表示继承关系。</p>
+<p>比如本例中，付款可以分为从支票账户付款，也可以从储蓄账户付款。二者属于付款的子用例。</p>
+<p>除了对Use Case进行继承外，还可以让Actor之间有继承关系。比如顾客中可以分为老顾客和新顾客。而不管新老，它们都是顾客，但是可能具备独特的行为和属性，如果设计成类，可以有这样的继承关系：</p>
+</li>
+<li><p>带扩展点的用例（Use Cases with extension points）</p>
+<p>一个带扩展点的用例如下图所示，上面是用例名，下面是扩展点。扩展点详细描述了扩展关系。</p>
+<p>比如用户可以在app中设置配置文件，因此可以有Set up Profile用例，而拓展点表示，当用户进入Set up Profile时，可以导航到几个不同的界面。如果顾客不知道该如何导航，可以访问配置文件帮助，如果顾客需要询问私人信息，可以去隐私信息界面去查看。扩展点指向对应的扩展用例。同时还可以设置<strong>注释</strong>，注明当满足什么条件时会引导到相应的扩展点。</p>
+</li>
+</ol>
+<p>最终就得到了这样一个银行app的用例图示例：</p>
+<h2 id="时序-x2F-序列图"><a href="#时序-x2F-序列图" class="headerlink" title="时序&#x2F;序列图"></a>时序&#x2F;序列图</h2><blockquote>
+<p>时序图显示了代码中的类&#x2F;对象在其执行顺序过程中的相互作用，换言之，其显示了序列事件。</p>
+</blockquote>
+<p>下面以一个ATM机存取，导致的银行系统执行流程来理解时序图。</p>
+<ul>
+<li><p>objects（对象）&amp; actor（参与者）：</p>
+<p>一个人去ATM机取钱，ATM机将于银行服务器通信，之后那个人的账户就会被存取。ATM机、银行服务器和银行账户，三者均属于银行系统。因此这三项可以算作objects。而那个人不属于银行系统，而且他来引发的事件，因此他是一名actor。</p>
+<p>画图时actor放在系统左边，在其右陆续画对象，按照与actor的远近画（比如ATM机与人的关系最近，因此右边的第一个对象是ATM机）</p>
+</li>
+<li><p>lifelines（生命线）</p>
+<p>生命线是位于对象下方垂直的虚线，显示着一个对象或者参与者存在的时间。沿着生命线向下代表着时间的流逝。</p>
+</li>
+<li><p>messages（信息）</p>
+<p>messages在对象之间传递，以表示相互作用时的动作或信息。各对象的message沿着生命线向下挪动，表示事件的前后发生关系。</p>
+<p>考虑整个系统的执行顺序，actor来到ATM机前的第一件事就是插入银行卡；接着ATM机与银行服务器通信来核对此卡是否有效；银行服务器将查询并向ATM机返回核对结果。</p>
+<p>插入卡片，通信要求核对，均属于信息，由实线箭头表示。而返回核对结果，则属于<strong>返回信息</strong>（return&#x2F;reply message），由虚线箭头表示。</p>
+<blockquote>
+<p>📌需注意，返回信息并没有明确的方向，可以从右指向左，也可以从左指向右，需要视具体情况而定。</p>
+</blockquote>
+<p>但是在返回信息的时候，问题出现了。有两种可能的回复信息，卡可用，或者不可用。那么如何在同一张图描述两种可能情况的发生呢，UML的解决方案是alternative frame。</p>
+</li>
+<li><p>Alternative Frame（选项）</p>
+<p>当银行服务器反馈，此时卡有效时，ATM机就会要求actor输入卡密码；而当反馈卡无效时，就会将卡弹出。</p>
+<p>由于要求输入密码这一事件，并不是在回应，因此不归属于返回信息，要用实线箭头画。Alternative frame中，左边写条件，并用虚线划分两个条件对应的行为。</p>
+<p>剩下的操作就是顺理成章的银行取钱操作。卡有效后，用户会输入密码，银行服务器反馈密码是否正确。密码正确后，用户输入需要取钱的金额，银行服务器会向银行账户核实是否有足够多的钱。</p>
+</li>
+<li><p>Activation Boxes（激活框）：</p>
+<p>Activation boxes显示对象进程的开始时间和结束时间。通过激活框可以轻松看到对象何时处于活动状态，何时处于空闲状态。下面根据messages来给各个对象加上激活框。</p>
+<p>通过激活框可以看出，银行账户对象显然比另外两个对象更不活跃。</p>
+<blockquote>
+<p>📌激活框只能作用于objects，不能作用于actors。</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="面向对象"><a href="#面向对象" class="headerlink" title="面向对象"></a>面向对象</h1><ul>
+<li><p>相比于面向过程，为什么项目开发使用面向对象？</p>
+<p>古早的程序需求足够简单，整个程序的处理流程只有一条主线，很容易被划分成顺序执行的几个步骤，很适合面向过程风格。</p>
+<p>但对于大规模复杂程序的开发来说，整个程序的处理流程错综复杂，画出来的话会是一个网状结构，再用面向过程来思考会比较吃力，此时面向对象的思维将更具优势。即，将需求翻译为类，并且在类之间建立交互关系。</p>
+<p>除此之外，面向对象也强制程序员将代码的组织方式更清晰、更模块化。</p>
+</li>
+</ul>
+<h2 id="四大特性"><a href="#四大特性" class="headerlink" title="四大特性"></a>四大特性</h2><blockquote>
+<p>四大特性：封装、抽象、继承、多态。这四大特性使得程序相比于面向过程风格的代码，更加易扩展、易复用、易维护。</p>
+</blockquote>
+<ol>
+<li><p>封装：信息隐藏&#x2F;数据访问保护，类通过暴露有限的访问接口，授权外部仅能通过类提供的方式（比如方法）来访问内部信息或者数据。</p>
+<p>如果对类中的属性不做限制，任何代码都能访问、修改的话，意味着不可控。即属性可能被随意地以各种方式修改，而且修改逻辑可能散落在代码中的各个角落，影响代码的可读性、可维护性。</p>
+<p>另一方面，仅暴露必要的操作，也能提高类的易用性。调用者只需使用api就好，不必过于细致的了解业务逻辑，减少心智负担。而且用错的概率会减少。</p>
+</li>
+<li><p>抽象：抽象通常由接口、抽象类来实现。其隐藏方法的具体实现，让调用者只需关心方法提供了哪些功能，并不需要知道这些功能是如何实现的。</p>
+<p>通过抽象，一方面降低调用者的操作难度，另一方面可以保持兼容能力，即使具体类的具体实现更改了，也不会影响到上层代码。</p>
+</li>
+<li><p>继承：继承表示类之间的is-a关系，比如猫是一种哺乳动物。</p>
+<p>继承的主要作用在于代码复用，可以避免代码重复写很多遍。但是继承层次过深也会导致代码可读性差、可维护性变差。</p>
+</li>
+<li><p>多态：子类可以替换父类，在实际的代码运行过程中，调用子类的方法实现。</p>
+<p>多态代码的作用在于提高代码的可扩展性和复用性。比如一个<code>print(Animal var)</code>就可以打印所有类型动物的信息。多态是众多设计模式实现的基石。</p>
+</li>
+</ol>
+<h2 id="基于接口而非实现编程"><a href="#基于接口而非实现编程" class="headerlink" title="基于接口而非实现编程"></a>基于接口而非实现编程</h2><blockquote>
+<p>Program to an interface, not an implementation</p>
+</blockquote>
+<p>从本质上来看，“接口”就是一组“协议”或者“约定”，是功能提供者提供给使用者的一个“功能列表”。这条原则希望，实际代码中，上层代码多用抽象出来的接口，而非具体实现了功能的类。这样可以带来好处：</p>
+<ul>
+<li><p><strong>接口与实现相分离</strong>。封装不稳定的实现，暴露稳定的接口。这样当实现发生变化的时候，上游系统的代码基本上不需要做改动，以此降低耦合性，提高扩展性。</p>
+<p><strong>好的代码设计，不仅能应对当下的需求，而且在将来需求发生变化的时候，仍然能够在不破坏原有代码设计的情况下灵活应对</strong>。</p>
+</li>
+</ul>
+<h2 id="多用组合少用继承"><a href="#多用组合少用继承" class="headerlink" title="多用组合少用继承"></a>多用组合少用继承</h2><p>继承的弊端不仅局限于简单继承的层次过深问题。考虑“鸟”这个类：</p>
+<ol>
+<li><p>方法选择受限：</p>
+<p>大部分鸟都会飞，那么可不可以在AbstractBird抽象类中，定义一个fly方法呢？</p>
+<ul>
+<li><p>如果定义了，依然有一些鸟是不会飞的，比如鸵鸟，但是鸵鸟类中却仍然有fly方法，即使将鸵鸟类中的fly内部写抛出异常的代码，也不会强制程序员在写代码时避免让 鸵鸟等鸟类fly，在后续扩展中难免有漏网之鱼，导致错误。</p>
+</li>
+<li><p>如果不定义，那么当会飞的鸟类想fly时，就要多写很多实现他们fly方法的代码，有悖于“继承提高代码复用”的目的。</p>
+</li>
+</ul>
+</li>
+<li><p>派生关系复杂：</p>
+<p>那么是否可以给AbstractBird派生两个类，一个会飞鸟类，一个不会飞鸟类，再在会飞类里派生具体的鸟类，不会飞鸟类里派生鸵鸟类。</p>
+<p>表面上这样可以解决问题，但是在后面的扩展中，这样的设计可能会带来更为严重的问题。比如此时需求变更，还想加上Tweet方法，即让鸟儿叫出来。沿袭刚才的思路，AbstractBird派生出来了四个类：会飞会叫、会飞不会叫、不会飞会叫、不会飞不会叫。两个功能衍生出了四种组合。也就是n个功能会有2^n种组合，呈指数形式变化。</p>
+<p>那么后面还要加下蛋（判断是否会下蛋）等功能，将会组合爆炸。这样继承的关系越来越复杂，可读性极差，而且极难维护。</p>
+</li>
+</ol>
+<blockquote>
+<p>📌继承主要有三个作用：表示is-a关系，支持多态特性，代码复用。而这三个作用都可以通过组合、接口、委托三个技术手段来达成。除此之外，利用组合还能解决层次过深、过复杂的继承关系影响代码可维护性的问题。</p>
+</blockquote>
+<ul>
+<li><p>组合、接口、委托的实现方案：</p>
+<p>针对不同需求，定义不同的接口，之后每个鸟类将这些接口组合在一起。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Flyable</span> &#123;</span><br><span class="line">  <span class="keyword">void</span> <span class="title function_">fly</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Tweetable</span> &#123;</span><br><span class="line">  <span class="keyword">void</span> <span class="title function_">tweet</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">EggLayable</span> &#123;</span><br><span class="line">  <span class="keyword">void</span> <span class="title function_">layEgg</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Ostrich</span> <span class="keyword">implements</span> <span class="title class_">Tweetable</span>, EggLayable &#123;<span class="comment">//鸵鸟</span></span><br><span class="line">  <span class="comment">//... 省略其他属性和方法...</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">tweet</span><span class="params">()</span> &#123; <span class="comment">//... &#125;</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">layEgg</span><span class="params">()</span> &#123; <span class="comment">//... &#125;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Sparrow</span> impelents Flayable, Tweetable, EggLayable &#123;<span class="comment">//麻雀</span></span><br><span class="line">  <span class="comment">//... 省略其他属性和方法...</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">fly</span><span class="params">()</span> &#123; <span class="comment">//... &#125;</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">tweet</span><span class="params">()</span> &#123; <span class="comment">//... &#125;</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">layEgg</span><span class="params">()</span> &#123; <span class="comment">//... &#125;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接口只声明方法，不定义实现。也就是说，每个会下蛋的鸟都要实现一遍layEgg()方法，并且实现逻辑是一样的，这就会导致代码重复的问题。可以通过组合+委托的方式来消除代码重复。针对三个接口再定义三个实现类，它们分别是：实现了fly()方法的FlyAbility类、实现了tweet()方法的TweetAbility类、实现了layEgg()方法的EggLayAbility类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Flyable</span> &#123;</span><br><span class="line">  <span class="keyword">void</span> <span class="title function_">fly</span><span class="params">()</span>；</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FlyAbility</span> <span class="keyword">implements</span> <span class="title class_">Flyable</span> &#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">fly</span><span class="params">()</span> &#123; <span class="comment">//... &#125;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//省略Tweetable/TweetAbility/EggLayable/EggLayAbility</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Ostrich</span> <span class="keyword">implements</span> <span class="title class_">Tweetable</span>, EggLayable &#123;<span class="comment">//鸵鸟</span></span><br><span class="line">  <span class="keyword">private</span> <span class="type">TweetAbility</span> <span class="variable">tweetAbility</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TweetAbility</span>(); <span class="comment">//组合</span></span><br><span class="line">  <span class="keyword">private</span> <span class="type">EggLayAbility</span> <span class="variable">eggLayAbility</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">EggLayAbility</span>(); <span class="comment">//组合</span></span><br><span class="line">  <span class="comment">//... 省略其他属性和方法...</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">tweet</span><span class="params">()</span> &#123;</span><br><span class="line">    tweetAbility.tweet(); <span class="comment">// 委托</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">layEgg</span><span class="params">()</span> &#123;</span><br><span class="line">    eggLayAbility.layEgg(); <span class="comment">// 委托</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>于是组合+接口+委托，达成了代码重复少、也不必再有复杂继承关系的目的。</p>
+</li>
+</ul>
+<h1 id="设计原则"><a href="#设计原则" class="headerlink" title="设计原则"></a>设计原则</h1><blockquote>
+<p>SOLID原则：由5个设计原则组成，分别是，单一职责原则、开闭原则、里氏替换原则、接口隔离原则和依赖反转原则，对应S、O、L、I、D 5个英文字母</p>
+</blockquote>
+<h2 id="单一职责原则（Single-Responsibility-Principle-SRP）"><a href="#单一职责原则（Single-Responsibility-Principle-SRP）" class="headerlink" title="单一职责原则（Single Responsibility Principle, SRP）"></a>单一职责原则（Single Responsibility Principle, SRP）</h2><blockquote>
+<p>一个类&#x2F;模块只负责完成一个职责（或者功能）</p>
+</blockquote>
+<p>一个类只负责完成一个职责或者功能。也就是说，不要设计大而全的类，要设计粒度小、功能单一的类。换个角度就是，一个类包含了两个或者两个以上业务不相干的功能，那我们就说它职责不够单一，应该将它拆分成多个功能更加单一、粒度更细的类。</p>
+<p>以下几点可以辅助判断类的职责是否足够单一：</p>
+<ul>
+<li><p>类中的代码行数、函数或属性过多，会影响代码的可读性和可维护性，我们就需要考虑对类进行拆分；</p>
+</li>
+<li><p>类依赖的其他类过多，或者依赖类的其他类过多，不符合高内聚、低耦合的设计思想，我们就需要考虑对类进行拆分；</p>
+</li>
+<li><p>私有方法过多，我们就要考虑能否将私有方法独立到新的类中，设置为public方法，供更多的类使用，从而提高代码的复用性；</p>
+</li>
+<li><p>比较难给类起一个合适名字，很难用一个业务名词概括，或者只能用一些笼统的Manager、Context之类的词语来命名，这就说明类的职责定义得可能不够清晰；</p>
+</li>
+<li><p>类中大量的方法都是集中操作类中的某几个属性，比如，在UserInfo例子中，如果一半的方法都是在操作address信息，那就可以考虑将这几个属性和对应的方法拆分出来。</p>
+</li>
+</ul>
+<h2 id="开闭原则：对扩展开放、修改关闭（Open-Closed-Principle）"><a href="#开闭原则：对扩展开放、修改关闭（Open-Closed-Principle）" class="headerlink" title="开闭原则：对扩展开放、修改关闭（Open Closed Principle）"></a>开闭原则：对扩展开放、修改关闭（Open Closed Principle）</h2><p>添加一个新的功能应该是，在已有代码基础上扩展代码（新增模块、类、方法等），而非修改已有代码（修改模块、类、方法等）。</p>
+<p>体现在C++代码的话，用父类指针去指向子类，体现了这样的开闭原则：</p>
+<p>比如定义一个Calculator抽象类，通过子类继承的方式扩展出加减乘除的功能：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="comment">//计算器类  </span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Calculator</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="comment">//抽象接口类，子类实现</span></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">double</span> <span class="title">getompute</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">getParam</span><span class="params">(<span class="type">double</span> a, <span class="type">double</span> b)</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//除</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Division</span> : <span class="keyword">public</span> Calculator</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">double</span> <span class="title">getompute</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> mA / mB;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">getParam</span><span class="params">(<span class="type">double</span> a, <span class="type">double</span> b)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    mA = a;</span><br><span class="line">    mB = b;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="type">double</span> mA;</span><br><span class="line">  <span class="type">double</span> mB;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//乘</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Multiplication</span> : <span class="keyword">public</span> Calculator</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">double</span> <span class="title">getompute</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> mA * mB;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">getParam</span><span class="params">(<span class="type">double</span> a, <span class="type">double</span> b)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    mA = a;</span><br><span class="line">    mB = b;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="type">double</span> mA;</span><br><span class="line">  <span class="type">double</span> mB;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//减</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Subtraction</span> : <span class="keyword">public</span> Calculator</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">double</span> <span class="title">getompute</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> mA - mB;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">getParam</span><span class="params">(<span class="type">double</span> a, <span class="type">double</span> b)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    mA = a;</span><br><span class="line">    mB = b;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="type">double</span> mA;</span><br><span class="line">  <span class="type">double</span> mB;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//加</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Addition</span> : <span class="keyword">public</span> Calculator</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">double</span> <span class="title">getompute</span><span class="params">()</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> mA + mB;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">getParam</span><span class="params">(<span class="type">double</span> a, <span class="type">double</span> b)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    mA = a;</span><br><span class="line">    mB = b;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="type">double</span> mA;</span><br><span class="line">  <span class="type">double</span> mB;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  Calculator* Add = <span class="keyword">new</span> Addition;</span><br><span class="line">  Add-&gt;<span class="built_in">getParam</span>(<span class="number">1</span>,<span class="number">2</span>);</span><br><span class="line">  <span class="type">double</span> c = Add-&gt;<span class="built_in">getompute</span>();</span><br><span class="line">  cout &lt;&lt; c &lt;&lt; endl;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么此时，还想添加一个求根的功能，就只需再添加一个求根运算的子类即可。</p>
+<h2 id="里式替换原则（Liskov-Substitution-Principle）"><a href="#里式替换原则（Liskov-Substitution-Principle）" class="headerlink" title="里式替换原则（Liskov Substitution Principle）"></a>里式替换原则（Liskov Substitution Principle）</h2><p>子类对象能够替换程序中父类对象出现的任何地方，并且保证原来程序的逻辑行为不变及正确性不被破坏。也就是子类对象替换了父类对象的内在实现，但是对外的接口保持与父类对象一致。</p>
+<p>明显违背LSP的代码：</p>
+<ul>
+<li><p>子类违背父类声明要实现的功能</p>
+<p>比如父类中提供的sortByAmount()函数，是按照类中的金额属性进行从小到大的排序，而子类重写此函数时，是按照日期属性进行排序的。那么子类的设计就违背了里式替换原则。</p>
+</li>
+<li><p>子类违背父类对输入、输出、异常的约定</p>
+<p>比如父类中的某个函数约定了：</p>
+<ol>
+<li><p>运行出错时返回null；获取数据为空时返回空集合。而子类重载函数之后，实现变了，运行出错返回异常，获取不到数据返回null；</p>
+</li>
+<li><p>输入数据可以是任意整数，但子类实现的时候，只允许输入数据是正整数，负数就抛出；</p>
+</li>
+<li><p>约定只会抛出A异常，子类实现时却只允许抛出B异常</p>
+</li>
+</ol>
+</li>
+</ul>
+<p>这些都导致子类违背里式替换原则。</p>
+<ul>
+<li>子类违背父类注释中所罗列的任何特殊说明</li>
+</ul>
+<blockquote>
+<p>📌理解LSP，最核心就是理解“按照协议设计”，即父类定义了函数的“协议”，那么子类可以改变函数的内部实现逻辑，但不能改变函数原有的“协议”。</p>
+</blockquote>
+<h2 id="接口隔离原则（Interface-Segregation-Principle）"><a href="#接口隔离原则（Interface-Segregation-Principle）" class="headerlink" title="接口隔离原则（Interface Segregation Principle）"></a>接口隔离原则（Interface Segregation Principle）</h2><p>接口的调用者&#x2F;使用者，不应该被强迫去依赖它不需要的接口。</p>
+<p>这里的接口Interface不局限于编程语言里的类似于抽象类的接口，而是可理解为：</p>
+<ol>
+<li><p>一组API接口集合</p>
+<p>如果部分接口只被部分调用者使用，就需要将这部分接口隔离出来，单独给这部分调用者使用，而不强迫其他调用者也依赖这部分不会被用到的接口。</p>
+</li>
+<li><p>单个API接口或函数</p>
+<p>部分调用者只需要函数中的部分功能，那我们就需要把函数拆分成粒度更细的多个函数，让调用者只依赖它需要的那个细粒度函数。</p>
+</li>
+<li><p>OOP中的接口概念</p>
+<p>接口的设计要尽量单一，不要让接口的实现类和调用者，依赖不需要的接口函数。</p>
+</li>
+</ol>
+<blockquote>
+<p>📌单一职责原则针对的是模块、类、接口的设计。接口隔离原则相对于单一职责原则，一方面更侧重于接口的设计，另一方面也是为单一职责的判定提供了一种新思路。<br>可以通过调用者如何使用接口来间接判定设计是否够职责单一。</p>
+</blockquote>
+<h2 id="依赖反转原则（Dependency-Inversoin-Principle）"><a href="#依赖反转原则（Dependency-Inversoin-Principle）" class="headerlink" title="依赖反转原则（Dependency Inversoin Principle）"></a>依赖反转原则（Dependency Inversoin Principle）</h2><h2 id="KISS原则"><a href="#KISS原则" class="headerlink" title="KISS原则"></a>KISS原则</h2><blockquote>
+<p>Keep It Simple and Stupid<br>Keep It Short and Simple<br>Keep It Simple and Straightforward</p>
+</blockquote>
+<p>尽量把代码写得简单，虽然“简单”的定义很模糊。</p>
+<ul>
+<li><p>不要使用同事可能不懂的技术来实现代码。</p>
+</li>
+<li><p>不要重复造轮子，要善于使用已经有的工具类库。</p>
+</li>
+<li><p>不要过度优化。不要过度使用一些奇技淫巧（比如，位运算代替算术运算、复杂的条件语句代替if-else、使用一些过于底层的函数等）来优化代码，牺牲代码的可读性。</p>
+</li>
+</ul>
+<h3 id="YAGNI原则"><a href="#YAGNI原则" class="headerlink" title="YAGNI原则"></a>YAGNI原则</h3><blockquote>
+<p>You Ain’t Gonna Need It</p>
+</blockquote>
+<p>不要去设计当前用不到的功能；不要去编写当前用不到的代码——不要做过度设计。</p>
+<p>比如，系统暂时只用Redis存储配置信息，以后可能会用到zookeeper。根据YAGNI原则，在未用到ZooKeeper之前，没必要提前编写这部分代码。</p>
+<p>再比如，不要在项目中提前引入不需要依赖的开发包。</p>
+<h2 id="DRY原则（Don’t-Repeat-Yourself）"><a href="#DRY原则（Don’t-Repeat-Yourself）" class="headerlink" title="DRY原则（Don’t Repeat Yourself）"></a>DRY原则（Don’t Repeat Yourself）</h2><h2 id="迪米特法则（Law-of-Demeter）"><a href="#迪米特法则（Law-of-Demeter）" class="headerlink" title="迪米特法则（Law of Demeter）"></a>迪米特法则（Law of Demeter）</h2><h1 id="编程规范"><a href="#编程规范" class="headerlink" title="编程规范"></a>编程规范</h1><h1 id="代码重构"><a href="#代码重构" class="headerlink" title="代码重构"></a>代码重构</h1><h1 id="23种设计模式"><a href="#23种设计模式" class="headerlink" title="23种设计模式"></a>23种设计模式</h1><h2 id="创建型"><a href="#创建型" class="headerlink" title="创建型"></a>创建型</h2><h3 id="1-单例模式"><a href="#1-单例模式" class="headerlink" title="1 单例模式"></a>1 单例模式</h3><p>单例模式表示一个类只会有一个对象，当程序想创建新的对象时，创建的新对象其实和之前创建的对象在一个地址，即名义上的多个对象实际只有一个。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Singleton</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  ~<span class="built_in">Singleton</span>()&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;~Singleton() destruct&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="type">static</span> Singleton&amp; <span class="title">CreateObject</span><span class="params">()</span></span>&#123; <span class="comment">//用户只能通过此函数构造对象</span></span><br><span class="line">    <span class="type">static</span> Singleton obj;           <span class="comment">//静态以单例</span></span><br><span class="line">    <span class="keyword">return</span> obj;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">Singleton</span>(Singleton&amp; obj) = <span class="keyword">delete</span>;             <span class="comment">//禁用拷贝构造函数</span></span><br><span class="line">  Singleton* <span class="keyword">operator</span>= (Singleton&amp; obj) = <span class="keyword">delete</span>; <span class="comment">//禁用拷贝构造函数，与上一行二者择一</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  <span class="built_in">Singleton</span>() &#123;                     <span class="comment">//封闭构造函数，不让用户有接触到构造函数的机会</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Singleton() construct&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">  Singleton&amp; pObj1 = Singleton::<span class="built_in">CreateObject</span>();</span><br><span class="line">  Singleton&amp; pObj2 = Singleton::<span class="built_in">CreateObject</span>();</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>CreateObject是static函数：</p>
+<p>避开无对象时没法调用构造函数创建对象的死结，直接用静态函数构造对象</p>
+</li>
+<li><p>CreateObject返回的是引用而不是指针：</p>
+<p>虽说也可以用指针</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> Singleton* m_pObject = <span class="literal">nullptr</span>;</span><br><span class="line"><span class="function"><span class="type">static</span> Singleton* <span class="title">CreateObject</span><span class="params">()</span></span>&#123; <span class="comment">//用户只能通过此函数构造对象</span></span><br><span class="line">    <span class="keyword">if</span>(m_pObject == <span class="literal">nullptr</span>)&#123;</span><br><span class="line">      m_pObject = <span class="keyword">new</span> <span class="built_in">Singleton</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> m_pObject;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但这么写存在的问题是，因为是指针，因为用了new，所以可能存在内存泄露问题。即使用户可以在main函数里<code>delete pObj1</code>，而且编译不会报错，但此时Singleton不再是线程安全的了。</p>
+</li>
+<li><p>禁用拷贝构造函数：</p>
+<p>传回的是引用，但若允许拷贝构造函数，这么写时仍不会报错</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Singleton pObj2 = Singleton::<span class="built_in">CreateObject</span>();</span><br></pre></td></tr></table></figure>
+
+<p>此时的pObj2是通过拷贝构造函数，新创建的Singleton对象，并把obj的内容拷贝了过来。那么此时pObj2和pObj1的地址不再相同，二者成为了两个对象，打破了单例模式。</p>
+<p>因此，此处禁用拷贝构造，强迫用户必须用引用来接对象。</p>
+</li>
+</ul>
+<h3 id="2-工厂模式"><a href="#2-工厂模式" class="headerlink" title="2 工厂模式"></a>2 工厂模式</h3><h4 id="2-1-简单工厂"><a href="#2-1-简单工厂" class="headerlink" title="2.1 简单工厂"></a>2.1 简单工厂</h4><h4 id="2-2-工厂方法"><a href="#2-2-工厂方法" class="headerlink" title="2.2 工厂方法"></a>2.2 工厂方法</h4><h4 id="2-3-抽象工厂"><a href="#2-3-抽象工厂" class="headerlink" title="2.3 抽象工厂"></a>2.3 抽象工厂</h4><h3 id="3-建造者模式"><a href="#3-建造者模式" class="headerlink" title="3 建造者模式"></a>3 建造者模式</h3><h3 id="4-原型模式"><a href="#4-原型模式" class="headerlink" title="4 原型模式"></a>4 原型模式</h3><h2 id="结构型"><a href="#结构型" class="headerlink" title="结构型"></a>结构型</h2><h3 id="5-代理模式"><a href="#5-代理模式" class="headerlink" title="5 代理模式"></a>5 代理模式</h3><h3 id="6-桥接模式"><a href="#6-桥接模式" class="headerlink" title="6 桥接模式"></a>6 桥接模式</h3><h3 id="7-装饰器模式"><a href="#7-装饰器模式" class="headerlink" title="7 装饰器模式"></a>7 装饰器模式</h3><h3 id="8-适配器模式"><a href="#8-适配器模式" class="headerlink" title="8 适配器模式"></a>8 适配器模式</h3><h3 id="9-门面模式"><a href="#9-门面模式" class="headerlink" title="9 门面模式"></a>9 门面模式</h3><h3 id="10-组合模式"><a href="#10-组合模式" class="headerlink" title="10 组合模式"></a>10 组合模式</h3><h3 id="11-享元模式"><a href="#11-享元模式" class="headerlink" title="11 享元模式"></a>11 享元模式</h3><h2 id="行为型"><a href="#行为型" class="headerlink" title="行为型"></a>行为型</h2><h3 id="12-观察者模式"><a href="#12-观察者模式" class="headerlink" title="12 观察者模式"></a>12 观察者模式</h3><h3 id="13-模板模式"><a href="#13-模板模式" class="headerlink" title="13 模板模式"></a>13 模板模式</h3><h3 id="14-策略模式"><a href="#14-策略模式" class="headerlink" title="14 策略模式"></a>14 策略模式</h3><h3 id="15-职责链模式"><a href="#15-职责链模式" class="headerlink" title="15 职责链模式"></a>15 职责链模式</h3><h3 id="16-状态模式"><a href="#16-状态模式" class="headerlink" title="16 状态模式"></a>16 状态模式</h3><h3 id="17-迭代器模式"><a href="#17-迭代器模式" class="headerlink" title="17 迭代器模式"></a>17 迭代器模式</h3><h3 id="18-访问者模式"><a href="#18-访问者模式" class="headerlink" title="18 访问者模式"></a>18 访问者模式</h3><h3 id="19-备忘录模式"><a href="#19-备忘录模式" class="headerlink" title="19 备忘录模式"></a>19 备忘录模式</h3><h3 id="20-命令模式"><a href="#20-命令模式" class="headerlink" title="20 命令模式"></a>20 命令模式</h3><h3 id="21-解释器模式"><a href="#21-解释器模式" class="headerlink" title="21 解释器模式"></a>21 解释器模式</h3><h3 id="22-中介模式"><a href="#22-中介模式" class="headerlink" title="22 中介模式"></a>22 中介模式</h3>
+    </div>
+
+    
+</div>
+    <div class="footer" id="footer">
+    <p>Copyright © 2020 <a class="flink" target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>-<a class="flink" target="_blank" rel="noopener" href="https://github.com/sanjinhub/hexo-theme-geek">Geek</a>.
+        <label class="el-switch el-switch-green el-switch-sm" style="vertical-align: sub;">
+            <input type="checkbox" name="switch" id="update_style">
+            <span class="el-switch-style"></span>
+        </label>
+<!--         <script type="text/javascript">
+        var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+        document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+        </script> -->
+    </p>
+</div>
+<input type="hidden" id="web_style" value="black">
+<input type="hidden" id="valine_appid" value="CmCti21ooOOIzFOhEyFkFvR0-gzGzoHsz">
+<input type="hidden" id="valine_appKey" value="FqiyUqbg7McKN2eG0MCewupf">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+    color: #698fca;
+}
+
+.v .vlist .vcard .vhead .vsys {
+    color: #3a3e4a;
+}
+
+.v .vlist .vcard .vh .vmeta .vat {
+    color: #638fd5;
+}
+
+.v .vlist .vcard .vhead .vnick {
+    color: #6ba1ff;
+}
+
+.v a {
+    color: #8696b1;
+}
+
+.v .vlist .vcard .vhead .vnick:hover {
+    color: #669bfc;
+}
+</style>
+</body>
+
+</html>
