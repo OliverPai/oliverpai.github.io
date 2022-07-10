@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.2","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Wolai版笔记：https:&#x2F;&#x2F;www.wolai.com&#x2F;hmeMVASSQi5bp7r9dNGZtY。Dinkelbach目前可以说是最常用的分式优化求解办法之一，本文研读经典论文后进行方法记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分式优化求解利器——Dinkelbach">
+<meta property="og:url" content="http://example.com/2022/01/03/Dinkelbach%20Approach/Dinkelbach%20Approach/index.html">
+<meta property="og:site_name" content="OliverPai">
+<meta property="og:description" content="Wolai版笔记：https:&#x2F;&#x2F;www.wolai.com&#x2F;hmeMVASSQi5bp7r9dNGZtY。Dinkelbach目前可以说是最常用的分式优化求解办法之一，本文研读经典论文后进行方法记录。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/image/image_rjrcmXIOqK.png">
+<meta property="og:image" content="http://example.com/image/image__Kmw3gOGVl.png">
+<meta property="article:published_time" content="2022-01-03T07:47:26.000Z">
+<meta property="article:modified_time" content="2022-07-10T11:30:00.621Z">
+<meta property="article:author" content="OliverPai">
+<meta property="article:tag" content="数学方法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/image/image_rjrcmXIOqK.png">
+
+
+<link rel="canonical" href="http://example.com/2022/01/03/Dinkelbach%20Approach/Dinkelbach%20Approach/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/01/03/Dinkelbach%20Approach/Dinkelbach%20Approach/","path":"2022/01/03/Dinkelbach Approach/Dinkelbach Approach/","title":"分式优化求解利器——Dinkelbach"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>分式优化求解利器——Dinkelbach | OliverPai</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="OliverPai" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">OliverPai</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">落叶本就是假的</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Dinkelbach-Approach"><span class="nav-number">1.</span> <span class="nav-text">Dinkelbach Approach</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%B4%E7%B4%A0Dinkelbach"><span class="nav-number">1.1.</span> <span class="nav-text">朴素Dinkelbach</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%9C%89%E6%95%88%E6%80%A7%E5%88%86%E6%9E%90"><span class="nav-number">1.1.1.</span> <span class="nav-text">算法有效性分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E4%B8%8A%E7%95%8C%E8%AE%BA%E8%AF%81%E7%9A%84%E6%94%B9%E8%BF%9BDinkelbach"><span class="nav-number">1.2.</span> <span class="nav-text">有上界论证的改进Dinkelbach</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%9C%89%E6%95%88%E6%80%A7%E5%88%86%E6%9E%90-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">算法有效性分析</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="OliverPai"
+      src="/images/avatar-star.png">
+  <p class="site-author-name" itemprop="name">OliverPai</p>
+  <div class="site-description" itemprop="description">求索与记录</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OliverPai" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OliverPai" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/03/Dinkelbach%20Approach/Dinkelbach%20Approach/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-star.png">
+      <meta itemprop="name" content="OliverPai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="OliverPai">
+      <meta itemprop="description" content="求索与记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="分式优化求解利器——Dinkelbach | OliverPai">
+      <meta itemprop="description" content="Wolai版笔记：https://www.wolai.com/hmeMVASSQi5bp7r9dNGZtY。Dinkelbach目前可以说是最常用的分式优化求解办法之一，本文研读经典论文后进行方法记录。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分式优化求解利器——Dinkelbach
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-01-03 15:47:26" itemprop="dateCreated datePublished" datetime="2022-01-03T15:47:26+08:00">2022-01-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-07-10 19:30:00" itemprop="dateModified" datetime="2022-07-10T19:30:00+08:00">2022-07-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">数学</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">Wolai版笔记：https://www.wolai.com/hmeMVASSQi5bp7r9dNGZtY。Dinkelbach目前可以说是最常用的分式优化求解办法之一，本文研读经典论文后进行方法记录。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Dinkelbach-Approach"><a href="#Dinkelbach-Approach" class="headerlink" title="Dinkelbach Approach"></a>Dinkelbach Approach</h1><blockquote>
+<p>问题描述：<br>给定两个连续函数$ f:\mathbf R^n\rightarrow\mathbf R  $和$g:\mathbf R^n\rightarrow \mathbf R$。二者定义域为多面体(polyhedral)集合$S\subset\mathbf R^n$使得对于所有$x\in S$都有$g(x)&gt;0$。需要找到一个分式规划问题的最优解$x^*$满足$\frac{f(x^*)}{g(x^*)}&#x3D;\max\limits_{x\in S}\frac{f(x)}{g(x)}$ (P)。</p>
+</blockquote>
+<p>Dinkelbach方法，简言之，将原问题P简化为一个全局优化问题(GP)：$\max\limits_{x\in S}(f(x)-\lambda g(x))$。</p>
+<h2 id="朴素Dinkelbach"><a href="#朴素Dinkelbach" class="headerlink" title="朴素Dinkelbach"></a>朴素Dinkelbach</h2><blockquote>
+<p>📌定理1：<br>$ x^*  $是分式规划问题(P)的解，当且仅当其是全局优化问题(GP)有约束$\lambda^*&#x3D;\frac{f(x^*)}{g(x^*)}$时的解。</p>
+</blockquote>
+<ul>
+<li><p>朴素Dinkelbach算法流程：</p>
+<ol>
+<li><p>选取$x^{(0)}\in S$。设置$\lambda^{(0)}:&#x3D;f(x^{(0)})&#x2F;g(x^{(0)}),\ k:&#x3D;0$；</p>
+</li>
+<li><p>求解全局优化问题：$\max\limits_{x\in S}(f(x)-\lambda^{(k)}g(x))$，得到当前解$x^{(k+1)}$；</p>
+</li>
+<li><p>若$f(x^{(k+1)})-\lambda^{(k)}g(x^{(k+1)})&#x3D;0$，那么最优解产生$ x^*&#x3D;x^{(k+1)},\ \lambda^*:&#x3D;\lambda^{(k)}  $，算法停止；</p>
+</li>
+<li><p>若$f(x^{(k+1)})-\lambda^{(k)}g(x^{(k+1)})&gt;0$，那么设置$\lambda^{(k+1)}:&#x3D;f(x^{(k+1)})&#x2F;g(x^{(k+1)}),\ k:k+1$后，回到步骤2。</p>
+</li>
+</ol>
+</li>
+</ul>
+<p>注：不需要验证$f(x^{(k+1)})-\lambda^{(k)}g(x^{(k+1)})&lt;0$的情况。（可以用反证法证明）对所有$k$都有</p>
+<p>$$<br>f(x^{(k+1)})-\lambda^{(k)}g(x^{(k+1)})&#x3D;\max\limits_{x\in S}f((x)-\lambda^{(k)}g(x))\ge f(x^{(k)})-\lambda^{(k)}g(x^{(k)})&#x3D;0<br>$$</p>
+<h3 id="算法有效性分析"><a href="#算法有效性分析" class="headerlink" title="算法有效性分析"></a>算法有效性分析</h3><p>考虑函数$M(\lambda)&#x3D;\max\limits_{x\in S}(f(x)-\lambda g(x))$。可以知道其符合以下性质：</p>
+<ol>
+<li><p>对于所有$\lambda&lt;\lambda^*$有$M(\lambda)&gt;0$且对于所有$\lambda&gt;\lambda^*$有$M(\lambda)&lt;0$；</p>
+</li>
+<li><p>$M(\lambda)$是凸函数。</p>
+</li>
+</ol>
+<blockquote>
+<p>超线性收敛(converge superlinearly)：<br>若序列$\alpha^{(0)},\alpha^{(1)},\cdots$满足$\lim\limits_{n\rightarrow\infty}\frac{|\alpha^*-\alpha^{(n+1)}|}{\theta^{n+1}}&#x3D;0$，其中$\theta\in(0,1]$，则称该序列超线性收敛于$\alpha^*$。</p>
+</blockquote>
+<p>（超线性收敛意味着，序列会收敛，而且以越来越快的速度收敛）</p>
+<blockquote>
+<p>📌引理1：<br>$x^<em>\in S$是问题(P)的最优解，且$x’$是$M(\lambda’)$的解满足$\lambda’&lt;\lambda^</em>$，那么：<br>$\lambda^*-\frac{f(x’)}{g(x’)}\le(\lambda^*-\lambda’)(1-\frac{g(x^*)}{g(x’)})$<br>其中$0\le1-g(x^*)&#x2F;g(x’)&lt;1$。</p>
+<p>Schaible S. Fractional programming: applications and algorithms[J]. European Journal of Operational Research, 1981, 7(2): 111-120.</p>
+</blockquote>
+<p>对于引理1，令$\lambda’&#x3D;\lambda^{(n)}$且$x’&#x3D;x^{(n+1)}$，则$x^{(n+1)}$是$M(\lambda^{(n)})$的解，那么可以得到每次迭代的误差满足：</p>
+<p>$$<br>(\lambda^*-\lambda^{(n+1)})\le(\lambda^*-\lambda^{(n)})(1-\frac{g(x^*)}{g(x^{(n+1)})})<br>$$</p>
+<p>令$\epsilon_i&#x3D;(1-g(x^*)&#x2F;g(x^{(i)})),\ i&#x3D;1,2,\cdots$，Schaible的理论表明$\epsilon_1\ge\epsilon_2\ge\cdots\ge0$。序列误差的级联关系可以表示为：</p>
+<p>$$<br>(\lambda^*-\lambda^{(n+1)})\le(\lambda^*-\lambda^{(0)})\prod_{i&#x3D;1}^{n+1}(1-\frac{g(x^*)}{g(x^{(i)})})&#x3D;(\lambda^*-\lambda^{(0)})\prod_{i&#x3D;1}^{n+1}\epsilon_i<br>$$</p>
+<p>此时可以使用第二个引理。</p>
+<blockquote>
+<p>📌引理2：<br>存在一个$x^*\in S$作为问题P的最优解，使得$\lim\limits_{n\rightarrow\infty}\epsilon_n&#x3D;0$</p>
+<p>Schaible S. Fractional Programming: Transformations, Duality and Algorithmic Aspects[R]. STANFORD UNIV CALIF DEPT OF OPERATIONS RESEARCH, 1973.</p>
+</blockquote>
+<p>因此，对于任意$\theta\in(0,1]$，存在一个整数$n_{\theta}\ge0$使得对于所有的$i \ge n_{\theta}$，有$\epsilon_i&lt;\theta$。</p>
+<p>定义常数$\beta_\theta&#x3D;\prod_{i&#x3D;1}^{n_\theta-1}(\frac{\epsilon_i}{\theta})$，可以有</p>
+<p>$$<br>\frac{\lambda^*-\lambda^{(n+1)}}{\theta^{n+1}}\le(\lambda^*-\lambda^{(0)})\beta_\theta\prod_{i&#x3D;n_\theta}^{n+1}(\frac{\epsilon_i}\theta)<br>$$</p>
+<p>因此$\lim_{n\rightarrow\infty}\frac{\lambda^*-\lambda^{(n+1)}}{\theta^{n+1}}&#x3D;0$。</p>
+<p>综上所述，序列的下界$\lambda^{(n+1)}$将会以一个超线性的速率收敛到$\lambda^*&#x3D;f(x^*)&#x2F;g(x^*)$。</p>
+<h2 id="有上界论证的改进Dinkelbach"><a href="#有上界论证的改进Dinkelbach" class="headerlink" title="有上界论证的改进Dinkelbach"></a>有上界论证的改进Dinkelbach</h2><p>从上面的推导可看出，朴素的Dinkelbach提供了下界的逼近，并没有提供上界的论证。这样可能会导致一个问题。如下图所示。</p>
+<p><img src="/image/image_rjrcmXIOqK.png"></p>
+<p>直线是$M(\lambda)$（实际情况可能不一定是直线哈，应该是个凸函数，这里只是为了演示方便），目标是最后逼近到$\lambda^*$。但是朴素Dinkelbach是类似于左边的下界线逼近的，现实情况里，可能很难迭代到$M(\lambda’)&#x3D;0$，往往都是小于一个$\delta$就表明收敛。但是其超线性则使$\lambda^{(n+1)}$有可能在离$\lambda^*$很远时就已经得到一个足够小的$M(\lambda^{(n+1)})$，导致最后的结果不够准确。那么如果能够<strong>再求得一条上界线从右边逼近，两条线同时逼近</strong>时，各自求的$\lambda$相差足够小，就可以更加精确地找到$\lambda^*$。</p>
+<p>这便是改进版Dinkelbach的思路。</p>
+<p>初始上界：分别解$\max\limits_{x\in S}f(x)$和$\min\limits_{x\in S}g(x)$得到$ x’  $和$x’’$，从而得到初始上界$\gamma^{(-1)}&#x3D;f(x’)&#x2F;g(x’’)$。这必然是一个比$\lambda^*$大的数，且由于之前所提的$M(\lambda)$的两条性质，每次迭代的上界都应该满足$M(\gamma)&lt;0$。定义每一轮的上界为：</p>
+<p>$$<br>\gamma^{(k)}:&#x3D;\gamma^{(k-1)}-M(\gamma^{(k-1)})\left(\frac{\gamma^{(k-1)}-\lambda^{(k)}}{M(\gamma^{(k-1)})-M(\lambda^{(k)})}\right)<br>$$</p>
+<p><img src="/image/image__Kmw3gOGVl.png"></p>
+<p>这个式子的含义如上图所示。接着就可以得到如下改进版Dinkelbach。</p>
+<ul>
+<li><p>改进版Dinkelbach：</p>
+<ol>
+<li><p>选取$x^{(0)}\in S$。设置$\lambda^{(0)}:&#x3D;f(x^{(0)})&#x2F;g(x^{(0)})$；</p>
+</li>
+<li><p>求解问题$\max\limits_{x\in S}f(x)$得到$x’$，求解问题$\min\limits_{x\in S}g(x)$得到$x’’$。设置$\gamma^{(-1)}:&#x3D;f(x’)&#x2F;g(x’’)$以及$k:&#x3D;0$。若$\gamma^{(-1)}-\lambda^{(0)}\le\delta$，那么$\lambda^*:&#x3D;\lambda^{(0)}$且$x^*:&#x3D;x^{(0)}$，算法停止；</p>
+</li>
+<li><p>求解全局优化问题$M(\lambda^{(k)})&#x3D;\max\limits_{x\in S}(f(x)-\lambda^{(k)}g(x))$，得到$x^{(k+1)}$；</p>
+</li>
+<li><p>若$M(\lambda^{(k)})&#x3D;0$，那么$ x^*:&#x3D;x^{(k+1)},\quad\lambda^*&#x3D;\lambda^{(k)}  $，算法停止；</p>
+</li>
+<li><p>求解全局优化问题$M(\gamma^{(k-1)})&#x3D;\max\limits_{x\in S}(f(x)-\gamma^{(k-1)}g(x))$，得到$y^{(k)}$；</p>
+</li>
+<li><p>若$M(\gamma^{(k-1)})&#x3D;0$，那么$x^*:&#x3D;y^{(k)},\quad\lambda^*&#x3D;\gamma^{(k-1)}$，算法停止；</p>
+</li>
+<li><p>设置$\gamma^{(k)}:&#x3D;\gamma^{(k-1)}-M(\gamma^{(k-1)})\left(\frac{\gamma^{(k-1)}-\lambda^{(k)}}{M(\gamma^{(k-1)})-M(\lambda^{(k)})}\right)$；</p>
+</li>
+<li><p>若$\gamma^{(k)}-\lambda^{(k)}\le\delta$，那么$ x^*:&#x3D;x^{(k+1)},\quad\lambda^*&#x3D;\lambda^{(k)}  $，算法停止；</p>
+</li>
+<li><p>设置$\lambda^{(k+1)}:&#x3D;f(x^{(k+1)})&#x2F;g(x^{(k+1)}),\ k:&#x3D;k+1$，返回步骤3。</p>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="算法有效性分析-1"><a href="#算法有效性分析-1" class="headerlink" title="算法有效性分析"></a>算法有效性分析</h3><blockquote>
+<p>📌定理2：<br>$ \lambda^<em>\le\gamma^{(i+1)}&lt;\gamma^{(i)},\quad i&#x3D;-1,0,1,\cdots  $<br>（这个定理强调的是每个迭代的$\gamma^{(i)}$都大于等于$\lambda^</em>$，不会越过$\lambda^*$）</p>
+</blockquote>
+<blockquote>
+<p>证明：（其实或许不需要证明，看上面的图即可体会此定理，但写论文还需要严格证明一下）<br>定义连接$(\lambda^{(n)},M(\lambda^{(n)}))$和$(\gamma^{n-1},M(\gamma^{(n-1)}))$的直线的函数为$L$。<br>由上面可知$\gamma^{(n)}&#x3D;q\lambda^{(n)}+(1-q)\gamma^{(n-1)},\quad q\in(0,1)$<br>所以有<br>$<br>\begin{aligned}<br>&amp;M\left(\gamma^{(n)}\right)&#x3D;M\left(q \lambda^{(n)}+(1-q) \gamma^{(n-1)}\right) \leqslant q M\left(\lambda^{(n)}\right)+(1-q) M\left(\gamma^{(n-1)}\right) \<br>&amp;\quad&#x3D;q L\left(\lambda^{(n)}\right)+(1-q) L\left(\gamma^{(n-1)}\right) \<br>&amp;\quad&#x3D;L\left(q \lambda^{(n)}+(1-q) \gamma^{(n-1)}\right)&#x3D;L\left(\gamma^{(n)}\right)&#x3D;0<br>\end{aligned}<br> $<br>所以$M(\gamma^{(n)})\le0$，由$M()$函数性质可知$\lambda^*\le\gamma^{(n)}$</p>
+</blockquote>
+<p>接下来论证上界序列$\gamma^{(n)}$也是以超线性的速率收敛到$\lambda^*$的。</p>
+<blockquote>
+<p><strong>拉格朗日中值定理</strong>：<br>$f(x)$在闭区间$[a,b]$内连续，在开区间$(a,b)$内可导，则在$(a,b)$内至少有一点$\epsilon(a&lt;\epsilon&lt;b)$，使等式$f(b)-f(a)&#x3D;f’(\epsilon)(b-a)$成立。<br><strong>罗尔中值定理</strong>：<br>$f(x)$在闭区间$[a,b]$上连续，在开区间$(a,b)$内可导，且在区间端点处的函数值相等，即$f(a)&#x3D;f(b)$，则在$(a,b)$内至少存在一点$\epsilon(a&lt;\epsilon&lt;b)$，使得$f’(\epsilon)&#x3D;0$。<br><strong>柯西中值定理</strong>：<br>如果函数$f(x),g(x)$满足：<br>(1)在闭区间$[a,b]$上连续<br>(2)在开区间$(a,b)$内可导<br>(3)对任意$x\in(a,b),\ g’(x)\notin0$<br>那么在$(a,b)$内至少有一点$\xi\in(a,b)$，使得$\frac{f(b)-f(a)}{g(b)-g(a)}&#x3D;\frac{f’(\xi)}{g’(\xi)}$成立。</p>
+</blockquote>
+<p>考虑第$(n+1)$次迭代时，还没有求出结果，根据定义可知</p>
+<p>$$<br>\begin{equation}<br>\gamma^{(n+1)}&#x3D;\gamma^{(n)}-M\left(\gamma^{(n)}\right)\left(\frac{\gamma^{(n)}-\lambda^{(n+1)}}{M\left(\gamma^{(n)}\right)-M\left(\lambda^{(n+1)}\right)}\right)<br>\end{equation}<br>$$</p>
+<p>经过一些代数运算，可得</p>
+<p>$$<br>\begin{equation}<br>\begin{aligned}<br>&amp;\left(\lambda^{<em>}-\gamma^{(n+1)}\right)&#x3D;\left(\lambda^{</em>}-\gamma^{(n)}\right)+M\left(\gamma^{(n)}\right)\left(\frac{\gamma^{(n)}-\lambda^{(n+1)}}{M\left(\gamma^{(n)}\right)-M\left(\lambda^{(n+1)}\right)}\right) \<br>&amp;\quad&#x3D;\frac{(\lambda^*-\gamma^{(n)})(M(\gamma^{(n)})-M(\lambda^{(n+1)}))+M(\gamma^{(n)})\gamma^{(n)}-M(\gamma^{(n)})\lambda^{(n+1)}}{M(\gamma^{(n)})-M(\lambda^{(n+1)})}\<br>&amp;\quad&#x3D;\frac{M(\gamma^{(n)})(\lambda^{<em>}-\lambda^{(n+1)})+M(\lambda^{(n+1)})(\gamma^{(n)}-\lambda^{</em>})}{M(\gamma^{(n)})-M(\lambda^{(n+1)})}\<br>&amp;\quad&#x3D;-(\lambda^*-\lambda^{(n+1)})(\lambda^*-\gamma^{(n)})\frac{\frac{M(\gamma^{(n)})-M(\lambda^*)}{\gamma^{(n)}-\lambda^*}-\frac{M(\lambda^{(n+1)})-M(\lambda^*)}{\lambda^{(n+1)}-\lambda^*}}{M(\gamma^{(n)})-M(\lambda^{(n+1)})}\<br>&amp;\quad&#x3D;-(\lambda^*-\lambda^{(n+1)})(\lambda^*-\gamma^{(n)})\frac{M’(\alpha)-M’(\beta)}{M’(\zeta_{n+1})[\gamma^{(n)}-\lambda^{(n+1)}]}\<br>&amp;\quad&#x3D;-(\lambda^*-\lambda^{(n+1)})(\lambda^*-\gamma^{(n)})\frac{M’’(\xi_{n+1})[\alpha-\beta]}{M’(\zeta_{n+1})[\gamma^{(n)}-\lambda^{(n+1)}]}\<br>&amp;\quad\le-\left(\lambda^{<em>}-\lambda^{(n+1)}\right)\left(\lambda^{</em>}-\gamma^{(n)}\right) \frac{M^{\prime \prime}\left(\xi_{n+1}\right)}{M^{\prime}\left(\zeta_{n+1}\right)}<br>\end{aligned}<br>\end{equation}<br>$$</p>
+<p>其中，$\xi_{n+1},\zeta_{n+1}\in[\lambda^{(n+1)},\gamma^{(n)}]$，令$\kappa&#x3D;\frac{\max\limits_{\xi\in I}|M’’(\xi)|}{\min\limits_{\zeta\in I}|M’(\zeta)|}$，$I&#x3D;[\lambda^{(0)},\gamma^{(-1)}]$且$I_{n+1}&#x3D;[\lambda^{(n+1)},\gamma^{(n)}]\subset I$，也就是说$ \kappa  $是分式$\frac{M^{\prime \prime}\left(\xi_{n+1}\right)}{M^{\prime}\left(\zeta_{n+1}\right)}$的上界，因此有</p>
+<p>$|\lambda^*-\gamma^{(n+1)}|\le|\lambda^*-\lambda^{(n+1)}||\lambda^*-\gamma^{(n)}|\kappa$，逐级推导，有</p>
+<p>$$<br>\begin{equation}<br>\left|\lambda^{<em>}-\gamma^{(n+1)}\right| \leqslant \kappa^{n+2}\left|\lambda^{</em>}-\gamma^{(-1)}\right| \prod_{i&#x3D;0}^{n+1}\left|\lambda^{*}-\lambda^{(i)}\right|<br>\end{equation}<br>$$</p>
+<p>前面提到$(\lambda^*-\lambda^{(n+1)})\le(\lambda^*-\lambda^{(n)})(1-\frac{g(x^*)}{g(x^{(n+1)})})$，因此可以将不等式进一步拆解成</p>
+<p>$$<br>\begin{equation}<br>\left|\lambda^{<em>}-\gamma^{(n+1)}\right| \leqslant \kappa^{n+2}\left|\lambda^{</em>}-\gamma^{(-1)} | \lambda^{*}-\lambda^{(0)}\right|^{n+2} \prod_{i&#x3D;1}^{n+1} \varepsilon_{i}^{n-i+2}<br>\end{equation}<br>$$</p>
+<p>引理2说明，$\epsilon$收敛到0。因此对于任意$\theta\in(0,1]$，存在整数$n_{\theta}\ge0$使得对于所有$i\ge n_\theta$都有$ \kappa|\lambda^*-\lambda^{(0)}|\epsilon_i&lt;\theta  $，因此定义$<br>\alpha_{\theta}&#x3D;\kappa\left|\lambda^{<em>}-\lambda^{(0)}\right| \prod_{i&#x3D;1}^{n_{\theta}-1}\left(\frac{\kappa\left|\lambda^{</em>}-\lambda^{(0)}\right| \varepsilon_{i}^{n-i+2}}{\theta}\right)<br> $，我们有</p>
+<p>$$<br>\begin{equation}<br>\frac{\left|\lambda^{<em>}-\gamma^{(n+1)}\right|}{\theta^{n+1}} \leqslant\left|\lambda^{</em>}-\gamma^{(-1)}\right| \alpha_{\theta} \prod_{i&#x3D;n_{\theta}}^{n+1}\left(\frac{\kappa\left|\lambda^{*}-\lambda^{(0)}\right| \varepsilon_{i}^{n-i+2}}{\theta}\right)<br>\end{equation}<br>$$</p>
+<p>因此，可以得到$\lim\limits_{n\rightarrow\infty}\frac{|\lambda^*-\gamma^{(-1)}|}{\theta^{n+1}}&#x3D;0$，也就是说序列上界$\gamma^{(n+1)}$同样将以超线性的速率收敛到$\lambda^*$。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E5%AD%A6%E6%96%B9%E6%B3%95/" rel="tag"># 数学方法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/10/18/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%9F%BA%E7%A1%80/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92-%E5%9F%BA%E7%A1%80/" rel="prev" title="动态规划（基础）">
+                  <i class="fa fa-chevron-left"></i> 动态规划（基础）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/01/30/Lyapunov%20Optimization/" rel="next" title="在线优化利器——李雅普诺夫优化">
+                  在线优化利器——李雅普诺夫优化 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">OliverPai</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

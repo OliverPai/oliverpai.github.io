@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.2","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Wolai版笔记：https:&#x2F;&#x2F;www.wolai.com&#x2F;7diTAjbzrwMpEtWV7nAAHA。李雅普诺夫优化在online optimization中是比较常见的一种解决思路。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在线优化利器——李雅普诺夫优化">
+<meta property="og:url" content="http://example.com/2022/01/30/Lyapunov%20Optimization/index.html">
+<meta property="og:site_name" content="OliverPai">
+<meta property="og:description" content="Wolai版笔记：https:&#x2F;&#x2F;www.wolai.com&#x2F;7diTAjbzrwMpEtWV7nAAHA。李雅普诺夫优化在online optimization中是比较常见的一种解决思路。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-01-30T10:44:29.000Z">
+<meta property="article:modified_time" content="2022-07-10T13:41:27.525Z">
+<meta property="article:author" content="OliverPai">
+<meta property="article:tag" content="数学方法">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2022/01/30/Lyapunov%20Optimization/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/01/30/Lyapunov%20Optimization/","path":"2022/01/30/Lyapunov Optimization/","title":"在线优化利器——李雅普诺夫优化"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>在线优化利器——李雅普诺夫优化 | OliverPai</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="OliverPai" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">OliverPai</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">落叶本就是假的</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lyapunov-Optimization"><span class="nav-number">1.</span> <span class="nav-text">Lyapunov Optimization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E9%9A%8F%E6%9C%BA%E4%BC%98%E5%8C%96%E5%BB%BA%E6%A8%A1"><span class="nav-number">1.1.</span> <span class="nav-text">1. 随机优化建模</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%98%9F%E5%88%97%E6%9E%84%E9%80%A0"><span class="nav-number">1.2.</span> <span class="nav-text">2 队列构造</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%BC%82%E7%A7%BB%E5%8A%A0%E7%BD%9A%E7%AE%97%E6%B3%95-drift-plus-penalty-algorithm"><span class="nav-number">1.3.</span> <span class="nav-text">3 漂移加罚算法(drift plus penalty algorithm)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-number">1.4.</span> <span class="nav-text">4 性能分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E8%AE%A1%E7%AE%97%E7%BB%93%E6%9E%9C%E7%B2%BE%E5%BA%A6"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 计算结果精度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E9%98%9F%E5%88%97%E9%95%BF%E5%BA%A6"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 队列长度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E7%B2%BE%E5%BA%A6%E4%B8%8E%E6%97%B6%E9%97%B4%E7%9A%84%E6%9D%83%E8%A1%A1"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 精度与时间的权衡</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-%E8%AF%81%E6%98%8E%E6%BC%82%E7%A7%BB%E5%8A%A0%E7%BD%9A%E7%AE%97%E6%B3%95%E6%BB%A1%E8%B6%B3%E7%BA%A6%E6%9D%9F%E6%9D%A1%E4%BB%B6"><span class="nav-number">1.4.4.</span> <span class="nav-text">4.4 证明漂移加罚算法满足约束条件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Case-Study"><span class="nav-number">1.5.</span> <span class="nav-text">5 Case Study</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-LODCO"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1 LODCO</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="OliverPai"
+      src="/images/avatar-star.png">
+  <p class="site-author-name" itemprop="name">OliverPai</p>
+  <div class="site-description" itemprop="description">求索与记录</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OliverPai" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OliverPai" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/30/Lyapunov%20Optimization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-star.png">
+      <meta itemprop="name" content="OliverPai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="OliverPai">
+      <meta itemprop="description" content="求索与记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="在线优化利器——李雅普诺夫优化 | OliverPai">
+      <meta itemprop="description" content="Wolai版笔记：https://www.wolai.com/7diTAjbzrwMpEtWV7nAAHA。李雅普诺夫优化在online optimization中是比较常见的一种解决思路。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在线优化利器——李雅普诺夫优化
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-01-30 18:44:29" itemprop="dateCreated datePublished" datetime="2022-01-30T18:44:29+08:00">2022-01-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-07-10 21:41:27" itemprop="dateModified" datetime="2022-07-10T21:41:27+08:00">2022-07-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">数学</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">Wolai版笔记：https://www.wolai.com/7diTAjbzrwMpEtWV7nAAHA。李雅普诺夫优化在online optimization中是比较常见的一种解决思路。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Lyapunov-Optimization"><a href="#Lyapunov-Optimization" class="headerlink" title="Lyapunov Optimization"></a>Lyapunov Optimization</h1><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Lyapunov_optimization" title="维基百科李雅普诺夫优化介绍">维基百科李雅普诺夫优化介绍</a></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Drift_plus_penalty" title="维基百科漂移加罚介绍">维基百科漂移加罚介绍</a></p>
+<p><a target="_blank" rel="noopener" href="http://hliangzhao.me/math/Lyapunov_optimization.pdf" title="浙大赵海亮文档">浙大赵海亮文档</a></p>
+<blockquote>
+<p>李雅普诺夫优化旨在，利用李雅普诺夫函数(Lyapunov function)以非负标量的形式描述一个用多维向量表示的状态，通过优化该函数实现逼近用向量表示的原问题的最优解</p>
+</blockquote>
+<p><strong>李雅普诺夫优化的一般步骤</strong></p>
+<p>为随机优化问题建模 → 构造队列 → 得到使用李雅普诺夫优化求的解 → 分析解与原始最优解的差距</p>
+<h2 id="1-随机优化建模"><a href="#1-随机优化建模" class="headerlink" title="1. 随机优化建模"></a>1. 随机优化建模</h2><p>&amp;#x20;      随机优化问题中的“随机”指的是每个时间片内都有随机事件发生，针对随机事件有相应的策略。定义第t个时隙内产生的所有随机事件为$\textbf{w}(t)\triangleq[w_1(t),w_2(t),…,w_n(t)]\in\Omega^n$，系统在每个时间片内采取的策略，即“动作”（control action）定义为$\alpha(t)\triangleq[\alpha_1(t),\alpha_2(t),…,\alpha_m(t)]\in\mathcal{A}^m$，其中$\Omega^n和\mathcal{A}^m$分别是随机事件和控制决策的集合。</p>
+<p>&amp;#x20;      如果我们的目标函数是$p(t)$，那么在每个时隙t，它会根据发生的随机事件和采取的措施，计算出当前时隙的目标函数值，即$p(t)&#x3D;P(\textbf{w}(t),\alpha(t))$，其中$P(\cdot)$是一个确定的函数。这里的$p(t)$的物理含义可以很丰富，比如令其表示功率，那么问题就是最小化功率消耗；令其为吞吐量的负$p(t)&#x3D;-r(t)$，那么最小化$p(t)$就是在最大化吞吐量。此外，系统中的一系列变量也会受到随机事件和控制决策的影响，可以描述为$y_k(t)&#x3D;Y_k(\textbf{w}(t),\alpha(t)),k\in{1,…,K}$，其中$\forall k\in{1,…,K}，Y_k(\cdot)$均为确定函数。由于最终需要把所有时间片的表现都考虑进去，从而得到最终系统表现，所以在优化目标时，需要优化的是各时间片的目标函数值的平均。</p>
+<p>那么随机优化问题的标准形式为：</p>
+<p>$$<br>\begin{aligned}\mathcal{P}1:&amp;\min_{\forall t,\alpha(t)\in\mathcal{A}^m}\lim_{T\rightarrow\infty}\frac 1 T\sum_{t&#x3D;0}^{T-1}\mathbb{E}[p(t)]\s.t.&amp;\ \lim_{T\rightarrow\infty}\frac 1 T\sum_{t&#x3D;0}^{T-1}\mathbb{E}[y_k(t)]\le 0,k\in{1,…,K}\end{aligned}<br>$$</p>
+<h2 id="2-队列构造"><a href="#2-队列构造" class="headerlink" title="2 队列构造"></a>2 队列构造</h2><p>&amp;#x20;     李雅普诺夫优化希望将长期约束分割到各个时间片中，在每个时间片约束变量遵守相应的条件，从而使得长期约束不被破坏，即保持稳定。由此，每一个约束$y_k(t)$可以对应一个队列，该队列中的元素随时间片的迭代而进进出出，最终达成保持队列稳定的目标。定义初值为0的队列为：</p>
+<p>$$<br>Q_k(t+1)&#x3D;\max{Q_k(t)+y_k(t),0},k\in{1,2,…,K}<br>$$</p>
+<p>这里的$y_k(t)$可以用$y_k(t)&#x3D;a_k(t)-b_k(t)$，其中$a_k(t)$是进，$b_k(t)$是出，从而实现队列的进出。需要注意的是，这里的$Q_k(t)$并不是队列本身，而是队列的积压量(backlog)。而由于前面随机优化问题中的约束条件，我们希望每一个时间片的$b_k(t)$尽可能大于等于$a_k(t)$，从而使$y_k(t)$尽可能小于等于0。</p>
+<p>易得$y_k(t)\le Q_k(t+1)-Q_k(t)$，对所有时间片累加可得$\sum_{t&#x3D;0}^{T-1}y_k(t)\le Q_k(T)-Q_k(0)&#x3D;Q_k(T),k&#x3D;{1,2,…,K}$，取期望可得：</p>
+<p>$$<br>\frac 1 T\sum_{t&#x3D;0}^{T-1}\mathbb{E}[y_k(t)]\le \frac{\mathbb{E}[Q_k(T)]}T,k\in{1,2,…,K}<br>$$</p>
+<p>由于前面随机优化的约束$\lim_{T\rightarrow\infty}\frac 1 T\sum_{t&#x3D;0}^{T-1}\mathbb{E}[y_k(t)]\le 0,k\in{1,…,K}$，再由于上式，可以得到李雅普诺夫形式的随机优化约束条件$\lim_{T\rightarrow\infty}\frac{\mathbb{E}[Q_k(T)]}{T}&#x3D;0,k\in{1,2,…,K}$。</p>
+<p>因此，构造好虚拟队列的随机优化问题新形式可表示为：</p>
+<p>$$<br>\begin{aligned}\mathcal{P}2:&amp;\min_{\forall t,\alpha(t)\in\mathcal{A}^m}\lim_{T\rightarrow\infty}\frac 1 T\sum_{t&#x3D;0}^{T-1}\mathbb{E}[p(t)]&amp;(1)\&amp;s.t.\lim_{T\rightarrow\infty}\frac{\mathbb{E}[Q_k(T)]}{T}&#x3D;0,k\in{1,2,…,K}\qquad&amp;(2)\end{aligned}<br>$$</p>
+<blockquote>
+<p>📌注：其实李雅普诺夫形式的约束条件还有另一种更加严格的表述，即下式，但一般采用上式</p>
+</blockquote>
+<p>$$<br>\exist\delta\le 0,\lim_{T\rightarrow 0}\frac{\mathbb{E}[Q_k(T)]}T\le\delta,k\in{1,2,…,K}<br>$$</p>
+<h2 id="3-漂移加罚算法-drift-plus-penalty-algorithm"><a href="#3-漂移加罚算法-drift-plus-penalty-algorithm" class="headerlink" title="3 漂移加罚算法(drift plus penalty algorithm)"></a>3 漂移加罚算法(drift plus penalty algorithm)</h2><p>将队列全体用一个向量表示为$(t)\triangleq[Q_1(t),Q_2(t),…,Q_K(t)]$，则李雅普诺夫函数定义为</p>
+<p>$$<br>L(\Theta(t))\triangleq\frac 1 2\sum_{k&#x3D;1}^KQ_k(t)^2<br>$$</p>
+<p>从而，可利用李雅普诺夫函数描述队列在时隙t的积压量$\Delta(\Theta(t))\triangleq L(\Theta(t+1))-L(\Theta(t))$，该式被称为李雅普诺夫漂移(Lyapunov drift)。易得$Q_k(t+1)^2\le(Q_k(t)+y_k(t))^2,k\in{1,2,…,K}$，对K个队列进行累加可得</p>
+<p>$$<br>\frac 1 2\sum_{k&#x3D;1}^KQ_k(t+1)^2\le\frac 1 2\sum_{k&#x3D;1}^KQ_k(t)^2+\frac 1 2\sum_{k&#x3D;1}^Ky_k(t)^2+\sum_{k&#x3D;1}^KQ_k(t)y_k(t)<br>$$</p>
+<p>由于队列的进出都是有限的，因此$\frac 1 2\sum_{k&#x3D;1}^Ky_k(t)^2$是存在上界$B&gt;0$的，所以可得</p>
+<p>$$<br>\begin{aligned}\Delta(\Theta(t))&amp;\triangleq\frac 1 2\sum_{k&#x3D;1}^KQ_k(t+1)^2-\frac 1 2\sum_{k&#x3D;1}^KQ_k(t)^2\&amp;\le\frac 1 2\sum_{k&#x3D;1}^Ky_k(t)^2+\sum_{k&#x3D;1}^KQ_k(t)y_k(t)\le B+\sum_{k&#x3D;1}^KQ_k(t)y_k(t)\end{aligned}\qquad(3)<br>$$</p>
+<p>$$<br>\begin{aligned}\mathcal{P}3:\min_{\forall t,\alpha(t)\in\mathcal{A}^m}\mathbb{E}[\Delta(\Theta(t))+V\cdot p(t)|\mathcal{\Theta}(t)]\s.t.\lim_{T\rightarrow\infty}\frac{\mathbb{E}[Q_k(T)]}{T}&#x3D;0,k\in{1,2,…,K}\end{aligned}<br>$$</p>
+<p>其中，V是一个权重，用来调节对二者的重视程度。然而此时计算李雅普诺夫漂移需要下一时隙的排队信息，这样的话无法在当前时隙中求得该问题的解，但是可以利用式(3)对问题$\mathcal{P}3$进行放缩，从而得到问题$\mathcal{P}4$ ：</p>
+<p>$$<br>\mathcal{P}4:\min_{\forall t,\alpha(t)\in\mathcal{A}^m}\mathbb{E}[B+V\cdot p(t)+\sum_{k&#x3D;1}^KQ_k(t)y_k(t)|\Theta(t)]\s.t.\lim_{T\rightarrow\infty}\frac{\mathbb{E}[Q_k(T)]}{T}&#x3D;0,k\in{1,2,…,K}<br>$$</p>
+<p>漂移加罚算法（DPP），就是求解$\mathcal{P}4$的近似最优解从而求解$\mathcal{P}3$</p>
+<p>算法步骤：</p>
+<p>（1）在时隙t开头，观察发生的所有随机事件以及所有队列的积压量：$\textbf{w}(t),\Theta(t)$</p>
+<p>（2）通过求解如下问题确定最优的控制决策$\alpha^*(t)$：</p>
+<p>$$<br>\alpha^*(t)&#x3D;\argmin_{\alpha(t)\in\mathcal{A}^m}\mathbb{E}[B+V\cdot p(t)+\sum_{k&#x3D;1}^KQ_k(t)y_k(t)|\Theta(t)]\qquad(4)<br>$$</p>
+<p>（3）$\forall k\in{1,2,…,K},Q_k(t+1)&#x3D;\max{Q_k(t)+y_k(t),0}$更新$Q_k(t)$</p>
+<p>（4）$t\leftarrow t+1$</p>
+<blockquote>
+<p>📌可以看到漂移加罚算法并没有管约束条件(2)，下方证明算法隐式地满足约束</p>
+</blockquote>
+<h2 id="4-性能分析"><a href="#4-性能分析" class="headerlink" title="4 性能分析"></a>4 性能分析</h2><h3 id="4-1-计算结果精度"><a href="#4-1-计算结果精度" class="headerlink" title="4.1 计算结果精度"></a>4.1 计算结果精度</h3><ul>
+<li><p>最优$\textbf{w}-only$策略：</p>
+<p>$\textbf{w}-only\ policy$是指每个时隙内仅依赖于观测到的$\textbf{w}(t)$选择最优控制动作，而不依赖于队列状态(backlog)的策略。最优$\textbf{w}-only$则是满足如下条件的$\textbf{w}-only$策略：</p>
+</li>
+</ul>
+<p>在每个时隙内，采取动作$\alpha^*(t)$满足：</p>
+<p>$$<br>P(\textbf{w}(t),\alpha^*(t))&#x3D;p^<em>\Y_k(\textbf{w}(t),\alpha^</em>(t))\le0,\ k\in{1,2,…,K}\qquad(5)<br>$$</p>
+<p>其中$p^*$是不考虑约束条件的原问题$\mathcal{P}1$的最优目标函数值，即</p>
+<p>$$<br>p^*&#x3D;\min(\lim_{T\rightarrow\infty}\frac 1 T\sum_{t&#x3D;0}^{T-1}\mathbb{E}[p(t)])<br>$$</p>
+<blockquote>
+<p>📌定理：如果原始问题P1有最优解，那么P1一定存在最优w-only策略</p>
+</blockquote>
+<ul>
+<li>DPP解与最优解之间的差距：</li>
+</ul>
+<p>由式(3)&amp;(4)可得，</p>
+<p>$$<br>\begin{aligned}\Delta(\Theta(t))+V\cdot p(t)&amp;\le B+V\cdot p(t)+\sum_{k&#x3D;1}^K Q_k(t)y_k(t)\&amp;&#x3D;B+V\cdot P(\textbf{w}(t),\alpha(t))+\sum_{k&#x3D;1}^KQ_k(t)Y_k(\textbf{w}(t),\alpha(t))\&amp;\le B+V\cdot P(\textbf{w}(t),\alpha^*(t))+\sum_{k&#x3D;1}^KQ_k(t)Y_k(\textbf{w}(t),\alpha^*(t))\end{aligned}<br>$$</p>
+<p>取期望得</p>
+<p>$$<br>\begin{aligned}&amp;\mathbb{E}[\Delta(\Theta(t))+V\cdot p(t)|\Theta(t)]\&amp;\le B+V\cdot\mathbb{E}[P(\textbf{w}(t),\alpha^*(t))]+\sum_{k&#x3D;1}^K\mathbb{E}[Q_k(t)Y_k(\textbf{w}(t),\alpha^*(t))|\Theta(t)]\&amp;&#x3D;B+V\cdot\mathbb{E}[P(\textbf{w}(t),\alpha^*(t))]+\sum_{k&#x3D;1}^K\mathbb{E}[Q_k(t)|\Theta(t)]\mathbb{E}[Y_k(\textbf{w}(t),\alpha^*(t))|\Theta(t)]\ (相互独立)\&amp;\le B+V\cdot p^*\qquad(这是因为式(5))\end{aligned}<br>$$</p>
+<p>时隙累加，可得</p>
+<p>$$<br>\begin{aligned}(B+V\cdot p^*)T&amp;\ge\sum_{t&#x3D;0}^{T-1}\mathbb{E}[\Delta(\Theta(t))+V\cdot p(t)|\Theta(t)]\&amp;&#x3D;\mathbb{E}[L(\Theta(t))-L(\Theta(0))]+V\cdot\sum_{t&#x3D;0}^{T-1}\mathbb{E}[p(t)|\Theta(t)]\&amp;\ge V\cdot\sum_{t&#x3D;0}^{T-1}\mathbb{E}[p(t)|\Theta(t)]\end{aligned}<br>$$</p>
+<p>也就是说$\mathcal{P}4$得到的近似最优解与不加约束的$\mathcal{P}1$的最优解之间的关系是一个不等式：</p>
+<p>$$<br>\frac1T\sum_{t&#x3D;0}^{T-1}\mathbb{E}[p(t)|\Theta(t)]\le p^*+\frac B V\qquad(6)<br>$$</p>
+<p>所以可知，$\mathcal{P}4$得到的近似最优解与不加约束的$\mathcal{P}1$的最优解之间的差距是$O(\frac 1 V)$的</p>
+<h3 id="4-2-队列长度"><a href="#4-2-队列长度" class="headerlink" title="4.2 队列长度"></a>4.2 队列长度</h3><p>假设存在一个$\textbf{w}-only$策略，满足$\exist\epsilon &gt;0,\ \mathbb{E}[Y_k(\textbf{w}(t),\alpha^*(t))]\le-\epsilon$（不要求是最优$\textbf{w}-only$策略），那么存在下列不等式：</p>
+<p>$$<br>\Delta(\Theta(t))+V\cdot p(t)\le B+V\cdot P(\textbf{w}(t),\alpha(t))+\sum_{k&#x3D;1}^KQ_k(t)Y_k(\textbf{w}(t),\alpha^*(t))\\Delta(\Theta(t))+V\cdot p_{min}\le B+V\cdot p_{max}+\sum_{k&#x3D;1}^KQ_k(t)Y_k(\textbf{w}(t),\alpha^*(t))\\begin{aligned}\mathbb{E}[\Delta(\Theta(t))]+V\cdot p_{min}&amp;\le B+V\cdot p_{max}+\sum_{k&#x3D;1}^K\mathbb<br>{E}[Q_k(t)]\mathbb{E}[Y_k(\textbf{w}(t),\alpha^*(t))]\&amp;\le B+V\cdot p_{max}+\sum_{k&#x3D;1}^K\mathbb{E}<a href="-%5Cepsilon">Q_k(t)</a>\end{aligned}<br>$$</p>
+<p>移项，累加可有</p>
+<p>$$<br>\frac 1 T\sum_{t&#x3D;0}^{T-1}\sum_{k&#x3D;1}^K\mathbb{E}[Q_k(t)]\le\frac{B+V\cdot(p_{max}-p_{min})}{\epsilon}\qquad(7)<br>$$</p>
+<p>由此可知，平均每时隙内所有队列长度是$O(V)$的</p>
+<h3 id="4-3-精度与时间的权衡"><a href="#4-3-精度与时间的权衡" class="headerlink" title="4.3 精度与时间的权衡"></a>4.3 精度与时间的权衡</h3><p>式(6)和式(7)共同构成了李雅普诺夫优化定理。</p>
+<p>时均队列大小是$O(V)$的，其反映算法的执行时间，而计算精度是$O(\frac 1 V)$的。</p>
+<p>也就是说增大V可以获得更加逼近与原始问题$\mathcal{P}1$最优解的解，而减少V则可以更快的满足约束条件，降低执行时间。所以说，需要调整V，找到算法执行时间与计算结果精度之间的trade-off</p>
+<h3 id="4-4-证明漂移加罚算法满足约束条件"><a href="#4-4-证明漂移加罚算法满足约束条件" class="headerlink" title="4.4 证明漂移加罚算法满足约束条件"></a>4.4 证明漂移加罚算法满足约束条件</h3><p>由前面可得，$\mathbb{E}[\Delta(\Theta(t))]+V\cdot p_{min}\le B+V\cdot p_{max}+\sum_{k&#x3D;1}^K\mathbb{E}<a href="-%5Cepsilon">Q_k(t)</a>$，对时隙进行累加有</p>
+<p>$$<br>\begin{aligned}\mathbb{E}[L(\Theta(t))]-\mathbb{E}[L(\Theta(0))]&amp;\le(B+V(p_{max}-p_{min}))\cdot T-\epsilon\sum_{t&#x3D;0}^{T-1}\sum_{k&#x3D;1}^K\mathbb{E}[Q_k(t)|\Theta(t)]\&amp;\le B’\cdot T\end{aligned}<br>$$</p>
+<p>$$<br>\frac 1 2\sum_{k&#x3D;1}^K\mathbb{E}[Q_k(T)^2]\le B’\cdot T\(\sum_{k&#x3D;1}^K\mathbb{E}[Q_k(T)])^2\le K\sum_{k&#x3D;1}^K\mathbb{E}[Q_k(T)^2]\le 2KB’\cdot T<br>$$</p>
+<p>取极限有</p>
+<p>$$<br>\lim_{T\rightarrow\infty}\frac{\sum_{k&#x3D;1}^K\mathbb{E}[Q_k(T)]}T\le\lim_{T\rightarrow\infty}\sqrt{\frac{2KB’}T}&#x3D;0<br>$$</p>
+<p>又由于$Q_k(t)\ge 0$，所以有</p>
+<p>$$<br>\forall k\in{1,2,…,K},\lim_{T\rightarrow\infty}\frac{\mathbb{E}[Q_k(T)]}T&#x3D;0<br>$$</p>
+<p>即，在漂移加罚算法的执行过程中，约束条件(2)是一直成立的</p>
+<h2 id="5-Case-Study"><a href="#5-Case-Study" class="headerlink" title="5 Case Study"></a>5 Case Study</h2><h3 id="5-1-LODCO"><a href="#5-1-LODCO" class="headerlink" title="5.1 LODCO"></a>5.1 LODCO</h3><p>其中$B’&#x3D;B+V\cdot(p_{max}-p_{min})$，代入李雅普诺夫函数和柯西不等式$(\sum_{i&#x3D;1}^nx_iy_i)^2\le(\sum_{i&#x3D;1}^nx_i^2)(\sum_{i&#x3D;1}^ny_i^2)$可得</p>
+<p>将前文所述的$p(t)$作为惩罚项(penalty)，同时求解李雅普诺夫漂移和惩罚项的最小值，便可以得到新问题</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E5%AD%A6%E6%96%B9%E6%B3%95/" rel="tag"># 数学方法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/01/03/Dinkelbach%20Approach/Dinkelbach%20Approach/" rel="prev" title="分式优化求解利器——Dinkelbach">
+                  <i class="fa fa-chevron-left"></i> 分式优化求解利器——Dinkelbach
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/05/10/hexo%E4%BD%BF%E7%94%A8/" rel="next" title="Hexo使用方法">
+                  Hexo使用方法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">OliverPai</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
