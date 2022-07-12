@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.2","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="论文《Learning to Coordinate Video Codec with Transport Protocol for Mobile Video Telephony》阅读笔记。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebRTC-GCC替代方案：Concerto">
+<meta property="og:url" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/index.html">
+<meta property="og:site_name" content="OliverPai">
+<meta property="og:description" content="论文《Learning to Coordinate Video Codec with Transport Protocol for Mobile Video Telephony》阅读笔记。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/1.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/2.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/3.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/4.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/5.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/6.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/7.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/8.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/9.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/10.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/11.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/12.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/13.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/14.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/15.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/16.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/17.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/18.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/19.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/20.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/21.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/22.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/23.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/24.png">
+<meta property="og:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/25.png">
+<meta property="article:published_time" content="2022-07-11T14:54:55.000Z">
+<meta property="article:modified_time" content="2022-07-12T16:48:03.255Z">
+<meta property="article:author" content="OliverPai">
+<meta property="article:tag" content="WebRTC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/concerto-pic/1.png">
+
+
+<link rel="canonical" href="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/","path":"2022/07/11/WebRTC-GCC替代方案：Concerto/","title":"WebRTC-GCC替代方案：Concerto"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>WebRTC-GCC替代方案：Concerto | OliverPai</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="OliverPai" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">OliverPai</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">落叶本就是假的</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text"> 背景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E6%9E%84%E9%80%A0"><span class="nav-number">1.1.</span> <span class="nav-text"> 数据集构造</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%B0%E6%9C%89%E9%97%AE%E9%A2%98"><span class="nav-number">1.2.</span> <span class="nav-text"> 现有问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90"><span class="nav-number">1.3.</span> <span class="nav-text"> 原因分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E7%8B%ACgcc-vs-%E8%A7%86%E9%A2%91%E9%80%9A%E8%AF%9D"><span class="nav-number">1.3.1.</span> <span class="nav-text"> 单独GCC vs 视频通话</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1"><span class="nav-number">2.</span> <span class="nav-text"> 算法设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E4%BB%BF%E5%AD%A6%E4%B9%A0imitation-learning"><span class="nav-number">2.1.</span> <span class="nav-text"> 模仿学习(Imitation Learning)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#concerto"><span class="nav-number">2.2.</span> <span class="nav-text"> Concerto</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E9%AA%8C%E8%AF%81"><span class="nav-number">3.</span> <span class="nav-text"> 实验验证</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94"><span class="nav-number">3.1.</span> <span class="nav-text"> 性能对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#concerto%E5%90%84%E6%A8%A1%E5%9D%97%E4%BD%9C%E7%94%A8"><span class="nav-number">3.2.</span> <span class="nav-text"> Concerto各模块作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%99%85%E9%83%A8%E7%BD%B2"><span class="nav-number">3.3.</span> <span class="nav-text"> 实际部署</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="OliverPai"
+      src="/images/avatar-star.png">
+  <p class="site-author-name" itemprop="name">OliverPai</p>
+  <div class="site-description" itemprop="description">求索与记录</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OliverPai" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OliverPai" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-star.png">
+      <meta itemprop="name" content="OliverPai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="OliverPai">
+      <meta itemprop="description" content="求索与记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="WebRTC-GCC替代方案：Concerto | OliverPai">
+      <meta itemprop="description" content="论文《Learning to Coordinate Video Codec with Transport Protocol for Mobile Video Telephony》阅读笔记。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          WebRTC-GCC替代方案：Concerto
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-07-11 22:54:55" itemprop="dateCreated datePublished" datetime="2022-07-11T22:54:55+08:00">2022-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-07-13 00:48:03" itemprop="dateModified" datetime="2022-07-13T00:48:03+08:00">2022-07-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/WebRTC/" itemprop="url" rel="index"><span itemprop="name">WebRTC</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">论文《Learning to Coordinate Video Codec with Transport Protocol for Mobile Video Telephony》阅读笔记。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>论文：《Learning to Coordinate Video Codec with Transport Protocol for Mobile Video Telephony》</p>
+<p>会议：Mobicom’ 2019</p>
+<p>作者：Anfu Zhou, Huanhuan Zhang, Guangyuan Su, Leilei Wu, Ruoxuan Ma, Zhen Meng, Xinyu Zhang, Xiufeng Xie, Huadong Ma, Xiaojiang Chen^</p>
+<p>机构：Beijing Univ. of Posts and Telecom, ^Alibaba Inc.</p>
+<p>应用：淘宝Live（内嵌在淘宝app中，论文中说还在优化，作者主页上说已规模应用）</p>
+<p>代码：未开源</p>
+</blockquote>
+<h1 id="背景"><a class="markdownIt-Anchor" href="#背景"></a> 背景</h1>
+<p>作者团队联合淘宝一起记录直播数据，建立了庞大的数据集，并通过对数据的分析，发现目前基于WebRTC建立直播系统所面临的严峻问题。同时，也通过进一步的探究，发现了导致问题出现的根本原因。</p>
+<h2 id="数据集构造"><a class="markdownIt-Anchor" href="#数据集构造"></a> 数据集构造</h2>
+<p>现有工作基本均通过实验室内的testbed、仿真器或者对直播类应用进行嗅探/抓包，以获取WebRTC终端通信时受不同因素（带宽、时延、丢包）等影响的拥塞状况。规模较小，无法充分体现不同时间、空间下实际系统拥塞情况的多样性。针对此问题，淘宝Live为作者团队提供了其app在全球范围下的直播数据集。</p>
+<p>淘宝Live是淘宝App内置的模块，其结构如图。当一个caller开启一个会话时，其视频推流到MCU（多媒体控制单元）中，之后MCU将视频分发至两路，一路直接发到与caller直接互动的callee处（此时MCU相当于中继），而另一路则将多个帧打包成一个chunk（大约包含5秒的内容），再讲chunk发送到CDN处。而CDN再进行重分发，分发至其他用户（其他用户对实时性要求可能略低）。收集数据集时主要收集MCU充当中继的那一路实时session数据。</p>
+<p>收集过程关注的是caller-to-MCU这一路，因为通常情况下此路上行带宽（通常受第一跳链路带宽制约）会低于MCU-to-callee这一路的下行带宽，从而成为瓶颈链路。此会话中，caller的客户端负责记录编码器比特率、GCC带宽估计值，以每3秒间隙log一次均值。会话结束时会将log结果发送给MCU，同时MCU也会记录吞吐量、丢包率和时延等数据，以每1秒间隙记录一次。</p>
+<p><img src="concerto-pic/1.png" alt="1.png" /></p>
+<p>最终的数据集多样性体现在下面两图中，从全球用户获取长达1348548小时的会话数据，且无线通信模式多样。</p>
+<p><img src="concerto-pic/2.png" alt="2.png" /></p>
+<p><img src="concerto-pic/3.png" alt="3.png" /></p>
+<h2 id="现有问题"><a class="markdownIt-Anchor" href="#现有问题"></a> 现有问题</h2>
+<p>根据ITU G.114标准，视频通话中合理的QoE水平体现在：端到端丢包率小于1%，且RTT小于300ms。基于此，可以有PSR（poor session ratio）指标来量化：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>P</mi><mi>S</mi><mi>R</mi><mo>=</mo><mfrac><mrow><mi mathvariant="normal">#</mi><mi>s</mi><mi>e</mi><mi>s</mi><mi>s</mi><mi>i</mi><mi>o</mi><mi>n</mi><mi>s</mi><mtext> </mtext><mi>w</mi><mi>i</mi><mi>t</mi><mi>h</mi><mtext> </mtext><mi>R</mi><mi>T</mi><mi>T</mi><mtext> </mtext><mo>&gt;</mo><mtext> </mtext><mn>300</mn><mi>m</mi><mi>s</mi><mtext> </mtext><mi>o</mi><mi>r</mi><mtext> </mtext><mi>p</mi><mi>a</mi><mi>c</mi><mi>k</mi><mi>e</mi><mi>t</mi><mtext> </mtext><mi>l</mi><mi>o</mi><mi>s</mi><mi>s</mi><mtext> </mtext><mo>&gt;</mo><mtext> </mtext><mn>1</mn><mi mathvariant="normal">%</mi></mrow><mrow><mi mathvariant="normal">#</mi><mi>a</mi><mi>l</mi><mi>l</mi><mtext> </mtext><mi>s</mi><mi>e</mi><mi>s</mi><mi>s</mi><mi>i</mi><mi>o</mi><mi>n</mi><mi>s</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">PSR=\frac{\#sessions\ with\ RTT\ &gt;\ 300ms\ or\ packet\ loss\ &gt;\ 1\%}{\#all\ sessions}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.30744em;vertical-align:-0.8804400000000001em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">#</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mspace"> </span><span class="mord mathnormal">s</span><span class="mord mathnormal">e</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord mathnormal">s</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">#</span><span class="mord mathnormal">s</span><span class="mord mathnormal">e</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord mathnormal">s</span><span class="mspace"> </span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">h</span><span class="mspace"> </span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">3</span><span class="mord">0</span><span class="mord">0</span><span class="mord mathnormal">m</span><span class="mord mathnormal">s</span><span class="mspace"> </span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mspace"> </span><span class="mord mathnormal">p</span><span class="mord mathnormal">a</span><span class="mord mathnormal">c</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord mathnormal">e</span><span class="mord mathnormal">t</span><span class="mspace"> </span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal">s</span><span class="mord mathnormal">s</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">1</span><span class="mord">%</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804400000000001em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<ul>
+<li>
+<p><strong>空间分布特点</strong>：</p>
+<p>将拥有大于2000个session的地区视作主要地区，统计此类地区session的PSR。这样的session中80.6%是国内通话（这个国内不局限在中国），其余为国际通话。</p>
+<p><img src="concerto-pic/4.png" alt="4.png" /></p>
+<p>发现所有地区的PSR，都至少是12%，而且超过一般的地区的PSR都达到了20%。也就是说，每5个会话中的一个就在经历较差用户体验的视频通话。</p>
+</li>
+<li>
+<p><strong>时间分布特点</strong>：</p>
+<p>所有的trace都切割成若干个持续1小时的time window。下图是24小时下time window在不同时段的数量。可以发现两点：</p>
+<ol>
+<li>
+<p>即使不是视频通话高峰期（凌晨1点到早8点），也会出现低PSR的情况，只是占比相对少一些。非高峰期低PSR的session占比17.5%，高峰期占比28.5%以上。</p>
+</li>
+<li>
+<p>即使流量负载下降（即session数减少），PSR也没有显著降低。这表明WebRTC的码率适应策略并没有充分利用整体变好的网络环境，而是受限于短暂的拥塞状况。</p>
+<p><img src="concerto-pic/5.png" alt="5.png" /></p>
+</li>
+</ol>
+</li>
+<li>
+<p>无线接入类型特点：</p>
+<p>淘宝LIve的用户主要通过三种方式接入互联网：WiFi（大多数采用WiFi，占全部session的73%）、4G、3G。其中WiFI的PSR（18%）远好于后两者。</p>
+<p><img src="concerto-pic/6.png" alt="6.png" /></p>
+<p>有研究表明，可能是3G/4G蜂窝网络中普遍存在的bufferbloat现象导致了这一问题，bufferbloadt可以减少丢包并能缓解带宽变化带来的影响，却带来了更大时延。</p>
+<blockquote>
+<p>bufferbloat：缓存膨胀到过大的状态。</p>
+</blockquote>
+</li>
+</ul>
+<p><img src="concerto-pic/7.png" alt="7.png" /></p>
+<p>总结上述对数据集的分析，可以发现，无论何种时间段、无论何种地域、无论何种网络接入方式，低QoE在由WebRTC构建的视频通话系统中，都是普遍存在的，而且占比不少。因此，改善低性能的问题迫在眉睫，需要从数据中寻找到造成此类现象的答案。</p>
+<h2 id="原因分析"><a class="markdownIt-Anchor" href="#原因分析"></a> 原因分析</h2>
+<p>作者发现的，造成WebRTC普遍低QoE现象的原因在于淘宝Live中传输控制和编码器的协作程度还不够。证据在于，如果单独使用GCC传输不需编码的文件，可以发现GCC在码率估计方面的能力是很强的，其有能力可以保证较低时延和较低丢包率（近似为0的丢包率），但一般涉及了编码，性能就会严重恶化。问题不在于编码器，而在于GCC和编码器的步调不一致，是结构的问题。</p>
+<h3 id="单独gcc-vs-视频通话"><a class="markdownIt-Anchor" href="#单独gcc-vs-视频通话"></a> 单独GCC vs 视频通话</h3>
+<p>为了能够提高实验速度，作者团队实现了一个网络模拟器，相比于现实网络可以加速400倍的运行。可以直接读取数据集中的trace，并得到和实际情况相当的网络动态变化。</p>
+<p>从数据集中随机选取了1000个会话，共763小时。将这些会话的throughput充当模拟器里的变化带宽，从而记录单独GCC传文件和视频通话这两种情况下，吞吐量、丢包率、时延等信息。结果如下：</p>
+<p><img src="concerto-pic/8.png" alt="8.png" /></p>
+<p>可以发现，视频通话的吞吐量明显低于纯GCC，然而其丢包率和时延又显著高于纯GCC。这是一种反常现象，按理说相同的网络环境下，更低的吞吐量更不容易导致拥塞（更少的网络负载），因此也应该丢包和时延更低。那么这样的反常现象又该如何解释？进一步分析可以发现，这个现象是又两个因素导致的：（下图随机取一个session演示）</p>
+<p><img src="concerto-pic/9.png" alt="9.png" /></p>
+<ol>
+<li>
+<p>快速下降：以M1，M2这两个点为例，在这两个位置RTT和丢包均出现峰值，那么本来追踪带宽还不错的两个方案，均选择了下调吞吐率。但是此时，相比于纯GCC，视频通话下降的幅度更大。（GCC分别下降44.9%和25.8%，而视频通话下降了83.6%和58.5%）这表明视频通话遭遇了更严重的网络拥塞，正如上面中、右两张图。</p>
+</li>
+<li>
+<p>缓慢恢复：拥塞结束后，视频通话将耗费更多的时间来恢复其比特率，如上面M3标记所示。</p>
+<p><img src="concerto-pic/10.png" alt="10.png" /></p>
+</li>
+</ol>
+<p>两因素的进一步佐证</p>
+<p>所以，是先有了同一时刻出现的更严重的丢包和时延，视频通话选择了更大的比特率降幅，同时低比特率持续的时间也更久（即使拥塞早已过去），从而导致了比纯GCC明显低的比特率。当再出现严重丢包和时延时，又会重复这一过程，也就在统计意义上，发生了上面的反常现象。</p>
+<p>那么为什么会出现这两个因素呢？文章给出了答案：</p>
+<ul>
+<li>
+<p><strong>视频编码器不能生成完美匹配GCC估计值的比特率</strong>：</p>
+<p>长期的平均比特率也许能够匹配目标，但是瞬时的变化（比如比特率突然飙到了平均值的两倍）会带来拥塞。</p>
+<p><img src="concerto-pic/11.png" alt="11.png" /></p>
+</li>
+<li>
+<p><strong>编码器滞后于GCC</strong>：</p>
+<p>编码器需要至少1秒来近似出目标码率，但是此时的网络条件可能已经变了。</p>
+<p><img src="concerto-pic/12.png" alt="12.png" /></p>
+</li>
+<li>
+<p>间歇性的视频流量模式影响了GCC带宽估计：</p>
+<p>视频并不会像文件一样连续发送。一般是一帧编码后才会突发一系列的包，而其余时间链路处于空闲状态。但GCC每接收到ACK才开始估计带宽。也就是说，ACK到达得越不频繁，带宽估计的更新也会越慢，那么码率调整也将慢下来。（视频通话更新码率的次数比纯GCC足足少了50%）</p>
+<p><img src="concerto-pic/13.png" alt="13.png" /></p>
+</li>
+</ul>
+<p>事实上，通过对反常现象的分析，进一步验证了之前推断的正确性：传输与编码的配合能力弱，导致了普遍存在的WebRTC低QoE问题。（前两个原因导致了更为严重的拥塞，后一个原因导致了更慢的恢复）</p>
+<p>因此，解决此类低QoE问题的关键，在于如何让传输控制和编码器之间的合作更为紧密一些。作者不认为Salsify中那种逐帧计算的方式是正确的，因为太过频繁的变化帧率分辨率，会导致人主观上的不适，一定程度上违反了优化QoE的目标。（而且Salsify的编码过程state-passing style，无法在硬编中进行）</p>
+<h1 id="算法设计"><a class="markdownIt-Anchor" href="#算法设计"></a> 算法设计</h1>
+<p>文章作者希望提出一个算法，在不严重改变WebRTC结构的前提下，能够替代GCC。也就是如下图，其以传输层信息（丢包率、包时延间隔）和编码器信息（发送端编码器比特率、接收端吞吐率）作为输入，输出一个目标码率，用于下一个时隙的pace和编码（设定时隙长度为1s，因为太短编码器用不了，太长的话对网络拥塞的反应能力会降低）。</p>
+<p>输出的目标码率B应当是一个由两部分协同确定的数值，兼顾到传输控制和视频编码在当前网络下的特征，成为匹配这些特征的最优决策。比如当网络动态变化过于剧烈，Concerto应该偏向保守的B，而当发现拥塞已过时，应该能够快速提升码率。</p>
+<p><img src="concerto-pic/14.png" alt="14.png" /></p>
+<p>Concento算法并没有采用学界目前RTC算法占主导地位的强化学习，而是使用了模仿学习方式。</p>
+<blockquote>
+<p>文章中认为强化学习的劣势：</p>
+<p>强化学习已在点播的应用中收获了良好效果，然而视频通话与点播有本质不同。在点播过程中可以容许buffer在几秒的时间上扩容，以补偿短期内的网络动态变化，而这也能体现强化学习“优化长期目标”的思想。但是视频通话的时延限制要低得多，而且其QoE主要体现在了对瞬时网络状态变化的应对，体现在瞬时动作上。</p>
+<p>其次，强化学习并没有一个明确的指导原则，需要模型自己摸索，得到的决策不一定最优。但是对于视频通话是可以有专家系统决策的，因此可以通过模仿的方式，确保做出的就是接近最优决策的策略。</p>
+</blockquote>
+<p>整个算法是在一个网络模拟器中训练的，从数据集中提取trace，trace里的throughput作为设定的带宽。trace中的80%用于训练，20%用于测试。</p>
+<h2 id="模仿学习imitation-learning"><a class="markdownIt-Anchor" href="#模仿学习imitation-learning"></a> 模仿学习(Imitation Learning)</h2>
+<p>IL的agent与环境交互，在每个离散时隙感知到状态，根据此状态确定了动作，并获得奖励值。状态空间为S，动作空间A，IL的目标在于做出最优的状态-动作映射策略，来优化某些特定指标。</p>
+<p>为了得到最优决策，设定一个专家（可能是人，可能是机器）。在第 i 轮训练中，现有策略会生成所有状态-动作对组成的集合。专家会从中进行指导，提供在此状态上的更优动作，形成新的集合。接着新集合被灌入神经网络中，迫使模型学习到更优决策，进而开启新的一轮训练。</p>
+<p>经过n轮训练，得到的策略将会收敛于最优策略</p>
+<h2 id="concerto"><a class="markdownIt-Anchor" href="#concerto"></a> Concerto</h2>
+<ul>
+<li>
+<p><strong>输入输出</strong>：</p>
+<p>第t时隙的输入状态为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mi>t</mi></msub><mo>=</mo><mo stretchy="false">(</mo><mtext> </mtext><mi><mover><mo><msub><mi>l</mi><mi>t</mi></msub></mo><mo lspace="0em" rspace="0em">→</mo></mover></mi><mo separator="true">,</mo><mtext> </mtext><mi><mover><mo><msub><mi>d</mi><mi>t</mi></msub></mo><mo lspace="0em" rspace="0em">→</mo></mover></mi><mo separator="true">,</mo><mtext> </mtext><mi><mover><mo><msub><mi>u</mi><mi>t</mi></msub></mo><mo lspace="0em" rspace="0em">→</mo></mover></mi><mo separator="true">,</mo><mtext> </mtext><mi><mover><mo><msub><mi>v</mi><mi>t</mi></msub></mo><mo lspace="0em" rspace="0em">→</mo></mover></mi><mtext> </mtext><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">s_t=(\ \overset{\rightarrow}{l_t},\ \overset{\rightarrow}{d_t},\ \overset{\rightarrow}{u_t},\ \overset{\rightarrow}{v_t}\ )</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.501249em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mspace"> </span><span class="mord"><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.251249em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span><span class="mop"><span class="mord"><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.01968em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.89444em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mrel mtight">→</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.251249em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span><span class="mop"><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.89444em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mrel mtight">→</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9873689999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span><span class="mop"><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.63056em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mrel mtight">→</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9873689999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span><span class="mop"><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.63056em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mrel mtight">→</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace"> </span><span class="mclose">)</span></span></span></span>，其中<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi><mover><mo><msub><mi>l</mi><mi>t</mi></msub></mo><mo lspace="0em" rspace="0em">→</mo></mover></mi></mrow><annotation encoding="application/x-tex">\overset{\rightarrow}{l_t}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.401249em;vertical-align:-0.15em;"></span><span class="mord"><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.251249em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span><span class="mop"><span class="mord"><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.01968em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.89444em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mrel mtight">→</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>表示过去k个时隙的丢包率统计值序列，后面三项分别是包间时延序列、编码器的发送码率序列和接收端吞吐量序列。</p>
+<p>通过训练的策略<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>π</mi><mo>∗</mo></msup></mrow><annotation encoding="application/x-tex">\pi^*</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.688696em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.688696em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">∗</span></span></span></span></span></span></span></span></span></span></span>，状态映射到动作<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mi>t</mi></msub><mo>=</mo><msub><mi>π</mi><mi>t</mi></msub><mo stretchy="false">(</mo><msub><mi>s</mi><mi>t</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">a_t=\pi_t(s_t)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>：目标码率，是编码器的目标比特率，也是传输层的发送码率。</p>
+<p>动作发生后，新的状态出现<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">s_{t+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.638891em;vertical-align:-0.208331em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.301108em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span></span></span></span>，以此类推。</p>
+</li>
+<li>
+<p><strong>网络结构</strong>：</p>
+<p><img src="concerto-pic/15.png" alt="15.png" /></p>
+<p>状态中的每个元素向量，并不是一维的，是二维的。因丢包序列为例，每个1s时间内，会获得多个RTCP包（默认15个），而每个RTCP包对应多个RTP包（默认4个），每个RTP包带来了一个丢包率数值。因此丢包率元素是一个15x4的二维矩阵。</p>
+</li>
+<li>
+<p><strong>训练方式</strong>：</p>
+<ul>
+<li>
+<p>自行设计的损失函数：</p>
+<p>cross-entropy：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mo stretchy="false">(</mo><mi>p</mi><mo separator="true">,</mo><mi>q</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mo>∑</mo><mi>x</mi></msub><mo>−</mo><mi>p</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mi>log</mi><mo>⁡</mo><mi>q</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">H(p, q) = \sum_x -p(x)\log q(x)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal">p</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.0497100000000001em;vertical-align:-0.29971000000000003em;"></span><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:-0.0000050000000000050004em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.0016819999999999613em;"><span style="top:-2.40029em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">x</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.29971000000000003em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">−</span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span></span></span></span></p>
+<p>不能仅仅使用cross-entropy来反映当前决策和最优决策之间的差距，还应该引入视频通话的特点。比如要惩罚underuse和overshoot这两种情况，但是对overshoot的惩罚要更严厉一些，因为其带来的伤害更大。因此在制定损失函数时，需要一个权重来刻画这种差异性的惩罚。</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>w</mi><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo><mo>=</mo><mrow><mo fence="true">{</mo><mtable rowspacing="0.3599999999999999em" columnalign="left left" columnspacing="1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><msup><mrow><mo fence="true">∥</mo><msub><mi>π</mi><mi>θ</mi></msub><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo><mo>−</mo><msup><mi>π</mi><mo lspace="0em" rspace="0em">∗</mo></msup><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo><mo fence="true">∥</mo></mrow><mn>2</mn></msup></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mtext> if </mtext><msub><mi>π</mi><mi>θ</mi></msub><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo><mo>≤</mo><msup><mi>π</mi><mo lspace="0em" rspace="0em">∗</mo></msup><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><msup><mrow><mo fence="true">∥</mo><msub><mi>π</mi><mi>θ</mi></msub><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo><mo>−</mo><msup><mi>π</mi><mo lspace="0em" rspace="0em">∗</mo></msup><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo><mo fence="true">∥</mo></mrow><mn>2</mn></msup><mo>+</mo><mi>C</mi></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mtext> else </mtext></mstyle></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">w(s)= \begin{cases}\left\|\pi_{\theta}(s)-\pi^{*}(s)\right\|^{2} &amp; \text { if } \pi_{\theta}(s) \leq \pi^{*}(s) \\ \left\|\pi_{\theta}(s)-\pi^{*}(s)\right\|^{2}+C &amp; \text { else }\end{cases}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:3.0000299999999998em;vertical-align:-1.25003em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size4">{</span></span><span class="mord"><span class="mtable"><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.69em;"><span style="top:-3.69em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="minner"><span class="minner"><span class="mopen delimcenter" style="top:0em;">∥</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">θ</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.688696em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mclose delimcenter" style="top:0em;">∥</span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.954008em;"><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span><span style="top:-2.25em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="minner"><span class="minner"><span class="mopen delimcenter" style="top:0em;">∥</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">θ</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.688696em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mclose delimcenter" style="top:0em;">∥</span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.954008em;"><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.19em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:1em;"></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.69em;"><span style="top:-3.69em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord text"><span class="mord"> if </span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">θ</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.688696em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span></span></span><span style="top:-2.25em;"><span class="pstrut" style="height:3.008em;"></span><span class="mord"><span class="mord text"><span class="mord"> else </span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.19em;"><span></span></span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi mathvariant="normal">ℓ</mi><mrow><mo fence="true">(</mo><msub><mi>π</mi><mi>θ</mi></msub><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo><mo separator="true">,</mo><msup><mi>π</mi><mo lspace="0em" rspace="0em">∗</mo></msup><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo><mo fence="true">)</mo></mrow><mo>=</mo><mi>w</mi><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo><mo>×</mo><mi>H</mi><mo stretchy="false">(</mo><mi>p</mi><mo separator="true">,</mo><mi>q</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\ell\left(\pi_{\theta}(s), \pi^{*}(s)\right)=w(s) \times H(p, q)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">ℓ</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">θ</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mclose delimcenter" style="top:0em;">)</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mopen">(</span><span class="mord mathnormal">p</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mclose">)</span></span></span></span></span></p>
+</li>
+<li>
+<p>平滑的比特率转换：</p>
+<p>类似于滤波器的策略。首先计算历史比特率的加权平均：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo stretchy="false">(</mo><mi>t</mi><mo separator="true">,</mo><mtext> </mtext><mi>k</mi><mo stretchy="false">)</mo><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></msubsup><msup><mn>2</mn><mrow><mo>−</mo><mi>k</mi></mrow></msup><mo>×</mo><msub><mi>π</mi><mi>θ</mi></msub><mo stretchy="false">(</mo><msub><mi>s</mi><mrow><mi>t</mi><mo>−</mo><mi>i</mi></mrow></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\phi(t,\ k)=\sum_{i=1}^k 2^{-k}\times\pi_{\theta}(s_{t-i})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">ϕ</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mpunct">,</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.2887179999999998em;vertical-align:-0.29971000000000003em;"></span><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:-0.0000050000000000050004em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9890079999999999em;"><span style="top:-2.40029em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.29971000000000003em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8491079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">θ</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mbin mtight">−</span><span class="mord mathnormal mtight">i</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>，那么训练时为了能够更加平滑，需要新比特率不要偏离<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo stretchy="false">(</mo><mi>t</mi><mo separator="true">,</mo><mi>k</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\phi(t,k)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">ϕ</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mclose">)</span></span></span></span>太多，所以在训练时除了要最小化损失函数，还需要照顾到一个反映平滑度的regularizer。</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>π</mi><msup><mi>θ</mi><mo lspace="0em" rspace="0em">∗</mo></msup></msub><mo>=</mo><mi><munder><mo><mi>arg</mi><mo>⁡</mo><mi>min</mi><mo>⁡</mo></mo><mi>θ</mi></munder></mi><msub><mi>E</mi><mrow><msub><mi>s</mi><mi>t</mi></msub><mo>∽</mo><msub><mi>d</mi><msub><mi>π</mi><mrow><mi>i</mi><mo>−</mo><mn>1</mn></mrow></msub></msub></mrow></msub><mrow><mo fence="true">[</mo><mi mathvariant="normal">ℓ</mi><mrow><mo fence="true">(</mo><msub><mi>π</mi><mi>θ</mi></msub><mrow><mo fence="true">(</mo><msub><mi>s</mi><mi>t</mi></msub><mo fence="true">)</mo></mrow><mo separator="true">,</mo><msup><mi>π</mi><mo lspace="0em" rspace="0em">∗</mo></msup><mrow><mo fence="true">(</mo><msub><mi>s</mi><mi>t</mi></msub><mo fence="true">)</mo></mrow><mo fence="true">)</mo></mrow><mo>+</mo><mi>λ</mi><mi mathvariant="normal">∣</mi><mi mathvariant="normal">∣</mi><msub><mi>π</mi><mi>θ</mi></msub><mrow><mo fence="true">(</mo><msub><mi>s</mi><mi>t</mi></msub><mo fence="true">)</mo></mrow><mo>−</mo><mi>ϕ</mi><mo stretchy="false">(</mo><mi>t</mi><mo separator="true">,</mo><mi>k</mi><mo stretchy="false">)</mo><mi mathvariant="normal">∣</mi><mi mathvariant="normal">∣</mi><mo fence="true">]</mo></mrow></mrow><annotation encoding="application/x-tex">\pi_{\theta^{*}}=\underset{\theta}{\arg \min } {E}_{s_{t} \backsim d_{\pi_{i-1}}}\left[\ell\left(\pi_{\theta}\left(s_{t}\right), \pi^{*}\left(s_{t}\right)\right)+\lambda||\pi_{\theta}\left(s_{t}\right)-\phi(t, k)||\right]
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">θ</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6183428571428571em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.696548em;vertical-align:-0.946548em;"></span><span class="mord"><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.66786em;"><span style="top:-2.153452em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">θ</span></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span><span class="mop"><span class="mop">ar<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop">min</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.946548em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.29634285714285713em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span><span class="mrel amsrm mtight">∽</span><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1645428571428571em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3448em;"><span style="top:-2.3448em;margin-left:-0.03588em;margin-right:0.1em;"><span class="pstrut" style="height:2.65952em;"></span><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.39805em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.42732142857142863em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.449125em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">[</span><span class="mord">ℓ</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">θ</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;">)</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;">)</span></span><span class="mclose delimcenter" style="top:0em;">)</span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal">λ</span><span class="mord">∣</span><span class="mord">∣</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">θ</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;">)</span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal">ϕ</span><span class="mopen">(</span><span class="mord mathnormal">t</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mclose">)</span><span class="mord">∣</span><span class="mord">∣</span><span class="mclose delimcenter" style="top:0em;">]</span></span></span></span></span></span></p>
+</li>
+<li>
+<p>专家标签：</p>
+<p>这里的ground-truth就是设定的带宽，将其作为专家标签。训练好后，实际部署就不再需要这样的标签了。</p>
+</li>
+<li>
+<p>参数：</p>
+<p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mn>4</mn><mo separator="true">,</mo><mtext> </mtext><mi>β</mi><mo>=</mo><mn>0.5</mn><mo separator="true">,</mo><mtext> </mtext><mi>λ</mi><mo>=</mo><mn>0.5</mn><mo separator="true">,</mo><mtext> </mtext><mi>k</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">L=4,\ \beta=0.5,\ \lambda=0.5,\ k=3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord">4</span><span class="mpunct">,</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05278em;">β</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">5</span><span class="mpunct">,</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">λ</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">5</span><span class="mpunct">,</span><span class="mspace"> </span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">3</span></span></span></span>。其中L是监督学习的loop数，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi></mrow><annotation encoding="application/x-tex">\beta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.05278em;">β</span></span></span></span>是每个loop中专家策略的占比</p>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>训练过程，使用的硬件为Tesla K80，每个epoch持续15分钟，大约20个epoch可收敛。learning rate以exponential decay方式，初始值0.001，斜率0.6。优化器为Adam且batch size为32.</p>
+</blockquote>
+<h1 id="实验验证"><a class="markdownIt-Anchor" href="#实验验证"></a> 实验验证</h1>
+<ul>
+<li>
+<p>基线方案：WebRTC、Salsify、RL-V（Pensieve）</p>
+</li>
+<li>
+<p>实验环境：</p>
+<ul>
+<li>
+<p>仿真：</p>
+<p><img src="concerto-pic/16.png" alt="16.png" /></p>
+<p>仿真器由三部分组成。frame handler会从真正的视频中提取帧，交由ffmpeg编码，以模拟出间歇性流量；控制单元部署算法；传输单元会将每一帧包装为RTP包，经由仿真的网络链路（服从trace的链路变化）。</p>
+</li>
+<li>
+<p>实验室testbed：</p>
+<p><img src="concerto-pic/17.png" alt="17.png" /></p>
+<p>三台运行ubuntu1604的电脑，其中的router使用tc来控制网络条件，来服从数据集的trace的变化。</p>
+</li>
+<li>
+<p>实际部署：</p>
+<p><img src="concerto-pic/18.png" alt="18.png" /></p>
+<p>直接将concerto集成进淘宝app中（仅限ios），编译后的模型17.2MB，运行时开销可忽略不计（iphone7中仅需几毫秒做出比特率决策，足够1s的更新周期使用）。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>QoE metric：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mi>o</mi><mi>E</mi><mo>=</mo><mi>a</mi><mo>×</mo><mi>D</mi><mi>e</mi><mi>l</mi><mi>a</mi><mi>y</mi><mo>+</mo><mi>b</mi><mo>×</mo><mi>P</mi><mi>Q</mi><mo>+</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">QoE=a\times Delay+b\times PQ+c</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">Q</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mord mathnormal">Q</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">c</span></span></span></span></p>
+<p>其中Delay是是平均时延、PQ是picture quality，abc是用于量化的系数。<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mi>o</mi><msub><mi>E</mi><mi>p</mi></msub></mrow><annotation encoding="application/x-tex">QoE_p</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord mathnormal">Q</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">p</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>表示侧重画质（比如直播带货），<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mi>o</mi><msub><mi>E</mi><mi>d</mi></msub></mrow><annotation encoding="application/x-tex">QoE_d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">Q</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">d</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>表示侧重视频的时延（比如交互式通话）。</p>
+<p><img src="concerto-pic/19.png" alt="19.png" /></p>
+</li>
+</ul>
+<h2 id="性能对比"><a class="markdownIt-Anchor" href="#性能对比"></a> 性能对比</h2>
+<p><img src="concerto-pic/20.png" alt="20.png" /></p>
+<p>Concerto在所有网络接入方式下的QoE都远高于其他基线方法。</p>
+<p><img src="concerto-pic/21.png" alt="21.png" /></p>
+<p>WebRTC相比于WebRTC，会有更大的吞吐量增益（因此会有比较好的画质提升）。</p>
+<p><img src="concerto-pic/22.png" alt="22.png" /></p>
+<p>为了观察为什么会有这样的吞吐量增益，以一个200s的会话为例。可以发现，Concerto对带宽的追踪能力最强，然而WebRTC却在遭受large reduction和slow recovery这两个因素的制约。这也是Concerto相比于WebRTC有所提升的原因。</p>
+<h2 id="concerto各模块作用"><a class="markdownIt-Anchor" href="#concerto各模块作用"></a> Concerto各模块作用</h2>
+<ul>
+<li>
+<p>兼顾编码器、损失函数：</p>
+<p><img src="concerto-pic/23.png" alt="23.png" /></p>
+</li>
+</ul>
+<p>Concerto相比于WebRTC的主要改进在于在做码率决策时，不仅考虑网络状态，同时还兼顾了编码器特性。为了验证这样做可以带来正向增益，将模仿学习输入参数中的去掉，此时的状态称为2-state，再训练推理以观察效果。事实上可以看到，相比于4-state，QoE会有18%的下降。</p>
+<p>除此之外，自行设计的损失函数或许也是提升性能的因素。尝试四种损失函数进行训练：l1（传统cross-entropy）、l2（平方差，C=0）、l3（严厉惩罚overshoot，C=100）、l4（合理惩罚overshoot，C=8）。</p>
+<p>可以观察到还是l4有最好的效果，说明自行设计的损失函数以及合理的权衡可以带来很大的增益。</p>
+<ul>
+<li>
+<p>神经网络参数：</p>
+<p><img src="concerto-pic/24.png" alt="24.png" /></p>
+</li>
+</ul>
+<h2 id="实际部署"><a class="markdownIt-Anchor" href="#实际部署"></a> 实际部署</h2>
+<p>团队将concerto部署在淘宝app的淘宝Live中，征募了6名志愿者在大量的地区（家、办公室、教学楼、超市、逛街、开车）游走，大部分室内接入的是WiFi，而室外接入的是4G。全部实验总共300个会话，共计69个小时。每位志愿者拿两部手机，分别运行WebRTC的淘宝和集成了concerto的淘宝，以保证在相同的网络环境下测试两种方案。</p>
+<p>WebRTC和Concerto的对比如表所示：</p>
+<p><img src="concerto-pic/25.png" alt="25.png" /></p>
+<p>1）Concerto会有略低一点的吞吐率，但是却能显著降低卡顿时间；</p>
+<p>2）对于WebRTC而言，4G情况下，移动速度越快，QoE越差；</p>
+<p>3）WebRTC在WiFi场景下是可以取得比较好表现的。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WebRTC/" rel="tag"># WebRTC</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/" rel="prev" title="Linux下tc模拟弱网">
+                  <i class="fa fa-chevron-left"></i> Linux下tc模拟弱网
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/07/12/WebRTC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9ASalsify/" rel="next" title="WebRTC替代方案：Salsify">
+                  WebRTC替代方案：Salsify <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">OliverPai</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.0/katex.min.css" integrity="sha256-uik/hNqHWZldXh/0K35nqOSCff9F61/ZOFReqNOBgB0=" crossorigin="anonymous">
+
+
+
+</body>
+</html>

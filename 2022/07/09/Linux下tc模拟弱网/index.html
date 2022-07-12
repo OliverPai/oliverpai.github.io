@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.2","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="记录使用traffic controller限制网络条件的原理和命令">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux下tc模拟弱网">
+<meta property="og:url" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/index.html">
+<meta property="og:site_name" content="OliverPai">
+<meta property="og:description" content="记录使用traffic controller限制网络条件的原理和命令">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/tc-pic/1.png">
+<meta property="og:image" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/tc-pic/2.png">
+<meta property="og:image" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/tc-pic/3.png">
+<meta property="og:image" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/tc-pic/4.png">
+<meta property="og:image" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/tc-pic/5.png">
+<meta property="og:image" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/tc-pic/6.png">
+<meta property="og:image" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/tc-pic/7.png">
+<meta property="og:image" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/tc-pic/8.png">
+<meta property="og:image" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/tc-pic/9.png">
+<meta property="og:image" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/tc-pic/10.png">
+<meta property="og:image" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/tc-pic/11.png">
+<meta property="article:published_time" content="2022-07-09T15:49:51.000Z">
+<meta property="article:modified_time" content="2022-07-12T16:15:41.440Z">
+<meta property="article:author" content="OliverPai">
+<meta property="article:tag" content="WebRTC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/tc-pic/1.png">
+
+
+<link rel="canonical" href="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/","path":"2022/07/09/Linux下tc模拟弱网/","title":"Linux下tc模拟弱网"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Linux下tc模拟弱网 | OliverPai</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="OliverPai" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">OliverPai</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">落叶本就是假的</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#tc%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text"> tc简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tc%E5%8E%9F%E7%90%86%E5%8F%8A%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text"> tc原理及常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E9%85%8D%E7%BD%AE%E6%97%B6linux%E5%86%85%E6%A0%B8%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%89%E6%8E%92%E6%B5%81%E9%87%8F%E4%BC%A0%E8%BE%93%E7%9A%84"><span class="nav-number">2.1.</span> <span class="nav-text"> 默认配置时，Linux内核是如何安排流量传输的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.2.</span> <span class="nav-text"> 术语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#classless-qdisc"><span class="nav-number">2.3.</span> <span class="nav-text"> classless qdisc</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tbftoken-bucket-filter"><span class="nav-number">2.3.1.</span> <span class="nav-text"> TBF（Token Bucket Filter）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sfqstochastic-fairness-queueing"><span class="nav-number">2.3.2.</span> <span class="nav-text"> SFQ（Stochastic Fairness Queueing）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#classful-qdisc"><span class="nav-number">2.4.</span> <span class="nav-text"> classful qdisc</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#prio"><span class="nav-number">2.4.1.</span> <span class="nav-text"> PRIO</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#tc-filter"><span class="nav-number">2.4.1.1.</span> <span class="nav-text"> tc-filter</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#htb%E5%B1%82%E7%BA%A7%E4%BB%A4%E7%89%8C%E6%A1%B6"><span class="nav-number">2.4.2.</span> <span class="nav-text"> HTB（层级令牌桶）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8tc%E7%9A%84%E8%84%9A%E6%9C%AC"><span class="nav-number">3.</span> <span class="nav-text"> 使用tc的脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#wondershaper"><span class="nav-number">3.1.</span> <span class="nav-text"> wondershaper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#comcast"><span class="nav-number">3.2.</span> <span class="nav-text"> comcast</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#netem%E8%BE%83%E7%AE%80%E5%8D%95%E7%9A%84%E5%BC%B1%E7%BD%91%E6%A8%A1%E6%8B%9F%E6%96%B9%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text"> NetEm：较简单的弱网模拟方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#netem%E8%AF%BB%E5%8F%96trace"><span class="nav-number">4.1.</span> <span class="nav-text"> netem读取trace</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text"> 其他配置</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="OliverPai"
+      src="/images/avatar-star.png">
+  <p class="site-author-name" itemprop="name">OliverPai</p>
+  <div class="site-description" itemprop="description">求索与记录</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OliverPai" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OliverPai" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-star.png">
+      <meta itemprop="name" content="OliverPai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="OliverPai">
+      <meta itemprop="description" content="求索与记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Linux下tc模拟弱网 | OliverPai">
+      <meta itemprop="description" content="记录使用traffic controller限制网络条件的原理和命令">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux下tc模拟弱网
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-07-09 23:49:51" itemprop="dateCreated datePublished" datetime="2022-07-09T23:49:51+08:00">2022-07-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-07-13 00:15:41" itemprop="dateModified" datetime="2022-07-13T00:15:41+08:00">2022-07-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/WebRTC/" itemprop="url" rel="index"><span itemprop="name">WebRTC</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">记录使用traffic controller限制网络条件的原理和命令</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>man文档：<a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man8/tc.8.html">man tc</a></p>
+<p><a target="_blank" rel="noopener" href="http://arthurchiao.art/blog/lartc-qdisc-zh/?hmsr=toutiao.io&amp;utm_campaign=toutiao.io&amp;utm_medium=toutiao.io&amp;utm_source=toutiao.io">《Linux高级路由和流量控制手册》</a></p>
+</blockquote>
+<h1 id="tc简介"><a class="markdownIt-Anchor" href="#tc简介"></a> tc简介</h1>
+<p>tc全称traffic controller，是Linux系统自带的流量控制器，可以通过软件形式控制传输过程中的变量——可用带宽、延时、丢包。同时，可以输入事先制定的变量时间序列，输入到由tc组成的Linux脚本中，使得后面较长时间的网络状态遵循设定值，从而模拟带宽骤变、时延抖动等情况。</p>
+<p>由于是Linux自带工具，因此无需安装，其文档可在终端输入man tc获得。</p>
+<p>后文中将提到，弱网条件下进行带宽限制和变化采用wondershaper完成，而延迟、抖动、丢包等情况的模拟借助netem实现，二者均依赖于tc。本文将首先简要介绍tc的工作原理，并解释tc命令中的常见选项，最后给出如何利用tc在Linux系统下模拟多种弱网状态。</p>
+<h1 id="tc原理及常用命令"><a class="markdownIt-Anchor" href="#tc原理及常用命令"></a> tc原理及常用命令</h1>
+<h2 id="默认配置时linux内核是如何安排流量传输的"><a class="markdownIt-Anchor" href="#默认配置时linux内核是如何安排流量传输的"></a> 默认配置时，Linux内核是如何安排流量传输的</h2>
+<p>每次在执行ip命令的时候，都会看到qdisc这个词</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~$ ip l</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">2: enp0s5: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000</span><br><span class="line">    link/ether 00:1c:42:f2:0d:5c brd ff:ff:ff:ff:ff:ff</span><br></pre></td></tr></table></figure>
+<p>可以看到，罗列ip时，lo的qdisc是noqueue，而enp0s5的qdisc是fq_codel。我们可以将Linux内核进行网络数据传输的过程，视为队列进出。当有数据想要传输时，先放入一个队列中，当满足<strong>某些要求后，通过某种规则</strong>以一定的顺序出队列，经由网络设备发送出去。而这里的要求与规则就是由qdisc制定的。qdisc全称queueing discipline，即排队规则，用于管理队列中数据的组织方式。</p>
+<p>ubuntu20.04默认使用的是fq_codel这一规则，而过去的Linux内核默认使用的qdisc是pfifo_fast，这里将从pfifo_fast开始介绍qdisc的工作方式。如名字所示，其是一个先入先出队列，因此所有包都是按进入队列的先后顺序来发送的。</p>
+<img title="" src="tc-pic/1.png" alt="1.png" data-align="center">
+<p>pfifo_fast有三个&quot;band&quot;（可以理解为实际的队列），编号分别为0、1、2，三个队列均为FIFO，但存在优先级的差异：如果band0有数据，就不会处理band1，如果band1有数据，就不会处理band2。当产生一个数据包时（不管是TCP还是UDP的），内核都会检查该包的TOS字段（ip协议头部），根据该字段的值选择将包放在哪一个band中。</p>
+<p>通过sudo tc qdisc add dev enp0s5 root pfifo_fast将默认qdisc从fq_codel改为pfifo_fast后，可以看到：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu:~$ tc qdisc show dev enp0s5</span><br><span class="line">qdisc pfifo_fast 8001: root refcnt 2 bands 3 priomap 1 2 2 2 1 2 0 0 1 1 1 1 1 1 1 1</span><br></pre></td></tr></table></figure>
+<p>有三个band，对应刚才所述的内容。pfifo_fast的配置是写死的，用户无法更改，但这份写死的配置中让我们看到了priomap这一参数，其意义为：<strong>将TOS字段映射为数据包优先级的规则</strong>。（这里的优先级指的是不同band的优先级，同一个band内数据包之间，只有先后顺序，没有优先级之分），tos由四个比特位组成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Binary Decimcal  Meaning</span><br><span class="line">-----------------------------------------</span><br><span class="line">1000   8         Minimize delay (md)</span><br><span class="line">0100   4         Maximize throughput (mt)</span><br><span class="line">0010   2         Maximize reliability (mr)</span><br><span class="line">0001   1         Minimize monetary cost (mmc)</span><br><span class="line">0000   0         Normal Service</span><br></pre></td></tr></table></figure>
+<p>priomap的规则如下（可以用tcpdump -vv查看）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">TOS     Bits  Means                    Linux Priority    Band</span><br><span class="line">------------------------------------------------------------</span><br><span class="line">0x0     0     Normal Service           0 Best Effort     1</span><br><span class="line">0x2     1     Minimize Monetary Cost   1 Filler          2</span><br><span class="line">0x4     2     Maximize Reliability     0 Best Effort     1</span><br><span class="line">0x6     3     mmc+mr                   0 Best Effort     1</span><br><span class="line">0x8     4     Maximize Throughput      2 Bulk            2</span><br><span class="line">0xa     5     mmc+mt                   2 Bulk            2</span><br><span class="line">0xc     6     mr+mt                    2 Bulk            2</span><br><span class="line">0xe     7     mmc+mr+mt                2 Bulk            2</span><br><span class="line">0x10    8     Minimize Delay           6 Interactive     0</span><br><span class="line">0x12    9     mmc+md                   6 Interactive     0</span><br><span class="line">0x14    10    mr+md                    6 Interactive     0</span><br><span class="line">0x16    11    mmc+mr+md                6 Interactive     0</span><br><span class="line">0x18    12    mt+md                    4 Int. Bulk       1</span><br><span class="line">0x1a    13    mmc+mt+md                4 Int. Bulk       1</span><br><span class="line">0x1c    14    mr+mt+md                 4 Int. Bulk       1</span><br><span class="line">0x1e    15    mmc+mr+mt+md             4 Int. Bulk       1</span><br></pre></td></tr></table></figure>
+<p>往往很多应用也会通过TOS字段，定义自己属于何种优先级（比如交互式流量应当具备高优先级，而大文件传输可以处于较低优先级）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">TELNET                   1000           (minimize delay)</span><br><span class="line">FTP     Control          1000           (minimize delay)</span><br><span class="line">        Data             0100           (maximize throughput)</span><br><span class="line"></span><br><span class="line">TFTP                     1000           (minimize delay)</span><br><span class="line"></span><br><span class="line">SMTP    Command phase    1000           (minimize delay)</span><br><span class="line">        DATA phase       0100           (maximize throughput)</span><br><span class="line"></span><br><span class="line">DNS     UDP Query        1000           (minimize delay)</span><br><span class="line">        TCP Query        0000</span><br><span class="line">        Zone Transfer    0100           (maximize throughput)</span><br><span class="line"></span><br><span class="line">NNTP                     0001           (minimize monetary cost)</span><br><span class="line"></span><br><span class="line">ICMP    Errors           0000</span><br><span class="line">        Requests         0000 (mostly)</span><br><span class="line">        Responses        &lt;same as request&gt; (mostly)</span><br></pre></td></tr></table></figure>
+<p>除此之外，既然涉及队列，队列的长度就不可能是无限大的，应当存在一个最大值。而pfifo_fast这个qdisc的<strong>发送队列</strong>长度由txqueuelen表示。tc命令是无法更改这个属性的（因为pfifo_fast对于tc而言，配置是写死的），但是ifconfig却可以：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ifconfig enp0s5 txqueuelen 10</span><br></pre></td></tr></table></figure>
+<p>经过这些操作后，如果想把默认qdisc改回之前的fq_codel，可以通过下面的命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo tc qdisc replace dev enp0s5 root fq_codel</span><br></pre></td></tr></table></figure>
+<p>那么抛开qdisc的具体类型，Linux是流量是如何进入和发出的呢。</p>
+<p>下面的图诠释了流量在Linux中从进到出所经历的大致流程，其从外部网络进入主机，然后进入ingress qdisc。这里会有policing过程，根据结果判断是否要丢弃这个包，以达到约束下行速率的目的。若判断允许通过，当其目的端为主机的应用程序时，会进入内核ip协议栈，最后交给用户态程序。如果还要将结果发送出去，就需要经过egress。这个时候需要判定使用那个qdisc进行流量发送。此时可能会有很多qdisc，根据各种限定选择好合适的qdisc后，该qdisc就会接收包（enqueueing入队过程），此时包位于qdisc中，等待内核召唤，然后从队列中拿出，交付给网络接口来发送出去（dequeueing出队过程）。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">              Userspace programs</span><br><span class="line">                   ^</span><br><span class="line">                   |</span><br><span class="line">   +---------------+-----------------------------------------+</span><br><span class="line">   |               Y                                         |</span><br><span class="line">   |    -------&gt; IP Stack                                    |</span><br><span class="line">   |   |              |                                      |</span><br><span class="line">   |   |              Y                                      |</span><br><span class="line">   |   |              Y                                      |</span><br><span class="line">   |   ^              |                                      |</span><br><span class="line">   |   |  / ----------&gt; Forwarding -&gt;                        |</span><br><span class="line">   |   ^ /                           |                       |</span><br><span class="line">   |   |/                            Y                       |</span><br><span class="line">   |   |                             |                       |</span><br><span class="line">   |   ^                             Y          /-qdisc1-\   |</span><br><span class="line">   |   |                            Egress     /--qdisc2--\  |</span><br><span class="line">---&gt;-&gt;Ingress                       Classifier ---qdisc3---- | -&gt;</span><br><span class="line">   |   Qdisc                                   \__qdisc4__/  |</span><br><span class="line">   |                                            \-qdiscN_/   |</span><br><span class="line">   |                                                         |</span><br><span class="line">   +----------------------------------------------------------+</span><br></pre></td></tr></table></figure>
+<h2 id="术语"><a class="markdownIt-Anchor" href="#术语"></a> 术语</h2>
+<p>介绍了pfifo_fast后就可以对qdisc以及Linux内核如何进行数据包的发送有一个大致印象。pfifo_fast只是众多qdisc的冰山一角，下面为了更为详细地介绍tc如何利用qdisc进行流量控制，先简单说明一个术语。</p>
+<ul>
+<li>
+<p>排队规则：Queueing Discipline：<em><strong>qdisc</strong></em></p>
+<p>管理设备队列的算法，可以是管理入向(incoming/ingress)的，也可以是管理出向队列(outgoing/egress)的。</p>
+</li>
+<li>
+<p>根排队规则：<em><strong>root qdisc</strong></em></p>
+<p>直接attach到网络设备（比如网卡）的那个qdisc。与该网络设备挂钩的全部类或qdisc共同构成了一棵树，而root qdisc就是这棵树的根节点。</p>
+</li>
+<li>
+<p>无类别排队规则：<em><strong>classless qdisc</strong></em></p>
+<p>对所有包一视同仁，同等对待。tc内置了以下的classless qdisc（概念不重要，可以直接移步）：</p>
+<ul>
+<li>
+<p>choke：</p>
+<p>CHOKe (CHOose and Keep for responsive flows, CHOose and Kill for unresponsive flows) is a classless qdisc designed to both identify and penalize flows that monopolize the queue. CHOKe is a variation of RED, and the configuration is similar to RED.</p>
+</li>
+<li>
+<p>codel：</p>
+<p>CoDel (pronounced “coddle”) is an adaptive “no-knobs” active queue management algorithm (AQM) scheme that was developed to address the shortcomings of RED and its variants.</p>
+</li>
+<li>
+<p>bfifo、qfifo：</p>
+<p>Simplest usable qdisc, pure First In, First Out behaviour. Limited in packets or in bytes.</p>
+</li>
+<li>
+<p>fq：</p>
+<p>Fair Queue Scheduler realises TCP pacing and scales to millions of concurrent flows per qdisc.</p>
+</li>
+<li>
+<p>fq_codel：</p>
+<p>Fair Queuing Controlled Delay is queuing discipline that combines Fair Queuing with the CoDel AQM scheme. FQ_Codel uses a stochastic model to classify incoming packets into different flows and is used to provide a fair share of the bandwidth to all the flows using the queue. Each such flow is managed by the CoDel queuing discipline. Reordering within a flow is avoided since Codel internally uses a FIFO queue.</p>
+</li>
+<li>
+<p>gred：</p>
+<p>Generalized Random Early Detection combines multiple RED queues in order to achieve multiple drop priorities. This is required to realize Assured Forwarding (RFC 2597).</p>
+</li>
+<li>
+<p>hhf</p>
+<p>Heavy-Hitter Filter differentiates between small flows and the opposite, heavy-hitters. The goal is to catch the heavy-hitters and move them to a separate queue with less priority so that bulk traffic does not affect the latency of critical traffic.</p>
+</li>
+<li>
+<p>ingress：</p>
+<p>This is a special qdisc as it applies to incoming traffic on an interface, allowing for it to be filtered and policed.</p>
+</li>
+<li>
+<p>mqprio：</p>
+<p>The Multiqueue Priority Qdisc is a simple queuing discipline that allows mapping traffic flows to hardware queue ranges using priorities and a configurable priority to traffic class mapping. A traffic class in this context is a set of contiguous qdisc classes which map 1:1 to a set of hardware exposed queues.</p>
+</li>
+<li>
+<p>multiq：</p>
+<p>Multiqueue is a qdisc optimized for devices with multiple Tx queues. It has been added for hardware that wishes to avoid head-of-line blocking. It will cycle though the bands and verify that the hardware queue associated with the band is not stopped prior to dequeuing a packet.</p>
+</li>
+<li>
+<p>netem：</p>
+<p>Network Emulator is an enhancement of the Linux traffic control facilities that allow to add delay, packet loss, duplication and more other characteristics to packets outgoing from a selected network interface.</p>
+</li>
+<li>
+<p>pfifo_fast：</p>
+<p>Standard qdisc for ‘Advanced Router’ enabled kernels. Consists of a three-band queue which honors Type of Service flags, as well as the priority that may be assigned to a packet.</p>
+</li>
+<li>
+<p>pie：</p>
+<p>Proportional Integral controller-Enhanced (PIE) is a control theoretic active queue management scheme. It is based on the proportional integral controller but aims to control delay.</p>
+</li>
+<li>
+<p>red：</p>
+<p>Random Early Detection simulates physical congestion by randomly dropping packets when nearing configured bandwidth allocation. Well suited to very large bandwidth applications.</p>
+</li>
+<li>
+<p>sfb：</p>
+<p>Stochastic Fair Blue is a classless qdisc to manage congestion based on packet loss and link utilization history while trying to prevent non-responsive flows (i.e. flows that do not react to congestion marking or dropped packets) from impacting performance of responsive flows. Unlike RED, where the marking probability has to be configured, BLUE tries to determine the ideal marking probability automatically.</p>
+</li>
+<li>
+<p>sfq：</p>
+<p>Stochastic Fairness Queueing reorders queued traffic so each ‘session’ gets to send a packet in turn.</p>
+</li>
+<li>
+<p>tbf：</p>
+<p>The Token Bucket Filter is suited for slowing traffic down to a precisely configured rate. Scales well to large bandwidths.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>有类别排队规则：<em><strong>classful qdisc</strong></em></p>
+<p>一个classful qdisc中包含多个类别（classes），每个类别可以进一步包含其他qdisc，包含的可以是classful qdisc，也可以是classless qdisc。tc内置了如下的classful qdisc（概念不重要，可直接移步）：</p>
+<ul>
+<li>
+<p>ATM：</p>
+<p>Map flows to virtual circuits of an underlying asynchronous transfer mode device.</p>
+</li>
+<li>
+<p>CBQ：</p>
+<p>Class Based Queueing implements a rich linksharing hierarchy of classes. It contains shaping elements as well as prioritizing capabilities. Shaping is performed using link idle time calculations based on average packet size and underlying link bandwidth. The latter may be ill- defined for some interfaces.</p>
+</li>
+<li>
+<p>DRR：</p>
+<p>The Deficit Round Robin Scheduler is a more flexible replacement for Stochastic Fairness Queuing. Unlike SFQ, there are no built-in queues – you need to add classes and then set up filters to classify packets accordingly. This can be useful e.g. for using RED qdiscs with different settings for particular traffic. There is no default class – if a packet cannot be classified, it is dropped.</p>
+</li>
+<li>
+<p>DSMARK：</p>
+<p>Classify packets based on TOS field, change TOS field of packets based on classification.</p>
+</li>
+<li>
+<p>HFSC：</p>
+<p>Hierarchical Fair Service Curve guarantees precise bandwidth and delay allocation for leaf classes and allocates excess bandwidth fairly. Unlike HTB, it makes use of packet dropping to achieve low delays which interactive sessions benefit from.</p>
+</li>
+<li>
+<p>HTB：</p>
+<p>The Hierarchy Token Bucket implements a rich linksharing hierarchy of classes with an emphasis on conforming to existing practices. HTB facilitates guaranteeing bandwidth to classes, while also allowing specification of upper limits to inter-class sharing. It contains shaping elements, based on TBF and can prioritize classes.</p>
+</li>
+<li>
+<p>PRIO：</p>
+<p>The PRIO qdisc is a non-shaping container for a configurable number of classes which are dequeued in order. This allows for easy prioritization of traffic, where lower classes are only able to send if higher ones have no packets available. To facilitate configuration, Type Of Service bits are honored by default.</p>
+</li>
+<li>
+<p>QFQ：</p>
+<p>Quick Fair Queueing is an O(1) scheduler that provides near-optimal guarantees, and is the first to achieve that goal with a constant cost also with respect to the number of groups and the packet length. The QFQ algorithm has no loops, and uses very simple instructions and data structures that lend themselves very well to a hardware implementation.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>类别：<em><strong>class</strong></em></p>
+<p>一个class的parent可以是一个qdisc，也可以是另一个class。leaf class是没有child class的，这种class只attach一个qdisc，来负责被判定到该class的数据发送。</p>
+</li>
+<li>
+<p>分类器：Classifier</p>
+<p>用于在classful qdisc中判断每个包应当放在哪一个class中。</p>
+</li>
+<li>
+<p>过滤器：<em><strong>Filter</strong></em></p>
+<p>分类的过程通过过滤器完成。过滤器中包含着很多判断条件，匹配到条件之后算filter匹配成功了。注意Filter仅限classful qdisc使用，在classless qdisc场景是不会使用到filter的。</p>
+<p>Linux支持的Filter包括：</p>
+<ul>
+<li>
+<p>basic</p>
+</li>
+<li>
+<p>bpf</p>
+</li>
+<li>
+<p>cgroup</p>
+</li>
+<li>
+<p>flow</p>
+</li>
+<li>
+<p>fw</p>
+</li>
+<li>
+<p>route</p>
+</li>
+<li>
+<p>rsvp</p>
+</li>
+<li>
+<p>tcindex</p>
+</li>
+<li>
+<p>u32</p>
+</li>
+<li>
+<p>matchall</p>
+</li>
+</ul>
+</li>
+<li>
+<p>随到随发qdisc：<em><strong>Work-Conserving qdisc</strong></em></p>
+<p>只要有包可发送就会立即发送，而不会延迟包的发送。</p>
+</li>
+<li>
+<p>非随到随发qdisc：<em><strong>non-Work-Conserving qdisc</strong></em></p>
+</li>
+</ul>
+<p>可能会延迟一段时间再将一个包发送出去的qdisc，即使有能力立即发，也要延迟。</p>
+<ul>
+<li>
+<p><em><strong>Shaping</strong></em> &amp; <em><strong>Policing</strong></em></p>
+<p>shaping是针对egress进行整形的，在包发送之前进行延迟处理以达到预设的最大发送速率；policing是针对ingress的，没有入向队列这一说，控制下行速率只能对包进行丢弃，不能延迟。</p>
+</li>
+</ul>
+<h2 id="classless-qdisc"><a class="markdownIt-Anchor" href="#classless-qdisc"></a> classless qdisc</h2>
+<p>所谓无类别排队规则，就是不管入队是什么包哪种包，都将其放入一个队列中，之后按照排队规则将包从队列取出发送，这里将主要介绍TBF和SFQ。</p>
+<blockquote>
+<p>有类别排队规则相反，入队之前会先将包判定属于某种类别，之后将包放入相应类别的队列中，按照该类别的排队规则进行取出发送。</p>
+</blockquote>
+<p>pfifo_fast严格意义上不属于classless qdisc，因为其分了三个band，相当于包也有了优先级。但对于用户来说，它就是classless的，因为用户是无法修改其配置的，用户眼里是看不出优先级的。</p>
+<h3 id="tbftoken-bucket-filter"><a class="markdownIt-Anchor" href="#tbftoken-bucket-filter"></a> TBF（Token Bucket Filter）</h3>
+<p>TBF 是一个简单 qdisc，对于<strong>没有超过预设速率的流量直接透传</strong>，但也能容忍<strong>超过预设速率的短时抖动</strong>（short bursts in excess of this rate）。 TBF非常简洁，对网络和处理器都很友好（network-and processor friendly）。 <strong>如果只是想实现接口限速，那TBF是第一选择。</strong></p>
+<p><img src="tc-pic/2.png" alt="2.png" /></p>
+<p>令牌桶（token bucket），顾名思义，首先维护了一个bucket用于存储令牌（token），而这个桶就是一个buffer。其大小决定了能容纳的token数量。在TBF算法中，存在token flow和data flow两种流。data flow的元素就是数据包，而token flow的元素就是token。token会以特定的速率填充进bucket中。当一个包到来时，会从bucket中拿出一个token，数据包发送出去后，就会从bucket中删除该token。两个flow的速率彼此独立，可能存在三种情况：</p>
+<ol>
+<li>
+<p>数据速率==token速率：每个包都能找到一个对应的token，然后直接从队列出去，没有延时（delay）。</p>
+</li>
+<li>
+<p>数据速率 &lt; token速率：正常到来的数据都能及时发送出去，然后删除一个token。由于token速率大于数据速率，<strong>会产生bucket积压</strong>，极端情况会将bucket占满。<strong>如果数据速率突然高于token速率，就可以消耗这些积压的 token</strong> 。因此积压的 token 有一个额外好处：<strong>能够容忍短时数据速率抖动（burst）</strong>。</p>
+</li>
+<li>
+<p>数据速率 &gt; token速率：token很快就会用完，然后 <strong>TBF 会关闭（throttle ）一会</strong>。这种情况称为<strong>overlimit</strong>（超过限制）。如果包还是源源不断地到来，就会产生丢包。</p>
+</li>
+</ol>
+<p>第三种情况是接口限速的关键所在，它使我们能够对数据可用的带宽进行整形(shape the bandwidth)。</p>
+<p>积压的 token 使得超过限速的短时抖动数据仍然能发送，不会丢包，但持续的 overload 会导致数据不断被 delay，然后被丢弃。</p>
+<blockquote>
+<p>实际情况中，token是基于字节数，而不是包数。</p>
+</blockquote>
+<ul>
+<li>
+<p>TBF中可以设置的参数：</p>
+<ul>
+<li>
+<p>limit or latency：</p>
+<ul>
+<li>
+<p>limit：因等待可用 token 而被放入队列的字节数。</p>
+</li>
+<li>
+<p>latency：每个包在 TBF 中停留的最长时间。随后会基于 latency、bucket size、rate 和 peakrate（如果设置了）来计算 limit。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>burst/buffer/maxburst：</p>
+<p>bucket 的大小，<strong>单位是字节</strong>。这是累积可用的 token 所支持的最大字节数（ maximum amount of bytes that tokens can be available for instantaneously）。总体来说，<strong>越大的整流速率（shaping rates）需要越大的缓冲区</strong>。要在 Intel 网卡 上实现 10Mbps 整流，你至少需要 10KB 缓冲区。</p>
+<p>如果缓冲区太小，可能会丢包，因为 token 到来太快导致无法放入 bucket 中。</p>
+</li>
+<li>
+<p>mpu：</p>
+<p><strong>“零长度”的包占用的并不是零带宽</strong>（A zero-sized packet does not use zero bandwidth）。例如对于以太网，任何一个包的字节数不会少于 64。 Minimum Packet Unit（最小包单元）决定了一个包所使用的最小 token 量（the minimal token usage for a packet）。</p>
+</li>
+<li>
+<p>rate：速率控制</p>
+</li>
+<li>
+<p>peakrate：</p>
+<p>默认情况下，包到了之后只要有 token 就会被立即发送。peakrate 可指定 <strong>bucket 发送数据的最快速度</strong>。通常来说：放行一个包 -&gt; 等待恰当的时长 -&gt; 放行下一个包。通过计算等待时长，最终实现了peakrate效果。</p>
+<p>但实际中，由于 Unix 默认的 10ms 定时器精读限制，如果平均每个包 10Kbits ， 我们只能做到 1Mbps peakrate！（10Kb/10ms = 1000Kbps = 1Mbps）。</p>
+</li>
+<li>
+<p>mtu/minburst：</p>
+<p>1Mbit/s 的 peakrate 通常并不是很有用，因为实际中的带宽要远大于此。实现更高 peakrate 的一种方式是：每个 timer tick 发送多个包，在效果上就好像我们创建了第二个 bucket！</p>
+<p>计算最大可能的 peakrate 时，用 MTU 乘以 100（更准确地说，乘以 HZ 数，例如 Intel 上是 100，Alpha 上是 1024）。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>一个简单但非常有用的配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev ppp0 root tbf rate 220kbit latency 50ms burst 1540</span><br></pre></td></tr></table></figure>
+<p>如果链路中有一个queue很大的网络设备，那么大文件传输时会严重影响实时交互。因为上传的数据会被缓存到该设备的queue里，而且缓存的数据量很大（以提高吞吐）。如果入队的数据包能少一些，可以保证交互式数据的实时性。因此，上面的配置将发送速率降低到了网络设备不会对数据进行排队缓存的水平，从而降低了延时。</p>
+<h3 id="sfqstochastic-fairness-queueing"><a class="markdownIt-Anchor" href="#sfqstochastic-fairness-queueing"></a> SFQ（Stochastic Fairness Queueing）</h3>
+<p>随机公平排队（SFQ）是公平排队算法族的一个简单实现。相比其他算法，<strong>SFQ 精准性要差一些，但它所需的计算量也更少</strong>，而结果几乎是完全公平的（almost perfectly fair）。</p>
+<p><img src="tc-pic/3.png" alt="3.png" /></p>
+<p><strong>SFQ 中的核心是 conversion（会话）或 flow（流）</strong>，大部分情况下都对应一个 TCP session 或 UDP stream。<strong>每个 conversion 对应一个 FIFO queue</strong>，然后将流量分到不同 queue。发送数据时，按照 round robin 方式，每个 session 轮流发送。</p>
+<p>这种机制会产生非常公平的结果，不会因为单个 conversion 太大而把其他 conversion 的带宽都挤占掉。<strong>SFQ 被称为“随机的”（stochastic）是因为它其实并没有为每个 session 分配一个 queue</strong>，而是用算法<strong>将流量哈希到了一组有限的 queue</strong>。</p>
+<p>这种方式也会导致问题：多个session可能被哈希到同一个queue中，那么queue中的各session吞吐量就会变少，达不到预期的整流带宽。于是为了避免这个问题严重影响性能，<strong>SFQ 会不断变换它使用的哈希算法</strong>，最终任何两个会话冲突的持续时间都不会很长，只会有几秒钟。</p>
+<p><strong>SFQ 只有在实际出向带宽已经非常饱和的情况下才有效</strong>，这一点非常重要！所以一般会将SFQ与其他qdisc相结合来实现一般情况下的公平排队。更明确的说，没有其他方式配合，<strong>单纯地使用SFQ配置没有意义</strong>。</p>
+<ul>
+<li>
+<p>SFQ中可以设置的参数：</p>
+<ul>
+<li>
+<p>perturb：每隔多少秒就重新配置哈希算法。如果这个参数不设，哈希算法就永远不会重新配置。 建议显式设置这个参数，不要为空。<strong>10s 可能是个不错的选择。</strong></p>
+</li>
+<li>
+<p>quantum：在轮到下一个 queue 发送之前，当前 queue 允许出队（dequeue）的最大字节数。默认是一个 MTU。不建议设置为小于 MTU 的值。</p>
+</li>
+<li>
+<p>limit：SFQ 能缓存的最大包数（超过这个阈值将导致丢包）。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>对SFQ来ls一下，还可以看见一个自动分配的句柄编号（handle number，下面的800c）和一个flows属性：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ tc -s -d qdisc ls</span><br><span class="line">qdisc sfq 800c: dev ppp0 quantum 1514b limit 128p flows 128/1024 perturb 10sec</span><br><span class="line"> Sent 4812 bytes 62 pkts (dropped 0, overlimits 0)</span><br></pre></td></tr></table></figure>
+<p>flows 128/1024表示这个SFQ中有1024个哈希槽（hash buckets），其中128个当前有数据待发送。</p>
+<h2 id="classful-qdisc"><a class="markdownIt-Anchor" href="#classful-qdisc"></a> classful qdisc</h2>
+<p>有类别排队规则不再对所有包一视同仁。classful qdisc下面可以再分若干类别，每个类别有自己的qdisc。</p>
+<p>当流量进入一个 classful qdisc 时，该 qdisc 需要将其发送到内部的某个 class —— 即 需要<strong>对这个包进行“分类”</strong>。而要这个判断过程，实际上是<strong>查询所谓的“过滤器”</strong>（ ‘filters’）。<strong>过滤器是在 qdisc 中被调用的，而不是其他地方</strong>，理解一点非常重要！</p>
+<p><strong>过滤器返回一个判决结果给 qdisc，qdisc 据此将包 enqueue 到合适的 class</strong>。 每个 subclass 可能会进一步执行其他 filters，以判断是否需要进一步处理。如果没有其他过滤器，这个 class 将把包 enqueue 到它自带的 qdisc。</p>
+<p>前面提到root qdisc是直接attach到网络设备（比如网卡）的那个qdisc。如果root qdisc被设置为一个classful qdisc，那么其下层可以配置众多qdisc或class。下面的qdisc和class也可以继续向下配置更多的qdisc和class。配置时，可以通过**句柄（handle）**指定具体设置树状qdisc中的哪一个节点。</p>
+<ul>
+<li>
+<p>handle：</p>
+<ul>
+<li>
+<p>每个handle由两部分组成：<major>:<minor></p>
+</li>
+<li>
+<p>按照惯例，root qdisc的handle为1:，这是1:0的简写</p>
+</li>
+<li>
+<p>每个qdisc的minor number永远是0（class可以不必是0，更为灵活一些）</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>class可以有qdisc做children，qdisc也可以有class做children。</p>
+<p>比如下面的分层例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">          1:   root qdisc</span><br><span class="line">           |</span><br><span class="line">          1:1    child class</span><br><span class="line">        /  |  \</span><br><span class="line">       /   |   \</span><br><span class="line">      /    |    \</span><br><span class="line">      /    |    \</span><br><span class="line">   1:10  1:11  1:12   child classes</span><br><span class="line">    |      |     |</span><br><span class="line">    |     11:    |    leaf class</span><br><span class="line">    |            |</span><br><span class="line">    10:         12:   qdisc</span><br><span class="line">   /   \       /   \</span><br><span class="line">10:1  10:2   12:1  12:2   leaf classes</span><br></pre></td></tr></table></figure>
+<p>一个包可能会经历这样的过程：1: -&gt; 1:1 -&gt; 1:12 -&gt; 12: -&gt; 12:2。如果设置了filter，其能够直接在root处决定叶子节点的包，也可能会经历：1: -&gt; 12:2。</p>
+<p>需要注意的是，<strong>包只会通过root qdisc入队或出队</strong>，也就是说当一个包被判定到一个叶子节点qdisc，并入队后，若要将其发送出去，会dequeue到它的父节点的qdisc，之后一层一层，直到传入root qdisc，此时再进行root qdisc的dequeue，从而通过网络设备发射出去。<strong>嵌套类（nested classed）只会和它们的parent qdiscs通信，而永远不会直接和接口交互</strong>。</p>
+<p>由于这样的机制，所以<strong>子qdisc的流量整形受限于父qdisc的流量整形</strong>（比如子qdisc限速100M，而父qdisc限速10M，那么最终流量会被整形为10M），但是HTB是例外。</p>
+<h3 id="prio"><a class="markdownIt-Anchor" href="#prio"></a> PRIO</h3>
+<p>PRIO qdisc会根据filter的设置对流量分类：</p>
+<p><img src="tc-pic/4.png" alt="4.png" /></p>
+<p><strong>可以将 PRIO qdisc 理解为 pfifo_fast qdisc 的升级版</strong>，它也有多个 band，但每个 band 都是一个独立的 class，而不是简单的 FIFO。当一个包 enqueue 到 PRIO qdisc 之后，它会根据设置的 filters 选择一个 class ，并将包送到这个 class。默认情况下会创建三个 class。每个 class 默认情况下都包含一个纯 FIFO qdisc，没有其他内部结构，但你可以用其他类型的 qdisc 替换掉 FIFO。</p>
+<p><img src="tc-pic/5.png" alt="5.png" /></p>
+<p>当从 PRIO qdisc 取出（dequeue）一个包时，会先尝试 :1。只有 lower bands/classes 没有数据包可取时，才会尝试 higher classes。相比于pfifo_fast，PRIO可以自定义优先级规则（通过设置filter），而非仅仅根据TOS分类。</p>
+<p>由于PRIO自身并不携带流量整形功能，因此若想进行流量整形，<strong>可以借助PRIO先分类再整形，构成嵌套qdisc</strong>：</p>
+<p><strong>在外层嵌套一个专门负责流量整形的classful qdisc</strong>。即PRIO qdisc是work-conserving（随到随发型）的。</p>
+<ul>
+<li>
+<p>PRIO的主要参数：</p>
+</li>
+<li>
+<p>bands：</p>
+<p>需要创建的band数量。如果改变这个配置，还需要同时修改priomap参数。</p>
+</li>
+<li>
+<p>priomap：</p>
+<p>如果没有提供tc filter来指导分类，那么就会使用和pfifo_fast类似的方式进行优先级排序。</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>band 0 对应的minor number是1，band 1 对应的minor number是2，以此类推。</strong></p>
+</blockquote>
+<ul>
+<li>
+<p><strong>示例配置</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ tc qdisc add dev eth0 root handle 1: prio </span><br><span class="line"># This *instantly* creates classes 1:1, 1:2, 1:3</span><br><span class="line"></span><br><span class="line">$ tc qdisc add dev eth0 parent 1:1 handle 10: sfq</span><br><span class="line">$ tc qdisc add dev eth0 parent 1:2 handle 20: tbf rate 20kbit buffer 1600 limit 3000</span><br><span class="line">$ tc qdisc add dev eth0 parent 1:3 handle 30: sfq</span><br></pre></td></tr></table></figure>
+<p>上述脚本会创建如下结构的树状qdisc。PRIO按自动配置，采用TOS字段区分优先级。</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">          1:   root qdisc</span><br><span class="line">         / | \</span><br><span class="line">        /  |  \</span><br><span class="line">       /   |   \</span><br><span class="line">     1:1  1:2  1:3    classes</span><br><span class="line">      |    |    |</span><br><span class="line">     10:  20:  30:    qdiscs    qdiscs</span><br><span class="line">     sfq  tbf  sfq</span><br><span class="line">band  0    1    2</span><br></pre></td></tr></table></figure>
+<h4 id="tc-filter"><a class="markdownIt-Anchor" href="#tc-filter"></a> tc-filter</h4>
+<p>每次要判断将包送到哪个 class 进行处理时，都会调用所谓的“classifier chain”（分类器链）。这个 chain 由 attach 到 classful qdisc 的所有 filter 构成。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">         root 1:</span><br><span class="line">           |</span><br><span class="line">         _1:1_</span><br><span class="line">        /  |  \</span><br><span class="line">       /   |   \</span><br><span class="line">      /    |    \</span><br><span class="line">    10:   11:   12:</span><br><span class="line">   /   \       /   \</span><br><span class="line">10:1  10:2   12:1  12:2</span><br></pre></td></tr></table></figure>
+<p>当 enqueue 一个包时，在每一个分叉的地方都需要查询相关的过滤规则。</p>
+<p>一种典型的配置是：</p>
+<ol>
+<li>
+<p>在 1:1 配置一个 filter，将包送到 12:。</p>
+</li>
+<li>
+<p>在 12: 配置一个 filter，将包送到12:2。</p>
+</li>
+</ol>
+<p>需要注意的是，包是无法向上过滤的（filter a packet ‘upwards’，上层可以选择下层，下层不能选择上层）。 另外，<strong>使用 HTB 时，所有的 filters 必须 attach 到 root！</strong></p>
+<p>包只能向下 enqueue！当 dequeue 时，它们会重新上来，到达要发送它的网络接口。 包并不是一路向下，最后从叶子节点到达网卡的！</p>
+<p>tc支持了很多filter，u32（universal 32bit classifier）是最常用的一种。其可以匹配ip头部的任何部分。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tc filter [add dev eth0] [parent handle] [protocol ip] [ something ] \</span><br><span class="line">    u32 match ip [OPTION_LIST] [0xffff] flowid [child handle]</span><br></pre></td></tr></table></figure>
+<p>something的内容因具体classful qdisc而异，比如PRIO，就可以设置为prio 1，表示匹配的包会被置为最高优先级，送入band 0。</p>
+<p>OPTION_LIST中的内容是关键，其可以匹配ip地址（v4和v6均可）、端口、协议（tcp还是udp）。</p>
+<ul>
+<li>
+<p>ip（是ipv4，若使用ipv6需要改成ip6选项）： src 1.2.3.4/32，表示匹配源ip为1.2.3.4发来的包，子网掩码/32。相应的也可以有：dst 4.3.2.1/32，表示匹配要发送到目标ip 4.3.2.1的包，子网掩码/32。</p>
+</li>
+<li>
+<p>port：与ip类似，分为源端口和目标端口：sport 80或dport 80。</p>
+</li>
+<li>
+<p>protocol：指定要匹配的协议，协议号写在/etc/protocols中。比如要指定udp协议protocol 17，要指定tcp协议protocol 6，要指定ICMP协议protocol 1。</p>
+</li>
+<li>
+<p>TOS：指定要匹配的包的TOS字段，比如tos 0x10 0xff，就是tos字段为0x10和0xff的包都要匹配到。</p>
+</li>
+<li>
+<p>fwmark：可以用ipchains/iptables等工具对包打标，filter匹配时只匹配这些标记即可。比如将包标记为6：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -A PREROUTING -t mangle -i eth0 -j MARK --set-mark 6</span><br></pre></td></tr></table></figure>
+<p>现在匹配标记为6的包：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc filter add dev eth1 protocol ip parent 1:0 prio 1 handle 6 fw flowid 1:1</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>如果OPTION_LIST什么都不设，那么就说明，如果一个包不满足其他filter的条件，就会满足此filter。</p>
+<p>0xffff：表示ip头部的32位都匹配，一般就是0xffff。</p>
+<p>flowid指定了class，即匹配的包送到parent qdisc包含的哪个类中。</p>
+<p>举个例子，上面指定的PRIO并没有添加filter，而是采用了默认的类似于pfifo_fast的方式。这里加上一些自定义匹配条件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ tc filter add dev eth0 parent 10:0 protocol ip prio 1 u32 match ip dst 4.3.2.1/32 0xffff flowid 10:1</span><br><span class="line">$ tc filter add dev eth0 parent 10:0 protocol ip prio 1 u32 match ip src 1.2.3.4/32 0xffff flowid 10:1</span><br><span class="line">$ tc filter add dev eth0 protocol ip parent 10: prio 2 0xffff flowid 10:2</span><br></pre></td></tr></table></figure>
+<h3 id="htb层级令牌桶"><a class="markdownIt-Anchor" href="#htb层级令牌桶"></a> HTB（层级令牌桶）</h3>
+<p>HTB是非常常用的一种classful qdisc，可以做到比较精准的网络限速，具有比CBQ更易扩展的特性。其原理不是本文重点，因此不做介绍，详细原理可以在<a target="_blank" rel="noopener" href="http://luxik.cdi.cz/~devik/qos/htb/">HTB官网</a>中看到。</p>
+<p><img src="tc-pic/6.png" alt="6.png" /></p>
+<p>需要注意，如果htb构成了嵌套，即父qdisc和子qdisc都是htb，那么子qdisc的最低保障速率（rate）不受父qdisc最高速率（ceil）的约束，即<strong>突破了前述层层dequeue下的子qdisc行为受限</strong>。</p>
+<h1 id="使用tc的脚本"><a class="markdownIt-Anchor" href="#使用tc的脚本"></a> 使用tc的脚本</h1>
+<h2 id="wondershaper"><a class="markdownIt-Anchor" href="#wondershaper"></a> wondershaper</h2>
+<p>wondershaper是由tc写成的Linux脚本，用于限制上行或下行带宽，基于HTB。使用方法为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wondershaper -s ens33 -u 150 -d 100 #将ens33网卡的上行带宽设置为150kbps,下行100kbps</span><br><span class="line">wondershaper -c ens33               #取消对ens33网卡的限制</span><br></pre></td></tr></table></figure>
+<h2 id="comcast"><a class="markdownIt-Anchor" href="#comcast"></a> comcast</h2>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/tylertreat/comcast">comcast</a>是更好用的工具，除了限制带宽之外还能设定延时、丢包率、协议、ip、端口号</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ comcast --device=eth0 --latency=250 \</span><br><span class="line">    --target-bw=1000 --default-bw=1000000 \</span><br><span class="line">    --packet-loss=10% \</span><br><span class="line">    --target-addr=8.8.8.8,10.0.0.0/24 \</span><br><span class="line">    --target-proto=tcp,udp,icmp \</span><br><span class="line">    --target-port=80,22,1000:2000</span><br></pre></td></tr></table></figure>
+<p>comcast本质上是对NetEm（一种classless qdisc）的封装。</p>
+<h1 id="netem较简单的弱网模拟方式"><a class="markdownIt-Anchor" href="#netem较简单的弱网模拟方式"></a> NetEm：较简单的弱网模拟方式</h1>
+<p><a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man8/tc-netem.8.html">NetEm(netem)</a>是Linux2.6及以上内核版本提供的一个网络模拟功能模块。该功能模块可以用来在性能良好的局域网中，模拟出复杂的互联网传输功能，诸如低带宽、传输延迟、延迟抖动、丢包等情况。而tc可以用来控制netem的工作方式，二者配合以进行弱网模拟。</p>
+<blockquote>
+<p>netem本质上属于一种classless qdisc，与tbf一个级别。虽然下面的例子中netem功能都被添加到了root qdisc，但是这并不是必须的。netem功能也可以被加入到其他自定义qdisc中，如自定义的parent qdisc等。</p>
+<p>介绍Netem原理的<a target="_blank" rel="noopener" href="https://www.rationali.st/blog/files/20151126-jittertrap/netem-shemminger.pdf">论文</a>，本质上是通过两个队列（一个private holding queue，一个FIFO嵌套队列），入队过程中会先给包打上时间戳，放入private holding queue，定时器再将包从该队列取出放入嵌套FIFO，最终发送时从嵌套FIFO取包。</p>
+</blockquote>
+<p><strong>延迟，丢包，重复，损坏，乱序</strong>等模拟的情况，均可用ping工具验证。</p>
+<ul>
+<li>
+<p>传输延迟：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev ens33 root netem delay 100ms</span><br></pre></td></tr></table></figure>
+<p>此命令将ens33网卡的传输设置为延迟100ms发送。更真实的情况下，延迟值不会如此准确，而是有一定的波动。可以用下面的情况来模拟出带有波动延迟：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev ens33 root netem delay 100ms 10ms</span><br></pre></td></tr></table></figure>
+<p>此外，还可以通过设置几率来加强波动的随机性：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev ens33 root netem delay 100ms 10ms 30%</span><br></pre></td></tr></table></figure>
+<p>此命令将ens33网卡的传输设置为100ms延迟发送，同时会有30%的包在100ms基础上在延迟±10ms。</p>
+</li>
+<li>
+<p>网络丢包：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev ens33 root netem loss 1%</span><br></pre></td></tr></table></figure>
+<p>该命令将ens33网卡设置为随机丢掉1%的数据包</p>
+<p>同时也可以设置丢包的成功率：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev ens33 root netem loss 1% 30%</span><br></pre></td></tr></table></figure>
+<p>此命令设置ens33网卡以30%的成功率随机丢掉1%的包。</p>
+</li>
+<li>
+<p>包重复：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev ens33 root netem duplicate 1%</span><br></pre></td></tr></table></figure>
+<p>此命令将ens33网卡的传输设置为随机产生1%的重复数据包。</p>
+</li>
+<li>
+<p>包损坏：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev ens33 root netem corrupt 0.2%</span><br></pre></td></tr></table></figure>
+<p>命令将ens33网卡的传输设置为随机产生0.2%的损坏数据包</p>
+</li>
+<li>
+<p>包乱序：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev ens33 root netem delay 10ms reorder 25% 50%</span><br></pre></td></tr></table></figure>
+<p>命令将ens33网卡设置为：有25%的数据包（50%相关）会被立即发送，其他的延迟10ms。</p>
+<blockquote>
+<p>相关数值控制了伪随机数之间的关联。NetEm算法中的伪随机数生成器，会基于前一次的伪随机数，和此时生成的另一个伪随机数ri，决定当前要产生的伪随机数x_i。</p>
+</blockquote>
+<p>也可以设置乱序的间隔：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev ens33 root netem reorder 25% gap 5 delay 100ms</span><br></pre></td></tr></table></figure>
+<p>命令使得ens33网卡每传5个包时，前4个包被延时100ms发送，而第5个包以25%的概率被立即发送。</p>
+</li>
+<li>
+<p>限制带宽：</p>
+<p>netem可以利用rate进行网速限速，但是需要注意limit需要足够大。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DELAY_MS=40</span><br><span class="line">RATE_MBIT=10</span><br><span class="line">BUF_PKTS=33</span><br><span class="line">BDP_BYTES=$(echo &quot;($DELAY_MS/1000.0)*($RATE_MBIT*1000000.0/8.0)&quot; | bc -q -l)</span><br><span class="line">BDP_PKTS=$(echo &quot;$BDP_BYTES/1500&quot; | bc -q)</span><br><span class="line">LIMIT_PKTS=$(echo &quot;$BDP_PKTS+$BUF_PKTS&quot; | bc -q)</span><br><span class="line">tc qdisc replace dev eth0 root netem delay $&#123;DELAY_MS&#125;ms rate $&#123;RATE_MBIT&#125;Mbit limit $&#123;LIMIT_PKTS&#125;</span><br></pre></td></tr></table></figure>
+<p>（只能限制上行带宽哈）</p>
+<p><img src="tc-pic/7.png" alt="7.png" /></p>
+</li>
+<li>
+<p>网损时限定条件：</p>
+<p>netem同时对tcp和udp进行网损。而若在视频会议场景，仅想测试弱网场景下的udp传输，而不想影响到tcp相关的信令连接，那么需要更细致地设定规则，因为netem默认会同时损伤tcp和udp。</p>
+<p>可以结合PRIO这个classful qdisc配合netem，进行针对性调整。（17对应的就是udp protocol）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev &lt;name&gt; root handle 1: prio</span><br><span class="line">tc filter add dev &lt;name&gt; protocol ip parent 1: prio 10 u32 match ip protocol 17 0xff flowid 1:1</span><br><span class="line">tc filter add dev &lt;name&gt; protocol ip parent 1: prio 10 u32 match ip protocol 17 0xff flowid 1:2</span><br><span class="line">tc filter add dev &lt;name&gt; protocol ip parent 1: prio 10 u32 match ip protocol 17 0xff flowid 1:3</span><br><span class="line"></span><br><span class="line">tc qdisc add dev &lt;name&gt; parent 1:1 netem &lt;impairments&gt;</span><br><span class="line">tc qdisc add dev &lt;name&gt; parent 1:2 netem &lt;impairments&gt;</span><br><span class="line">tc qdisc add dev &lt;name&gt; parent 1:3 netem &lt;impairments&gt;</span><br></pre></td></tr></table></figure>
+<p>此外，还可以分链路以限速：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tc qdisc add dev eth0 root handle 1: prio</span><br><span class="line">tc qdisc add dev eth0 parent 1:3 handle 30: tbf rate 20kbit buffer 1600 limit  3000</span><br><span class="line">tc qdisc add dev eth0 parent 30:1 handle 31: netem  delay 200ms 10ms distribution normal</span><br><span class="line">tc filter add dev eth0 protocol ip parent 1:0 prio 3 u32 match ip dst 65.172.181.4/32 flowid 1:3</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<p>ipert验证：</p>
+<p><a target="_blank" rel="noopener" href="https://iperf.fr/">iperf工具</a>可以分别针对tcp和udp进行可达速率测试。通过下面的命令设置对udp限速后，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">sudo tc qdisc replace dev enp0s5 root handle 1: prio</span><br><span class="line"># 将udp传输限制为10Mbps</span><br><span class="line">sudo tc qdisc add dev enp0s5 parent 1:1 handle 10: \</span><br><span class="line">    netem delay 40ms rate 10Mbit limit 2000</span><br><span class="line">sudo tc filter add dev enp0s5 protocol ip parent 1:0 prio 1 \</span><br><span class="line">    u32 match ip protocol 17 0xff flowid 1:1</span><br><span class="line"># 将tcp传输开放不限制</span><br><span class="line">sudo tc qdisc add dev enp0s5 parent 1:2 handle 20: fq_codel</span><br><span class="line">sudo tc filter add dev enp0s5 protocol ip parent 1:1 prio 2 \</span><br><span class="line">    u32 match ip protocol 6 0xff flowid 1:</span><br></pre></td></tr></table></figure>
+<p>使用iperf测量的结果：(限速uplink的主机是client，接收数据包的主机是server)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iperf3 -c 192.168.0.108 -u -b 20M #-u选项表明发的是udp包</span><br></pre></td></tr></table></figure>
+<p><img src="tc-pic/8.png" alt="8.png" /></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iperf3 -c 192.168.0.108 #默认发的是tcp包</span><br></pre></td></tr></table></figure>
+<p><img src="tc-pic/9.png" alt="9.png" /></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="netem读取trace"><a class="markdownIt-Anchor" href="#netem读取trace"></a> netem读取trace</h2>
+<p><a target="_blank" rel="noopener" href="http://tcn.hypert.net/">TCN</a>是Linux内核中对netem的进一步扩展，它能够从一个trace中读取时延、丢包、包重复、包损坏等随时间变化的数值，且trace长度不限。TCN可模拟出真实网络下的重要特性（e.g., long-range dependence, self-similarity of cross-traffic）。</p>
+<p><img src="tc-pic/10.png" alt="10.png" /></p>
+<h1 id="其他配置"><a class="markdownIt-Anchor" href="#其他配置"></a> 其他配置</h1>
+<p>如果用Wifi进行两设备间通信，同时在发送设备处使用tc模拟网损，可能会带来问题，因为无线网络本身抖动和延迟就比较大，而且因时而变。下图是通过<a target="_blank" rel="noopener" href="https://test.ustc.edu.cn/">中科大测速网站</a>测试的结果：</p>
+<p><img src="tc-pic/11.png" alt="11.png" /></p>
+<p>也就是说，可能网络条件自身的延迟抖动比我们自行设定的还要大，那么模拟出的网损就失去了意义。因此，如果可以的话，两台设备间最好还是通过网线或者数据线进入同一局域网，确保足够稳定的网络条件，再进行网损。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WebRTC/" rel="tag"># WebRTC</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/" rel="prev" title="WebRTC拥塞控制策略改进调研">
+                  <i class="fa fa-chevron-left"></i> WebRTC拥塞控制策略改进调研
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/07/11/WebRTC-GCC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9AConcerto/" rel="next" title="WebRTC-GCC替代方案：Concerto">
+                  WebRTC-GCC替代方案：Concerto <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">OliverPai</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.0/katex.min.css" integrity="sha256-uik/hNqHWZldXh/0K35nqOSCff9F61/ZOFReqNOBgB0=" crossorigin="anonymous">
+
+
+
+</body>
+</html>

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.2","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="WebRTC的QoS策略在弱网环境下仍然存在若干问题，本文记录业界和学术界针对这些问题所做的优化工作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebRTC拥塞控制策略改进调研">
+<meta property="og:url" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/index.html">
+<meta property="og:site_name" content="OliverPai">
+<meta property="og:description" content="WebRTC的QoS策略在弱网环境下仍然存在若干问题，本文记录业界和学术界针对这些问题所做的优化工作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/qos-overview.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/rtcp.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/nack.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/pacer.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/buffer.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/mindpic.jpeg">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/loss1.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/loss2.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/jitter1.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/jitter2.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/jitter3.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/bandw.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/rongyun.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/mailing.jpeg">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/tencent.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/jigou1.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/jigou2.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/jigou3.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/baidu1.png">
+<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/baidu2.png">
+<meta property="article:published_time" content="2022-07-08T16:00:49.000Z">
+<meta property="article:modified_time" content="2022-07-12T16:16:30.783Z">
+<meta property="article:author" content="OliverPai">
+<meta property="article:tag" content="WebRTC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/qos-overview.png">
+
+
+<link rel="canonical" href="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/","path":"2022/07/09/WebRTC拥塞控制策略改进调研/","title":"WebRTC拥塞控制策略改进调研"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>WebRTC拥塞控制策略改进调研 | OliverPai</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="OliverPai" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">OliverPai</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">落叶本就是假的</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text"> 背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#webrtc%E7%8E%B0%E6%9C%89%E7%AD%96%E7%95%A5"><span class="nav-number">2.</span> <span class="nav-text"> WebRTC现有策略</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%B0%E6%9C%89%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text"> 现有问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%B8%80%E8%B9%B6%E4%B8%8D%E6%8C%AF%E5%AF%B9%E4%B8%A2%E5%8C%85%E6%95%8F%E6%84%9F"><span class="nav-number">3.1.</span> <span class="nav-text"> 1 一蹶不振：对丢包敏感</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%AF%B9%E6%8A%96%E5%8A%A8%E6%95%8F%E6%84%9F-%E5%8F%8D%E5%BA%94%E8%BF%9F%E9%92%9D"><span class="nav-number">3.2.</span> <span class="nav-text"> 2 对抖动敏感 &amp; 反应迟钝</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%B8%A6%E5%AE%BD%E5%88%A9%E7%94%A8%E7%8E%87%E4%BD%8E%E5%BF%AB%E4%B8%8B%E9%99%8D%E4%B8%8E%E6%85%A2%E6%81%A2%E5%A4%8D"><span class="nav-number">3.3.</span> <span class="nav-text"> 3 带宽利用率低：快下降与慢恢复</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88"><span class="nav-number">4.</span> <span class="nav-text"> 优化方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E4%B8%9A%E7%95%8C%E4%BC%98%E5%8C%96"><span class="nav-number">4.1.</span> <span class="nav-text"> 工业界优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A3%B0%E7%BD%91"><span class="nav-number">4.1.1.</span> <span class="nav-text"> 声网</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%9E%8D%E4%BA%91"><span class="nav-number">4.1.2.</span> <span class="nav-text"> 融云</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%88%E8%81%86%E4%BC%9A%E8%AE%AE"><span class="nav-number">4.1.3.</span> <span class="nav-text"> 迈聆会议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%85%BE%E8%AE%AF"><span class="nav-number">4.1.4.</span> <span class="nav-text"> 腾讯</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%B3%E6%9E%84%E7%A7%91%E6%8A%80"><span class="nav-number">4.1.5.</span> <span class="nav-text"> 即构科技</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%99%BE%E5%BA%A6%E6%99%BA%E8%83%BD%E4%BA%91"><span class="nav-number">4.1.6.</span> <span class="nav-text"> 百度智能云</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E4%B8%9A%E7%95%8C%E4%BC%98%E5%8C%96%E7%BB%93%E6%9E%9C"><span class="nav-number">4.1.7.</span> <span class="nav-text"> 工业界优化结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E6%9C%AF%E7%95%8C%E4%BC%98%E5%8C%96"><span class="nav-number">4.2.</span> <span class="nav-text"> 学术界优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#salsifynsdi-18"><span class="nav-number">4.2.1.</span> <span class="nav-text"> Salsify(NSDI’ 18)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#concertomobicom19-%E6%B7%98%E5%AE%9Dlive"><span class="nav-number">4.2.2.</span> <span class="nav-text"> Concerto(Mobicom’19 淘宝Live)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text"> 总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="OliverPai"
+      src="/images/avatar-star.png">
+  <p class="site-author-name" itemprop="name">OliverPai</p>
+  <div class="site-description" itemprop="description">求索与记录</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OliverPai" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OliverPai" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-star.png">
+      <meta itemprop="name" content="OliverPai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="OliverPai">
+      <meta itemprop="description" content="求索与记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="WebRTC拥塞控制策略改进调研 | OliverPai">
+      <meta itemprop="description" content="WebRTC的QoS策略在弱网环境下仍然存在若干问题，本文记录业界和学术界针对这些问题所做的优化工作。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          WebRTC拥塞控制策略改进调研
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-07-09 00:00:49" itemprop="dateCreated datePublished" datetime="2022-07-09T00:00:49+08:00">2022-07-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-07-13 00:16:30" itemprop="dateModified" datetime="2022-07-13T00:16:30+08:00">2022-07-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/WebRTC/" itemprop="url" rel="index"><span itemprop="name">WebRTC</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">WebRTC的QoS策略在弱网环境下仍然存在若干问题，本文记录业界和学术界针对这些问题所做的优化工作。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="背景"><a class="markdownIt-Anchor" href="#背景"></a> 背景</h1>
+<p>随着新政策的引导及资本市场的追捧，直播行业首先在娱乐、游戏直播等行业经历了一次大规模增长，2020年后，疫情爆发进一步促进了直播行业高速发展，正在全面赋能电商、旅游、文化传播等众多领域。基于WebRTC的超低延时技术应运而生。WebRTC已被纳入万维网联盟的W3C推荐标准，且被腾讯云、阿里云等公司广泛应用于会议、云游戏等场景。然而，虽然WebRTC对直播服务质量提供了一定程度的优化，根据众多企业（如阿里、声网等）的测试，其在弱网环境中的效果仍然存在带宽利用率低、延时较高、恢复能力较弱等不足等问题（弱网阶段主要体现在用户接入最后一公里网络质量）。此类问题导致<strong>弱网中WebRTC性能不佳的情况普遍存在</strong>，字节跳动火山引擎数据显示，接近40%的直播产品用户处于弱网状态。同时根据淘宝Live的统计数据，国内至少有12%的用户承受着WebRTC中的低QoE（Quality of Experience）问题，且大部分地区有20%的用户QoE较低。</p>
+<p>通过在WebRTC中引入弱网抗性优化策略，在弱网环境下改善传输性能的问题已迫在眉睫。本文档旨在调研业界改良WebRTC传输的解决方案，从中获取启发。</p>
+<h1 id="webrtc现有策略"><a class="markdownIt-Anchor" href="#webrtc现有策略"></a> WebRTC现有策略</h1>
+<p><img src="opti-pic/qos-overview.png" alt="qos-overview.png" /></p>
+<ul>
+<li>
+<p>RTCP协议与NACK：</p>
+<p><img src="opti-pic/rtcp.png" alt="rtcp.png" /></p>
+<p>RTCP报文头部</p>
+<p>RTP协议和RTCP协议通常搭配使用，RTP包负责数据传输，而RTCP包可以承载传输过程中的信息，比如包的端到端延迟等，可认为RTP侧重数据，RTCP侧重控制。当PT设置为205时，表示当前的RTCP报文属于RTPFB（RTP Feedback），即RTP反馈报文，用于反馈过去一段时间RTP包的传输情况。</p>
+<p>当RTCP报文类型为RTPFB，且此时FMT字段设置为1，表示NACK报文。此报文由数据接收端回传给数据发送端，通知发送端过去时间内有哪些包丢失。NACK报文包含两个字段：PID和BLP。PID标识从哪个包（填充该包的序列号）开始丢包，而BLP标识从PID开始，接下来16个RTP包的丢失情况。</p>
+<ul>
+<li>
+<p>RTX：</p>
+<p>发送端收到NACK报文后，着手开展所丢包的重传工作。重传流为RTX流（区别于原始码流，重传的包有不同的头部：PT、SSRC、序列号等）</p>
+<p><img src="opti-pic/nack.png" alt="nack.png" /></p>
+<p>媒体协商阶段已开始将原始码流与RTX流绑定</p>
+</li>
+</ul>
+</li>
+<li>
+<p>GCC（Transport-cc）码率估计：</p>
+<p>GCC算法有两种，一种是早期版本WebRTC采用的Goog-REMB，另一种是现在版本中使用的Transport-cc。前者在接收端采集数据，利用卡尔曼滤波估算出带宽后反馈给发送端，发送端再根据估算结果做出下一阶段的码率决策。后者则直接在发送端进行码率估计，接收端仅反馈通信信息（如延迟、丢包）即可。Goog-REMB已基本不被使用。</p>
+<p><a target="_blank" rel="noopener" href="https://www.wolai.com/rjmCB8E1VC7N8fhv4pBsSP">WebRTC网络传输与QoS</a></p>
+<p>现在的WebRTC还添加了Probe探测估计的带宽与实际带宽是否相匹配。</p>
+</li>
+<li>
+<p>Pacer：</p>
+<p><img src="opti-pic/pacer.png" alt="pacer.png" /></p>
+<p>码率估计后，会驱动编码器和pacer控制传输速率。更具体地，音视频编码器控制输出码流的大小，pacer控制码流发送的速率。一帧视频可能很大，远大于以太网的1500byte，需要分别封装在几个RTP报文中，若这些视频帧RTP报文一起发送到网络上，必然会导致网络瞬间拥塞，产生丢包抖动等异常。再者，包之间的大小可能有显著差异，比如I、P、B帧间的长度相差非常大，直接发送网络波动幅度很大。因此在通过编码器控制流速后，仍需要pacer进行平滑发包，从而能够让数据包有条不紊地在网络中传输且不造成波动和拥塞。</p>
+<p>组好的包会进入pace queue中，此队列并不是FIFO，在入队时会将各个数据包排出优先级（比如I帧的包肯定要优先于B、P帧的包），高优先级在发送时会先出队列。发送线程每隔5ms（timer）从pace queue中取出数据包以发送。发送的数据量由Budget计算：待发送字节数=（当前时间-上次send时间）*目标码率+8。为确保在定时时间内可以把数据包都发出去，可以修改参数（max_pacing_delay，发送时延上限）以调整目标码率。当队列中数据发完，下一时刻未到，会发padding包。</p>
+</li>
+<li>
+<p>FEC：</p>
+<p>FEC是发送端在发送报文的时候，将媒体包按照一定规则产生冗余包，随同媒体数据一同发送，当接收端丢包后可以根据冗余包和媒体包恢复出丢失的媒体数据。</p>
+<p>FEC流也不同于原始码流。相比于RTX流，其延迟更小。但是冗余包导致带宽占用大。</p>
+<p>方便与RTX区分，可理解为RTX是后向纠错（FEC是前向纠错）。</p>
+<p>WebRTC内置三种类型的FEC方案：<strong>RED、UlpFEC（默认）、FLEXFEC。</strong></p>
+</li>
+<li>
+<p>JitterBuffer：</p>
+<p>网络抖动会造成包到达乱序，比如104号包到了，但是103号包没到，那么就无法组帧。为了避免乱序造成的丢包，需要引入buffer专门对抗jitter。当103号包到达时，根据对序列号的计算，将其插入到buffer的合适位置，即可交给组帧模块进一步处理。然而buffer大小不应该是一成不变的，当抖动小的时候就该小（降低延时），当抖动大的时候就需要大（提高包乱序容错能力）。</p>
+<p><img src="opti-pic/buffer.png" alt="buffer.png" /></p>
+<p>WebRTC利用卡尔曼滤波来适应抖动，调整JitterBuffer大小。（算法与Goog-REMB比较像）</p>
+</li>
+<li>
+<p>SVC / Simulcast</p>
+<ul>
+<li>Simulcast直译过来是多播的意思，其实就是一个客户端发送多条不同码率大小的流，为了达到这样的效果，客户端会对同一帧画面进行不同分辨率的编码来达到降低码率的目的。Simulcast虽然理论上可以解决下行带宽不足时降码率的需求，但仍然存在致命缺陷：</li>
+</ul>
+<p>1.上行带宽的增加，我们在上行时会多发送多条流，导致大量的带宽浪费。而为了应对几个下行网络较差的用户而牺牲上行用户的带宽资源，这样的做法有待商榷；</p>
+<p>2.下行可供的流选择性很少，及时使用3条流同时传输的方式，在移动网络这样复杂多变的网络条件下，上下调整的幅度将会是巨大的，会造成不好的用户体验，相比SVC适用性较差。</p>
+</li>
+<li>
+<p>SVC技术是H.264标准的一个扩展，最初由JVT在2004年开始制定。H.264 SVC是H.264标准的扩展部分，SVC扩展部分引入了一种传统H.264 AVC不存在的概念——编码流中的层。基本层编码最低层的时域、空域和质量流；增强层以基本层作为起始点，对附加信息进行，从而在解码过程中重构更高层的质量、分辨率和时域层。通过解码基本层和相邻增强层，解码器能生成特定层的视频流。</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qw225967/article/details/121251305"></a></p>
+</li>
+</ul>
+<p>对上述内容进行总结的话，可归纳出如下思维导图：</p>
+<p><img src="opti-pic/mindpic.jpeg" alt="mindpic.jpeg" /></p>
+<h1 id="现有问题"><a class="markdownIt-Anchor" href="#现有问题"></a> 现有问题</h1>
+<h2 id="1-一蹶不振对丢包敏感"><a class="markdownIt-Anchor" href="#1-一蹶不振对丢包敏感"></a> 1 一蹶不振：对丢包敏感</h2>
+<p><img src="opti-pic/loss1.png" alt="loss1.png" /></p>
+<p>当多于10%的丢包率时，WebRTC会一蹶不振</p>
+<p>GCC中，如果丢包率小于2%，允许速率上升，如果丢包率介于2%~10%，速率控制不变。</p>
+<p>实验现象中，当丢包率大于等于10%时，数据率收敛到50Kbps，相当于只在传输音频数据（音频因其速率要求低，故在WebRTC中不会被限制）。</p>
+<p>即使在事先建立好数据通路再提高丢包率，来到20%后依然会有数据率急剧下降的情况出现。</p>
+<p><img src="opti-pic/loss2.png" alt="loss2.png" /></p>
+<h2 id="2-对抖动敏感-反应迟钝"><a class="markdownIt-Anchor" href="#2-对抖动敏感-反应迟钝"></a> 2 对抖动敏感 &amp; 反应迟钝</h2>
+<img src="opti-pic/jitter1.png" title="" alt="jitter1.png" width="420">
+<img src="opti-pic/jitter2.png" title="" alt="jitter2.png" width="415">
+<p>且由于TCC依托于接收端反馈的信息，当处于高延时环境下，TCC无法及时更新，从而导致传输性能差。高延时场景尤其体现在4G/3G蜂窝网络条件下，蜂窝网络中会有bufferbloat问题，即缓存膨胀到过大的状态。bufferbloadt可以减少丢包并能缓解带宽变化带来的影响，却带来了更大时延。</p>
+<img src="opti-pic/jitter3.png" title="" alt="jitter3.png" width="419">
+<h2 id="3-带宽利用率低快下降与慢恢复"><a class="markdownIt-Anchor" href="#3-带宽利用率低快下降与慢恢复"></a> 3 带宽利用率低：快下降与慢恢复</h2>
+<p><img src="opti-pic/bandw.png" alt="bandw.png" /></p>
+<ol>
+<li>
+<p>快速下降：以M1，M2这两个点为例，在这两个位置RTT和丢包均出现峰值，那么本来追踪带宽还不错的两个方案，均选择了下调吞吐率。但是此时，相比于纯GCC，视频通话下降的幅度更大。（GCC分别下降44.9%和25.8%，而视频通话下降了83.6%和58.5%）这表明视频通话遭遇了更严重的网络拥塞，正如上面中、右两张图。</p>
+</li>
+<li>
+<p>缓慢恢复：拥塞结束后，视频通话将耗费更多的时间来恢复其比特率，如上面M3标记所示。</p>
+</li>
+</ol>
+<h1 id="优化方案"><a class="markdownIt-Anchor" href="#优化方案"></a> 优化方案</h1>
+<h2 id="工业界优化"><a class="markdownIt-Anchor" href="#工业界优化"></a> 工业界优化</h2>
+<h3 id="声网"><a class="markdownIt-Anchor" href="#声网"></a> 声网</h3>
+<p><a target="_blank" rel="noopener" href="https://www.agora.io/cn/community/blog-123-category-22120">音视频学习 – 弱网对抗技术相关实践</a></p>
+<p><a target="_blank" rel="noopener" href="https://km.sankuai.com/page/495742814">https://km.sankuai.com/page/495742814</a></p>
+<p>声网通过测试发现，主流拥塞控制算法（Cubic、BBR、PCC Vivace、Copa、Verus、Sprout、Vegas等）各有优劣，适用的网络或者业务场景各不相同，但是哪个都不适合应用于实时音视频场景。即使在几个算法之间调参，也无法取得比较好的效果。</p>
+<p>针对此，声网<strong>自研了新的拥塞控制算法</strong>，算法具备“在线学习”、“loss differentiator(损失函数微分器，也就是机器学习优化器)”、“异常时序检测”等能力，可以提升带宽追踪速度，并能有效应对持续丢包。</p>
+<p>（算法是learning-based，但可能不是基于深度学习）</p>
+<h3 id="融云"><a class="markdownIt-Anchor" href="#融云"></a> 融云</h3>
+<p><a target="_blank" rel="noopener" href="https://www.rongcloud.cn/blog/?p=7601">RTC系统音视频传输弱网对抗技术</a></p>
+<p>融云分析了现阶段WebRTC码率估计、ARQ、FEC、JitterBuffer抗抖动的方式，分析了在应对丢包方面的要点，以及当前WebRTC抗抖动能力的不足，最终给出了自己的优化方案。</p>
+<ul>
+<li>
+<p><strong>ARQ</strong>：</p>
+<p>重传流程有以下细节需要考虑：</p>
+<ol>
+<li>
+<p><strong>首次请求延时</strong>：应结合其他策略考虑发现丢包时是否立即请求，比如结合 FEC 策略考虑。</p>
+</li>
+<li>
+<p><strong>重复请求间隔考虑</strong>：同一个数据包重复请求间隔要大于当前 RTT。</p>
+</li>
+<li>
+<p><strong>请求次数限制</strong>：结合当前 RTT 与容忍的最大延时来计算。</p>
+</li>
+<li>
+<p><strong>发送端重传带宽限制</strong>：重传带宽作为总传输带宽的一部分，不能超出总体带宽限制。</p>
+</li>
+<li>
+<p><strong>重传包回传机制</strong>：建议采用单独的 RTP 码流发送，利于丢包率统计与重传带宽计算。</p>
+</li>
+</ol>
+</li>
+<li>
+<p><strong>ARQ与FEC的配合</strong>：</p>
+</li>
+</ul>
+<p>相较于 FEC，ARQ 的缺点是会引入延时，优点是有较高的带宽利用率。抗丢包技术的优化目标概括来讲就是在满足延时要求的前提下，尽量以最小的额外带宽与计算成本，获得足够的保护力度。因此，在考虑ARQ和FEC的配合策略时应考虑以下原则：</p>
+<ul>
+<li>
+<p>在延时限制容许的前提下尽可能使用 ARQ，可根据当前 RTT 和最大延时限制计算最大重传次数；</p>
+</li>
+<li>
+<p>如果最大重传次数可以将丢包率降低到一定程度以下（&lt;%1)，则不必开启 FEC 保护；</p>
+</li>
+<li>
+<p>如果需开启 FEC，FEC 的保护程度要依据应用 ARQ 修复之后剩余的丢包概率来计算，进行兜底保护。</p>
+</li>
+</ul>
+<p>下图是在一定场景下的 FEC 与 ARQ 配合示意图，RTT 在 20ms 内，如果传输延时要求在 100ms 以内，在丢包 30% 的弱网链路上，则 ARQ 可以将丢包率降低到 1% 以下，由 ARQ 负责丢包修复。而随着 RTT 的上涨，FEC 的保护占比增加，最终由 FEC 单独负责丢包修复。</p>
+<img src="opti-pic/rongyun.png" title="" alt="rongyun.png" width="555">
+<ul>
+<li>
+<p><strong>抖动问题</strong>：<br />
+WebRTC的JitterBuffer机制中，针对视频分别采用了基于卡尔曼滤波的抖动延时估计算法。然而，WebRTC 主要为一对一实时沟通的应用场景设计，在如视频会议等一对多、多对多场景下，音视频流更多的是通过流媒体中转服务转发。通过实测，该算法对多节点转发场景下的全链路抖动延时估计效果有待改进。</p>
+</li>
+<li>
+<p>融云的弱网对抗技术优化方案：</p>
+<ul>
+<li>
+<p><strong>拥塞控制</strong>：基于 Google GCC 算法进行改进。除了统计单向延时变化进行拥塞趋势判断之外，同时对丢包模式进行进一步分析，提升带宽预测的准确率。</p>
+</li>
+<li>
+<p><strong>抗丢包</strong>：基于 FlexFEC 框架，采用高修复能力的 FEC 编码，并进行综合调优来提升抗丢包能力</p>
+</li>
+<li>
+<p><strong>优化ARQ与FEC机制的配合</strong></p>
+</li>
+<li>
+<p><strong>抗抖动</strong>：采用场景适应性更强的抖动延时估计方法，力求提升流畅度的同时减少延时。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="迈聆会议"><a class="markdownIt-Anchor" href="#迈聆会议"></a> 迈聆会议</h3>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/448850999">WebRTC拥塞控制算法对比-GCC vs BBR vs PCC</a></p>
+<p>基于谷歌的gcc算法自研了Omcc算法(optimization of Mindlinker in network congestion controller)，在现有表现上已经可以在大部分网络场景下准确预估带宽。</p>
+<p>Omcc算法已经可以做到抗50%丢包, 抗800ms抖动, 抗2s延时, 在300k-10mbps带宽范围下也可以准确预估带宽值, 在保障低延时的情况下, 能够尽可能提高带宽利用率。</p>
+<p>（但是并没有说明是如何实现的）</p>
+<p>迈聆会议给出了GCC、BBR、PCC这三种已经在WebRTC新版本中集成的拥塞控制算法的测试和优缺点说明，阐述了自研拥塞控制算法的需求。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">○ 带宽限制: 500kbps  1mbps  2mbps</span><br><span class="line">○ 丢包限制: 10%         20%</span><br><span class="line">○ 延时限制:  100ms     200ms</span><br><span class="line">○ 抖动限制:   100ms    200ms</span><br><span class="line">○ 混合网损模拟A: 1mbps+10%+100ms延时</span><br><span class="line">○ 混合网损模拟B:  10%+100ms延时+100ms抖动</span><br></pre></td></tr></table></figure>
+<p><img src="opti-pic/mailing.jpeg" alt="mailing.jpeg" /></p>
+<h3 id="腾讯"><a class="markdownIt-Anchor" href="#腾讯"></a> 腾讯</h3>
+<p>腾讯发布超低延时直播白皮书，其中腾讯认为原生WebRTC的音视频编码格式受限，音频不支持AAC，视频不支持H.265和B帧，不支持私有数据的透传，不支持可选加密限制了其在大规模直播场景的应用。且重传较为激进（为保证低延迟），这带来了大量的带宽浪费。因此腾讯基于WebRTC在适配低延迟直播方面进行了大量的优化升级。</p>
+<p>1、编码改造：</p>
+<ul>
+<li>
+<p>支持AAC：附加Audio FEC，使音频能抗50%以上的丢包</p>
+</li>
+<li>
+<p>H.265：更高压缩率</p>
+</li>
+<li>
+<p>B帧：增强画质的同时大幅减少码率，通过客户端SDK配合CDN实现。</p>
+</li>
+<li>
+<p>Simulcast/ABR（自适应码率优化弱网卡顿）</p>
+</li>
+</ul>
+<p>2、传输改造：</p>
+<ul>
+<li>
+<p>柔性分级传输：直播场景下主播和观众是1对多模型，个别观众的网络问题无法调整主播推流码率，因此采用柔性分级丢帧的传输策略来渐进式减低码率。</p>
+<p>net_score=1 / exp(k1 * rtt / rtt_max + k2 * loss_rate + k3 * retrans_rate) * 100</p>
+<p><img src="opti-pic/tencent.png" alt="tencent.png" /></p>
+</li>
+<li>
+<p>自适应码率：扩展RTCP作为切流信令，服务端通过渐进式的超发来探测网络的承载能力作为切流决策依据</p>
+</li>
+<li>
+<p>P2P分发网络：将看同一视频流的用户群就近组织成网络，相互分享传输</p>
+</li>
+<li>
+<p>自适应pacing降低卡顿、优先响应I帧以优化重传</p>
+</li>
+<li>
+<p>避免NACK积压：新的GOP到来时，将往期GOP的NACK丢弃。</p>
+</li>
+</ul>
+<h3 id="即构科技"><a class="markdownIt-Anchor" href="#即构科技"></a> 即构科技</h3>
+<p>如何实现70%丢包下音视频的高可用：<a target="_blank" rel="noopener" href="https://blog.csdn.net/zego_0616/article/details/118763442?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165519040216781685310839%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&amp;request_id=165519040216781685310839&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-118763442-null-null.nonecase&amp;utm_term=%E9%AB%98%E5%8F%AF%E7%94%A8&amp;spm=1018.2226.3001.4450">信令篇</a>、<a target="_blank" rel="noopener" href="https://blog.csdn.net/zego_0616/article/details/118897182?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165519040216781685310839%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&amp;request_id=165519040216781685310839&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-2-118897182-null-null.nonecase&amp;utm_term=%E9%AB%98%E5%8F%AF%E7%94%A8&amp;spm=1018.2226.3001.4450">数据篇</a></p>
+<p>与融云相似，即构也在<strong>融合ARQ和FEC</strong>方面发力。ARQ和FEC各有优劣，适用于不同的场景。</p>
+<p><img src="opti-pic/jigou1.png" alt="jigou1.png" /></p>
+<p>混合ARQ与FEC的智能策略应当充分考虑网络情况，根据RTT和丢包率来智能地决定使用FEC还是ARQ，以及二者都使用时各自的比例。</p>
+<p><img src="opti-pic/jigou2.png" alt="jigou2.png" /></p>
+<p>此外，当GCC估计出带宽后，仍需要进行<strong>合理的带宽分配</strong>。发送端需要把带宽分配给原始数据包、FEC校验包、ARQ重传包，而分配的依据则是网络情况（包括RTT和丢包率等因素）。</p>
+<p>冗余数据包的带宽分配得越多，纠错能力就越强，然而原始数据包就相应分配得越少，实时视频的质量就会降低；</p>
+<p>冗余数据包的带宽分配得越少，纠错能力越弱，但原始数据包的带宽分配也更多，质量得到了保障。</p>
+<p>合理的带宽分配就是在视频质量和纠错能力之间寻找平衡点：</p>
+<p><img src="opti-pic/jigou3.png" alt="jigou3.png" /></p>
+<h3 id="百度智能云"><a class="markdownIt-Anchor" href="#百度智能云"></a> 百度智能云</h3>
+<p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040794703">百度智能云抗弱网技术</a></p>
+<p>百度智能云总结了Transport-cc的设计不足，并在抗弱网方面给出了自己的实践解决方案。其优化策略与上述公司存在很多重合之处。</p>
+<ul>
+<li>
+<p>Transport-cc的设计不足：</p>
+<ol>
+<li>
+<p>强依赖反馈，由接收影响发送，因此在高延迟时算法几近失效；</p>
+</li>
+<li>
+<p>丢包、延时拥塞都基于统计实现，反应灵敏度低；</p>
+</li>
+<li>
+<p>算法未能覆盖高抖动场景。</p>
+</li>
+</ol>
+</li>
+<li>
+<p>百度智能云的优化实践：</p>
+<ol>
+<li>
+<p>视频的带宽分为三部分：视频原始码率、前向纠错的FEC码率、重传NACK的RTX码率。可以根据实际的丢包、延时情况改变NACK+FEC的带宽分配比例，从而提升抗丢包率。</p>
+</li>
+<li>
+<p>规避重传时的NACK风暴：同一个RTP包，在两次重传间会隔1倍的RTT，通过这种方式保护因多次发送导致的带宽占用。</p>
+</li>
+<li>
+<p>增强丢包抗性：</p>
+<p><img src="opti-pic/baidu1.png" alt="baidu1.png" /></p>
+<p>将丢包的情况分类为：拥塞丢包、非拥塞丢包和偶发丢包。</p>
+<p>非拥塞丢包场景下，个体的避让对整体信号质量的影响有限，为了保证视频的流畅，我们不能降低带宽，需要发送更多的数据包，将带宽分配给纠错部分。目前，还很难解决拥塞丢包问题。偶发丢包问题可能是非持续的网络信号抖动，无需通过降低带宽来优化。</p>
+</li>
+<li>
+<p>增强乱序抖动抗性：</p>
+<p><img src="opti-pic/baidu2.png" alt="baidu2.png" /></p>
+<p>带宽估计对乱序抖动的适应性较差。为此，我们需要避免将乱序误判为丢包。在存在一定丢包的情况下，也应该考虑对乱序和延时的估计，提升对弱网的适应性。</p>
+</li>
+<li>
+<p>提升拥塞灵敏度：</p>
+</li>
+</ol>
+</li>
+</ul>
+<p>在带宽估计过程中，默认的实现以事后统计数据为基础。为了提升探测拥塞的灵敏度，可以通过在发送端增加 TCP 拥塞窗口，动态地分配窗口，可以很灵敏地感知到发送方下行带宽出现的拥塞。</p>
+<h3 id="工业界优化结果"><a class="markdownIt-Anchor" href="#工业界优化结果"></a> 工业界优化结果</h3>
+<p>1、声网：在带宽限制128k<sub>1Mbps区间内，丢包率0</sub>50%范围内以及延时15ms时，相比于WebRTC码率明显提升且卡顿率显著降低。</p>
+<p>2、融云：在 60%、70% 的高丢包场景下，融云可以做到在Android 和 iOS 移动端测试，流畅度方面 MOS 值仍达到 4 分。</p>
+<p>3、腾讯：优化的超低延迟直播技术已支持腾讯高质量完成多项大型赛事、活动。</p>
+<p>4、迈聆会议：Omcc算法可以做到抗50%丢包、抗800ms抖动、抗2s延时，在300k~10Mbps带宽范围下准确预估带宽值，收获更高带宽利用率。</p>
+<p>5、即构科技：实现在70%高丢包环境下，音视频流畅互动。</p>
+<p>6、百度智能云：未说明可以做到何种程度的抗性优化。</p>
+<h2 id="学术界优化"><a class="markdownIt-Anchor" href="#学术界优化"></a> 学术界优化</h2>
+<p>学术界在优化视频传输方面，有非常多设计ABR算法和基于深度学习进行带宽预测的工作，但相关算法目前落地，乃至应用于MRTC改进并不现实。偏工程且受广泛关注的工作有以下两项。两项工作的主要发力点在于改进WebRTC结构的不足，相比于工业界优化方案更为激进。</p>
+<h3 id="salsifynsdi-18"><a class="markdownIt-Anchor" href="#salsifynsdi-18"></a> Salsify(NSDI’ 18)</h3>
+<p>可参考本人之前的笔记：</p>
+<h3 id="concertomobicom19-淘宝live"><a class="markdownIt-Anchor" href="#concertomobicom19-淘宝live"></a> Concerto(Mobicom’19 淘宝Live)</h3>
+<p>可参考本人之前的笔记：</p>
+<h1 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h1>
+<p>通过对业界和学界进行调研，发现对WebRTC传输性能进行改进可以从NACK、FEC、拥塞控制、结构调整、编码优化、抖动适应能力等多方面入手。此处对后续可能进行的改进方案进行列举：</p>
+<p>1、BBR计算结果对比GCC中的Probe效果，观察能否通过融合BBR的方式针对WebRTC现存的“慢恢复”问题进行提速，以规避突发风险或提高服务质量。</p>
+<p>2、引入对丢包模式的分析，从而对抗丢包网络状况，避免带宽利用率持续偏低。</p>
+<p>3、同时考虑ARQ和FEC策略，</p>
+<p>4、对实际音视频码流、RTX码流、FEC码流进行合理带宽分配。</p>
+<p>5、改进NACK处理策略，优化ARQ阶段的大量重复NACK。</p>
+<p>6、参考Salsify中的编码器state-passing，优化重传时的编码时延。</p>
+<p>7、优化多节点情况下JitterBuffer的抖动估计算法。</p>
+<p>8、支持B帧。</p>
+<p>9、引入B帧后进行平滑发包（参考腾讯）。</p>
+<p>10、自适应QoS分级，进行SVC或ABR。</p>
+<p>11、在ACK高时延时，采用时序预测方法（包括带宽预测和时延预测）及时更新目标码率，避免GCC慢速更新。</p>
+<p>12、在PCC/GCC基础上自研拥塞控制算法（或结合Salsify等工作的策略替换GCC）。</p>
+<p>13、参考Concerto，对码率估计进行经验调参（结合编码器特点）。</p>
+<p>14、编码器提速。</p>
+<p>15、在实际4G、5G网络中进一步测试并分析问题（改善将更偏底层，比如优化4/5G通信的Resource Block），目前已知4G网络下的RTC极易遭遇bufferbloat问题，后续优化时可参考bufferbloat状况改善方案。</p>
+<p>16、pacer引入对inter arrival的修正，参考Salsify改进（动态pacer发送）</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WebRTC/" rel="tag"># WebRTC</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/07/01/C++%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/C++%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" rel="prev" title="C++基础知识">
+                  <i class="fa fa-chevron-left"></i> C++基础知识
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/07/09/Linux%E4%B8%8Btc%E6%A8%A1%E6%8B%9F%E5%BC%B1%E7%BD%91/" rel="next" title="Linux下tc模拟弱网">
+                  Linux下tc模拟弱网 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">OliverPai</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.0/katex.min.css" integrity="sha256-uik/hNqHWZldXh/0K35nqOSCff9F61/ZOFReqNOBgB0=" crossorigin="anonymous">
+
+
+
+</body>
+</html>

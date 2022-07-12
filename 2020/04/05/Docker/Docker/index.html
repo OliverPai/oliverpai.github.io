@@ -27,14 +27,14 @@
 <meta property="og:site_name" content="OliverPai">
 <meta property="og:description" content="Wolai版笔记：https:&#x2F;&#x2F;www.wolai.com&#x2F;oNuD4Pvm1Zyd1AK5CT5HZ5。Docker的使用方法。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/image/docker%E5%91%BD%E4%BB%A4_mHG9nKYq_l.png">
-<meta property="og:image" content="http://example.com/image/network_XM4cj9dlTB.png">
+<meta property="og:image" content="http://example.com/2020/04/05/Docker/Docker/image/docker%E5%91%BD%E4%BB%A4_mHG9nKYq_l.png">
+<meta property="og:image" content="http://example.com/2020/04/05/Docker/Docker/image/network_XM4cj9dlTB.png">
 <meta property="article:published_time" content="2020-04-05T09:55:32.000Z">
 <meta property="article:modified_time" content="2022-07-10T13:22:58.194Z">
 <meta property="article:author" content="OliverPai">
 <meta property="article:tag" content="工具">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/image/docker%E5%91%BD%E4%BB%A4_mHG9nKYq_l.png">
+<meta name="twitter:image" content="http://example.com/2020/04/05/Docker/Docker/image/docker%E5%91%BD%E4%BB%A4_mHG9nKYq_l.png">
 
 
 <link rel="canonical" href="http://example.com/2020/04/05/Docker/Docker/">
@@ -121,7 +121,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker"><span class="nav-number">1.</span> <span class="nav-text">Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-docker%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">1 docker简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-docker%E4%B8%8E%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 docker与虚拟机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E9%95%9C%E5%83%8F"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-docker%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">1.2.</span> <span class="nav-text">2 docker基本命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-docker%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4%E6%A6%82%E8%A7%88"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 docker基本命令概览</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-docker-run%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 docker run详解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-docker%E6%9E%84%E5%BB%BA%E9%95%9C%E5%83%8F"><span class="nav-number">1.3.</span> <span class="nav-text">3 docker构建镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.1.</span> <span class="nav-text">基本步骤</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-docker-registry"><span class="nav-number">1.4.</span> <span class="nav-text">4 docker registry</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0Registry%E5%88%9B%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8"><span class="nav-number">1.4.1.</span> <span class="nav-text">本地Registry创建与使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-docker%E5%AD%98%E5%82%A8"><span class="nav-number">1.5.</span> <span class="nav-text">5 docker存储</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E5%8D%B7%E6%8C%82%E8%BD%BD"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1 卷挂载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E7%BB%91%E5%AE%9A%E6%8C%82%E8%BD%BD"><span class="nav-number">1.5.2.</span> <span class="nav-text">5.2 绑定挂载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-docker%E7%BD%91%E7%BB%9C"><span class="nav-number">1.6.</span> <span class="nav-text">6 docker网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Bridge%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.6.1.</span> <span class="nav-text">Bridge模式详解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-docker-compose"><span class="nav-number">1.7.</span> <span class="nav-text">7 docker compose</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-docker-swarm"><span class="nav-number">1.8.</span> <span class="nav-text">8 docker swarm</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#docker"><span class="nav-number">1.</span> <span class="nav-text"> Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-docker%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text"> 1 docker简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#11-docker%E4%B8%8E%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="nav-number">1.1.1.</span> <span class="nav-text"> 1.1 docker与虚拟机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-%E9%95%9C%E5%83%8F"><span class="nav-number">1.1.2.</span> <span class="nav-text"> 1.2 镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-docker%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">1.2.</span> <span class="nav-text"> 2 docker基本命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#21-docker%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4%E6%A6%82%E8%A7%88"><span class="nav-number">1.2.1.</span> <span class="nav-text"> 2.1 docker基本命令概览</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#22-docker-run%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.2.2.</span> <span class="nav-text"> 2.2 docker run详解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-docker%E6%9E%84%E5%BB%BA%E9%95%9C%E5%83%8F"><span class="nav-number">1.3.</span> <span class="nav-text"> 3 docker构建镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.1.</span> <span class="nav-text"> 基本步骤</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-docker-registry"><span class="nav-number">1.4.</span> <span class="nav-text"> 4 docker registry</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0registry%E5%88%9B%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8"><span class="nav-number">1.4.1.</span> <span class="nav-text"> 本地Registry创建与使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-docker%E5%AD%98%E5%82%A8"><span class="nav-number">1.5.</span> <span class="nav-text"> 5 docker存储</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#51-%E5%8D%B7%E6%8C%82%E8%BD%BD"><span class="nav-number">1.5.1.</span> <span class="nav-text"> 5.1 卷挂载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#52-%E7%BB%91%E5%AE%9A%E6%8C%82%E8%BD%BD"><span class="nav-number">1.5.2.</span> <span class="nav-text"> 5.2 绑定挂载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-docker%E7%BD%91%E7%BB%9C"><span class="nav-number">1.6.</span> <span class="nav-text"> 6 docker网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#bridge%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.6.1.</span> <span class="nav-text"> Bridge模式详解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-docker-compose"><span class="nav-number">1.7.</span> <span class="nav-text"> 7 docker compose</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-docker-swarm"><span class="nav-number">1.8.</span> <span class="nav-text"> 8 docker swarm</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -136,18 +136,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -250,19 +250,26 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h1><p><a target="_blank" rel="noopener" href="https://docs.docker.com/reference/" title="官方手册">官方手册</a></p>
+        <h1 id="docker"><a class="markdownIt-Anchor" href="#docker"></a> Docker</h1>
+<p><a target="_blank" rel="noopener" href="https://docs.docker.com/reference/" title="官方手册">官方手册</a></p>
 <p><a target="_blank" rel="noopener" href="https://yeasy.gitbook.io/docker_practice/" title="电子书：docker从入门到实践">电子书：docker从入门到实践</a></p>
-<h2 id="1-docker简介"><a href="#1-docker简介" class="headerlink" title="1 docker简介"></a>1 docker简介</h2><h3 id="1-1-docker与虚拟机"><a href="#1-1-docker与虚拟机" class="headerlink" title="1.1 docker与虚拟机"></a>1.1 docker与虚拟机</h3><h3 id="1-2-镜像"><a href="#1-2-镜像" class="headerlink" title="1.2 镜像"></a>1.2 镜像</h3><h2 id="2-docker基本命令"><a href="#2-docker基本命令" class="headerlink" title="2 docker基本命令"></a>2 docker基本命令</h2><h3 id="2-1-docker基本命令概览"><a href="#2-1-docker基本命令概览" class="headerlink" title="2.1 docker基本命令概览"></a>2.1 docker基本命令概览</h3><p><img src="/image/docker%E5%91%BD%E4%BB%A4_mHG9nKYq_l.png"></p>
-<h3 id="2-2-docker-run详解"><a href="#2-2-docker-run详解" class="headerlink" title="2.2 docker run详解"></a>2.2 docker run详解</h3><blockquote>
+<h2 id="1-docker简介"><a class="markdownIt-Anchor" href="#1-docker简介"></a> 1 docker简介</h2>
+<h3 id="11-docker与虚拟机"><a class="markdownIt-Anchor" href="#11-docker与虚拟机"></a> 1.1 docker与虚拟机</h3>
+<h3 id="12-镜像"><a class="markdownIt-Anchor" href="#12-镜像"></a> 1.2 镜像</h3>
+<h2 id="2-docker基本命令"><a class="markdownIt-Anchor" href="#2-docker基本命令"></a> 2 docker基本命令</h2>
+<h3 id="21-docker基本命令概览"><a class="markdownIt-Anchor" href="#21-docker基本命令概览"></a> 2.1 docker基本命令概览</h3>
+<p><img src="image/docker%E5%91%BD%E4%BB%A4_mHG9nKYq_l.png" alt="" /></p>
+<h3 id="22-docker-run详解"><a class="markdownIt-Anchor" href="#22-docker-run详解"></a> 2.2 docker run详解</h3>
+<blockquote>
 <p>📌若之前未下载对应镜像，会从docker hub拉取；若下载过，直接用镜像创建</p>
 </blockquote>
 <ul>
-<li><p>若直接输入docker run ubuntu，会发现创建了容器之后便退出了，并没有运行</p>
+<li>
+<p>若直接输入docker run ubuntu，会发现创建了容器之后便退出了，并没有运行</p>
 <p>这是因为docker是用来运行进程或任务的，进程一旦完成，容器便会退出。而ubuntu只是一个其它服务依托的基础镜像，本身并没有进程，所以创建新容器后就会退出。</p>
 </li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#----------------- 解决这种问题的几种方式 ---------------------</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 方式一：启动容器时指定运行命令</span></span><br><span class="line">docker run ubuntu <span class="built_in">sleep</span> 5 <span class="comment"># 此命令会启动容器时执行sleep 5，睡眠5秒后应用停止，容器退出</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 方式二：交互模式，连接到终端</span></span><br><span class="line">docker run -it kodekloud/simple-prompt-docker </span><br></pre></td></tr></table></figure>
-
 <p>若容器化应用既包括标准输入又有标准输出，那run容器时默认只会输出，并不会监听标准输入</p>
 <p>-i ：交互模式，可以监听标准输入</p>
 <p>-t：即使是交互模式，由于终端不一致，有标准输入的app仍不会完整实现，所以用-t选项连接终端</p>
@@ -270,36 +277,35 @@
 <li>docker run还有attach和detach的选项</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -d选项，使容器在后台运行</span></span><br><span class="line">docker run -d kodekloud/simple-webapp</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果想重新连接到正在后台运行的容器，可以使用attach命令</span></span><br><span class="line">docker attach 容器ID/容器名</span><br></pre></td></tr></table></figure>
-
 <ul>
-<li><p>此外还可以用tag指定run的版本，如docker run redis:4.0（默认tag是latest）</p>
+<li>
+<p>此外还可以用tag指定run的版本，如docker run redis:4.0（默认tag是latest）</p>
 </li>
-<li><p>端口映射：-p选项</p>
+<li>
+<p>端口映射：-p选项</p>
 </li>
 </ul>
 <p>docker容器的IP地址以及端口均属于内部，可以从容器内部访问localhost，但是外部默认无法访问</p>
 <p>此时需要将容器的端口映射到主机的端口，之后便可以通过主机IP访问容器</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># simple-webapp程序监听容器的5000端口</span></span><br><span class="line">docker run -p 80:5000 kodekloud/simple-webapp <span class="comment">#容器的5000端口被映射到主机的80端口</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/image/network_XM4cj9dlTB.png"></p>
+<p><img src="image/network_XM4cj9dlTB.png" alt="" /></p>
 <p>通过把不同容器映射到主机的不同端口上，可以同时实现多个实例</p>
 <ul>
 <li>目录映射</li>
 </ul>
 <p>容器有自己的隔离的文件系统，任何对文件的修改都发生在容器内部，如果用rm命令删除容器，数据也会消失。如果想删除容器但是保留数据，可以将容器内的卷挂载到主机中。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -v选项负责目录映射</span></span><br><span class="line">docker run -v /opt/datadir:/var/lib/mysql mysql</span><br><span class="line"><span class="comment"># 将主机的/opt/datadir映射到mysql容器内的/var/lib/mysql目录</span></span><br><span class="line"><span class="comment"># mysql容器删除后/opt/datadir中的内容仍在</span></span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>设置并查看环境变量</li>
 </ul>
 <p>可以在run的时候指定容器的环境变量，从而使调用该环境变量的程序得到自定义数值</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用-e选项，将simple-webapp-color容器中的APP_COLOR环境变量赋值为blue</span></span><br><span class="line">docker run -e APP_COLOR=blue simple-webapp-color</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用inspect可以查看环境变量的值</span></span><br><span class="line">docker inspect simple-webapp-color</span><br><span class="line"><span class="comment"># 输出中的Config中会有环境变量列表</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="3-docker构建镜像"><a href="#3-docker构建镜像" class="headerlink" title="3 docker构建镜像"></a>3 docker构建镜像</h2><h3 id="基本步骤"><a href="#基本步骤" class="headerlink" title="基本步骤"></a>基本步骤</h3><ul>
+<h2 id="3-docker构建镜像"><a class="markdownIt-Anchor" href="#3-docker构建镜像"></a> 3 docker构建镜像</h2>
+<h3 id="基本步骤"><a class="markdownIt-Anchor" href="#基本步骤"></a> 基本步骤</h3>
+<ul>
 <li>创建Dockerfile（dockerfle中的每一行都是命令+参数）</li>
 </ul>
 <figure class="highlight docker"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> Ubuntu</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get update</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> apt-get install python</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> pip install flask</span></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> pip install flask-mysql</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> . /opt/source-code</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> FLASK_APP=/opt/source-code/app.py flask run</span></span><br></pre></td></tr></table></figure>
-
 <pre><code>Layer1. Base Ubuntu Layer
 
 Layer2. Changes in apt packages
@@ -311,7 +317,10 @@ Layer4. Source Code
 Layer5. Update Entrypoint with &quot;flask command&quot;
 </code></pre>
 <blockquote>
-<p>📌关于docker分层结构：<br>- 每一层只存储与前一层之间的变化，所以往往层数很高时，该层大小也很小<br>- docker history+镜像名：可查看每一层执行的命令和大小<br>- docker build会在构建期间缓存已经成功的层，这样如果构建失败或者需要修改镜像时，可以从中间的某一层开始重新构建，节省时间</p>
+<p>📌关于docker分层结构：<br />
+- 每一层只存储与前一层之间的变化，所以往往层数很高时，该层大小也很小<br />
+- docker history+镜像名：可查看每一层执行的命令和大小<br />
+- docker build会在构建期间缓存已经成功的层，这样如果构建失败或者需要修改镜像时，可以从中间的某一层开始重新构建，节省时间</p>
 </blockquote>
 <pre><code># dockerfile基本指令
 FROM :       指定基础镜像，在其上构建当前镜像
@@ -346,25 +355,26 @@ WORKDIR :    相当于dockerfile中的cd
 <li>使用docker build构建镜像</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用URL github.com/creack/docker-firefox 的 Dockerfile 创建镜像</span></span><br><span class="line">docker build github.com/creack/docker-firefox</span><br><span class="line"><span class="comment"># 通过-f选项指定Dockerfile的位置</span></span><br><span class="line">docker build -f /path/to/Dockerfile</span><br><span class="line"><span class="comment"># 使用当前目录的 Dockerfile 创建镜像（注意最后那个点），标签为 runoob/ubuntu:v1</span></span><br><span class="line">docker build -t runoob/ubuntu:v1 .</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>使用docker push将镜像推到docker hub</li>
 </ul>
-<h2 id="4-docker-registry"><a href="#4-docker-registry" class="headerlink" title="4 docker registry"></a>4 docker registry</h2><blockquote>
+<h2 id="4-docker-registry"><a class="markdownIt-Anchor" href="#4-docker-registry"></a> 4 docker registry</h2>
+<blockquote>
 <p>docker registry是镜像存储的地方，中央仓库</p>
 </blockquote>
-<p>如nginx镜像名全称为nginx&#x2F;nginx，前者是用户名，若不提供则默认用户名与镜像名相同</p>
+<p>如nginx镜像名全称为nginx/nginx，前者是用户名，若不提供则默认用户名与镜像名相同</p>
 <p>默认的docker registry是dockerhub，其它的还有谷歌gcr(提供k8s镜像)等等，AWS等公司也提供私有registry方便于不想共享镜像的时候</p>
 <ul>
-<li><p>dockerhub提供的私有仓库：docker login <a target="_blank" rel="noopener" href="http://private-registry.io/" title="private-registry.io">private-registry.io</a></p>
+<li>
+<p>dockerhub提供的私有仓库：docker login <a target="_blank" rel="noopener" href="http://private-registry.io" title="private-registry.io">private-registry.io</a></p>
 <p>使用私有仓库需要保证在登录状态</p>
 </li>
 </ul>
-<h3 id="本地Registry创建与使用"><a href="#本地Registry创建与使用" class="headerlink" title="本地Registry创建与使用"></a>本地Registry创建与使用</h3><p>Registry本身就是一个应用程序，且已经ss被做成了镜像，其容器开放端口5000，利用该容器可以在局域网内与团队共享所创建的镜像</p>
+<h3 id="本地registry创建与使用"><a class="markdownIt-Anchor" href="#本地registry创建与使用"></a> 本地Registry创建与使用</h3>
+<p>Registry本身就是一个应用程序，且已经ss被做成了镜像，其容器开放端口5000，利用该容器可以在局域网内与团队共享所创建的镜像</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 运行registry容器，也可以加上-v选项将镜像存于本地</span></span><br><span class="line">docker run -d -p 5000:5000 --name registry registry:2</span><br><span class="line"><span class="comment"># 使用tag将镜像标记为可被本地Registry接受的镜像名</span></span><br><span class="line">docker image tag my-image localhost:5000/my-image</span><br><span class="line"><span class="comment"># 向本地registry推送镜像</span></span><br><span class="line">docker push localhost:5000/my-image</span><br><span class="line"><span class="comment"># 从本地registry拉取镜像</span></span><br><span class="line">docker pull localhost:5000/my-image</span><br><span class="line"><span class="comment"># 从局域网内其它主机的registry拉取镜像</span></span><br><span class="line">docker pull 192.168.56.100:5000/my-image</span><br></pre></td></tr></table></figure>
-
 <blockquote>
-<p>📌注：可以通过curl localhost:5000&#x2F;v2&#x2F;_catalog命令查看镜像是否上传成功</p>
+<p>📌注：可以通过curl localhost:5000/v2/_catalog命令查看镜像是否上传成功</p>
 </blockquote>
 <p>上述方法适用于docker 1.3.x之前的版本，交互全部使用http服务。然而该版本之后，docker搭建私有镜像默认使用https，若从registry里pull镜像会报错。</p>
 <p><strong>解决办法一</strong>：配置SSL证书</p>
@@ -375,31 +385,26 @@ WORKDIR :    相当于dockerfile中的cd
 <li>创建certs文件夹</li>
 </ol>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p certs</span><br></pre></td></tr></table></figure>
-
 <p>从CA拷贝.crt和.key文件到certs文件夹（例中采用名字domain.crt和domain.key）</p>
-<p>假设域名为https:&#x2F;&#x2F;myregistry.domain.com&#x2F;</p>
-<p>&amp;#x20;2. 启动registry容器</p>
+<p>假设域名为https://myregistry.domain.com/</p>
+<p> 2. 启动registry容器</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">  --restart=always \</span><br><span class="line">  --name registry \</span><br><span class="line">  -v <span class="string">&quot;<span class="subst">$(pwd)</span>&quot;</span>/certs:/certs \</span><br><span class="line">  -e REGISTRY_HTTP_ADDR=0.0.0.0:443 \</span><br><span class="line">  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \</span><br><span class="line">  -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \</span><br><span class="line">  -p 443:443 \</span><br><span class="line">  registry:2</span><br></pre></td></tr></table></figure>
-
 <p>此命令将容器中的certs文件夹挂载到宿主机的certs文件夹，通过环境变量告知容器该到哪里找domain.crt和domain.key。registry将在443端口（默认HTTPS端口）运行。</p>
 <p>新registry通过myregistry.domain.com访问</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker pull ubuntu:16.04</span><br><span class="line">docker tag ubuntu:16.04 myregistry.domain.com/my-ubuntu</span><br><span class="line">docker push myregistry.domain.com/my-ubuntu</span><br><span class="line">docker pull myregistry.domain.com/my-ubuntu</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>使用中间证书(intermediate certificate)</li>
 </ul>
 <p>证书发放者往往会提供的是中间证书，需要利用该证书创建domain.crt</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> domain.crt intermediate-certificates.pem &gt; certs/domain.crt</span><br></pre></td></tr></table></figure>
-
 <p><strong>解决方法2</strong>：需要pull的机器添加信任registry列表</p>
-<p>打开&#x2F;etc&#x2F;docker&#x2F;daemon.json</p>
+<p>打开/etc/docker/daemon.json</p>
 <p>添加私有registry</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;insecure-registries&quot;</span>:[<span class="string">&quot;myregistry.example.com:5000&quot;</span>]</span><br></pre></td></tr></table></figure>
-
 <p>或</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;insecure-registries&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;registry:5000&quot;</span>, </span><br><span class="line">    <span class="string">&quot;registry2:5000&quot;</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-
-<h2 id="5-docker存储"><a href="#5-docker存储" class="headerlink" title="5 docker存储"></a>5 docker存储</h2><p>docker容器被创建后，就会创建以下目录</p>
+<h2 id="5-docker存储"><a class="markdownIt-Anchor" href="#5-docker存储"></a> 5 docker存储</h2>
+<p>docker容器被创建后，就会创建以下目录</p>
 <pre><code>docker文件系统
 /var/lib/docker
          -- aufs
@@ -409,40 +414,48 @@ WORKDIR :    相当于dockerfile中的cd
 </code></pre>
 <p>一般容器内的数据在容器删除后便被删除，要想避免这种情况可以采用外部存储挂载到容器内的方法</p>
 <p>主要有两种挂载方式，卷挂载(volume)和绑定挂载(binding)</p>
-<h3 id="5-1-卷挂载"><a href="#5-1-卷挂载" class="headerlink" title="5.1 卷挂载"></a>5.1 卷挂载</h3><p>卷挂载是在docker主机内创建一个独立于容器的卷，卷内的内容与宿主机无关</p>
+<h3 id="51-卷挂载"><a class="markdownIt-Anchor" href="#51-卷挂载"></a> 5.1 卷挂载</h3>
+<p>卷挂载是在docker主机内创建一个独立于容器的卷，卷内的内容与宿主机无关</p>
 <ul>
 <li>创建卷</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ docker volume create my-vol       <span class="comment"># 创建卷</span></span><br><span class="line">$ docker volume <span class="built_in">ls</span>                  <span class="comment"># 列出所有卷</span></span><br><span class="line">DRIVER              VOLUME NAME</span><br><span class="line"><span class="built_in">local</span>               my-vol</span><br><span class="line">$ docker volume inspect my-vol      <span class="comment"># 查看卷的信息</span></span><br><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;Driver&quot;</span>: <span class="string">&quot;local&quot;</span>,</span><br><span class="line">        <span class="string">&quot;Labels&quot;</span>: &#123;&#125;,</span><br><span class="line">        <span class="string">&quot;Mountpoint&quot;</span>: <span class="string">&quot;/var/lib/docker/volumes/my-vol/_data&quot;</span>,</span><br><span class="line">        <span class="string">&quot;Name&quot;</span>: <span class="string">&quot;my-vol&quot;</span>,</span><br><span class="line">        <span class="string">&quot;Options&quot;</span>: &#123;&#125;,</span><br><span class="line">        <span class="string">&quot;Scope&quot;</span>: <span class="string">&quot;local&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>挂载卷</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">旧写法：-v my-vol:/usr/share/nginx/html <span class="comment">#后者是容器内目录</span></span><br><span class="line">新写法：--mount <span class="built_in">source</span>=my-vol,target=/usr/share/nginx/html</span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>删除卷</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker volume <span class="built_in">rm</span> my-vol</span><br><span class="line">docker volume prune        <span class="comment">#删除无主卷</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="5-2-绑定挂载"><a href="#5-2-绑定挂载" class="headerlink" title="5.2 绑定挂载"></a>5.2 绑定挂载</h3><p>绑定挂载是将宿主机的目录指定为容器内的目录，即该目录的修改是对宿主机目录的直接修改</p>
+<h3 id="52-绑定挂载"><a class="markdownIt-Anchor" href="#52-绑定挂载"></a> 5.2 绑定挂载</h3>
+<p>绑定挂载是将宿主机的目录指定为容器内的目录，即该目录的修改是对宿主机目录的直接修改</p>
 <ul>
-<li><p>旧写法：-v选项</p>
+<li>
+<p>旧写法：-v选项</p>
 </li>
-<li><p>新写法：- - mount选项</p>
+<li>
+<p>新写法：- - mount选项</p>
 </li>
 </ul>
-<h2 id="6-docker网络"><a href="#6-docker网络" class="headerlink" title="6 docker网络"></a>6 docker网络</h2><blockquote>
-<p>docker自动创建Bridge、 none、 host三种网络<br>可通过network选项修改当前模式：docker run Ubuntu - -network&#x3D;host</p>
+<h2 id="6-docker网络"><a class="markdownIt-Anchor" href="#6-docker网络"></a> 6 docker网络</h2>
+<blockquote>
+<p>docker自动创建Bridge、 none、 host三种网络<br />
+可通过network选项修改当前模式：docker run Ubuntu - -network=host</p>
 </blockquote>
 <ul>
-<li><p>none模式：完全没有网络，容器彼此隔绝，容器与主机隔绝</p>
+<li>
+<p>none模式：完全没有网络，容器彼此隔绝，容器与主机隔绝</p>
 </li>
-<li><p>host模式：容器使用主机的网络，容器的端口就是主机的端口，注意此时，不同容器再不能在内部使用相同的端口运行程序</p>
+<li>
+<p>host模式：容器使用主机的网络，容器的端口就是主机的端口，注意此时，不同容器再不能在内部使用相同的端口运行程序</p>
 </li>
 </ul>
-<h3 id="Bridge模式详解"><a href="#Bridge模式详解" class="headerlink" title="Bridge模式详解"></a>Bridge模式详解</h3><h2 id="7-docker-compose"><a href="#7-docker-compose" class="headerlink" title="7 docker compose"></a>7 docker compose</h2><p><a target="_blank" rel="noopener" href="https://docs.docker.com/compose/compose-file/compose-file-v3/" title="Compose-file官方文档">Compose-file官方文档</a></p>
-<h2 id="8-docker-swarm"><a href="#8-docker-swarm" class="headerlink" title="8 docker swarm"></a>8 docker swarm</h2><p><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/swarm/" title="官方文档">官方文档</a></p>
+<h3 id="bridge模式详解"><a class="markdownIt-Anchor" href="#bridge模式详解"></a> Bridge模式详解</h3>
+<h2 id="7-docker-compose"><a class="markdownIt-Anchor" href="#7-docker-compose"></a> 7 docker compose</h2>
+<p><a target="_blank" rel="noopener" href="https://docs.docker.com/compose/compose-file/compose-file-v3/" title="Compose-file官方文档">Compose-file官方文档</a></p>
+<h2 id="8-docker-swarm"><a class="markdownIt-Anchor" href="#8-docker-swarm"></a> 8 docker swarm</h2>
+<p><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/swarm/" title="官方文档">官方文档</a></p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3.7&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">minio1:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">minio/minio:RELEASE.2020-11-19T23-48-16Z</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">minio1</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">minio1-data:/export</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9001:9000&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">minio_distributed</span></span><br><span class="line">    <span class="attr">deploy:</span></span><br><span class="line">      <span class="attr">restart_policy:</span></span><br><span class="line">        <span class="attr">delay:</span> <span class="string">10s</span></span><br><span class="line">        <span class="attr">max_attempts:</span> <span class="number">10</span></span><br><span class="line">        <span class="attr">window:</span> <span class="string">60s</span></span><br><span class="line">      <span class="attr">placement:</span></span><br><span class="line">        <span class="attr">constraints:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">node.labels.minio1==true</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">server</span> <span class="string">http://minio&#123;1...4&#125;/export</span></span><br><span class="line">    <span class="attr">secrets:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">secret_key</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">access_key</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD&quot;</span>, <span class="string">&quot;curl&quot;</span>, <span class="string">&quot;-f&quot;</span>, <span class="string">&quot;http://localhost:9000/minio/health/live&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">30s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">20s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">3</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">minio2:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">minio/minio:RELEASE.2020-11-19T23-48-16Z</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">minio2</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">minio2-data:/export</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9002:9000&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">minio_distributed</span></span><br><span class="line">    <span class="attr">deploy:</span></span><br><span class="line">      <span class="attr">restart_policy:</span></span><br><span class="line">        <span class="attr">delay:</span> <span class="string">10s</span></span><br><span class="line">        <span class="attr">max_attempts:</span> <span class="number">10</span></span><br><span class="line">        <span class="attr">window:</span> <span class="string">60s</span></span><br><span class="line">      <span class="attr">placement:</span></span><br><span class="line">        <span class="attr">constraints:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">node.labels.minio2==true</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">server</span> <span class="string">http://minio&#123;1...4&#125;/export</span></span><br><span class="line">    <span class="attr">secrets:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">secret_key</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">access_key</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD&quot;</span>, <span class="string">&quot;curl&quot;</span>, <span class="string">&quot;-f&quot;</span>, <span class="string">&quot;http://localhost:9000/minio/health/live&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">30s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">20s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">3</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">minio3:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">minio/minio:RELEASE.2020-11-19T23-48-16Z</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">minio3</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">minio3-data:/export</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9003:9000&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">minio_distributed</span></span><br><span class="line">    <span class="attr">deploy:</span></span><br><span class="line">      <span class="attr">restart_policy:</span></span><br><span class="line">        <span class="attr">delay:</span> <span class="string">10s</span></span><br><span class="line">        <span class="attr">max_attempts:</span> <span class="number">10</span></span><br><span class="line">        <span class="attr">window:</span> <span class="string">60s</span></span><br><span class="line">      <span class="attr">placement:</span></span><br><span class="line">        <span class="attr">constraints:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">node.labels.minio3==true</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">server</span> <span class="string">http://minio&#123;1...4&#125;/export</span></span><br><span class="line">    <span class="attr">secrets:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">secret_key</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">access_key</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD&quot;</span>, <span class="string">&quot;curl&quot;</span>, <span class="string">&quot;-f&quot;</span>, <span class="string">&quot;http://localhost:9000/minio/health/live&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">30s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">20s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">3</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">minio4:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">minio/minio:RELEASE.2020-11-19T23-48-16Z</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">minio4</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">minio4-data:/export</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;9004:9000&quot;</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">minio_distributed</span></span><br><span class="line">    <span class="attr">deploy:</span></span><br><span class="line">      <span class="attr">restart_policy:</span></span><br><span class="line">        <span class="attr">delay:</span> <span class="string">10s</span></span><br><span class="line">        <span class="attr">max_attempts:</span> <span class="number">10</span></span><br><span class="line">        <span class="attr">window:</span> <span class="string">60s</span></span><br><span class="line">      <span class="attr">placement:</span></span><br><span class="line">        <span class="attr">constraints:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">node.labels.minio4==true</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">server</span> <span class="string">http://minio&#123;1...4&#125;/export</span></span><br><span class="line">    <span class="attr">secrets:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">secret_key</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">access_key</span></span><br><span class="line">    <span class="attr">healthcheck:</span></span><br><span class="line">      <span class="attr">test:</span> [<span class="string">&quot;CMD&quot;</span>, <span class="string">&quot;curl&quot;</span>, <span class="string">&quot;-f&quot;</span>, <span class="string">&quot;http://localhost:9000/minio/health/live&quot;</span>]</span><br><span class="line">      <span class="attr">interval:</span> <span class="string">30s</span></span><br><span class="line">      <span class="attr">timeout:</span> <span class="string">20s</span></span><br><span class="line">      <span class="attr">retries:</span> <span class="number">3</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">minio1-data:</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">minio2-data:</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">minio3-data:</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">minio4-data:</span></span><br><span class="line"></span><br><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">minio_distributed:</span></span><br><span class="line">    <span class="attr">driver:</span> <span class="string">overlay</span></span><br><span class="line"></span><br><span class="line"><span class="attr">secrets:</span></span><br><span class="line">  <span class="attr">secret_key:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">minio_secret_key</span></span><br><span class="line">  <span class="attr">access_key:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">minio_access_key</span></span><br></pre></td></tr></table></figure>
 
     </div>
@@ -460,8 +473,8 @@ WORKDIR :    相当于dockerfile中的cd
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2020/02/24/JavaScript/" rel="prev" title="JavaScript">
-                  <i class="fa fa-chevron-left"></i> JavaScript
+                <a href="/2020/03/15/%E6%AC%A1%E6%A8%A1%E5%87%BD%E6%95%B0/%E6%AC%A1%E6%A8%A1%E5%87%BD%E6%95%B0/" rel="prev" title="次模函数Submodular Function">
+                  <i class="fa fa-chevron-left"></i> 次模函数Submodular Function
                 </a>
             </div>
             <div class="post-nav-item">
@@ -517,8 +530,7 @@ WORKDIR :    相当于dockerfile中的cd
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
-<script src="/js/third-party/math/mathjax.js"></script>
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.0/katex.min.css" integrity="sha256-uik/hNqHWZldXh/0K35nqOSCff9F61/ZOFReqNOBgB0=" crossorigin="anonymous">
 
 
 
