@@ -419,10 +419,10 @@
 <p>现有工作基本均通过实验室内的testbed、仿真器或者对直播类应用进行嗅探/抓包，以获取WebRTC终端通信时受不同因素（带宽、时延、丢包）等影响的拥塞状况。规模较小，无法充分体现不同时间、空间下实际系统拥塞情况的多样性。针对此问题，淘宝Live为作者团队提供了其app在全球范围下的直播数据集。</p>
 <p>淘宝Live是淘宝App内置的模块，其结构如图。当一个caller开启一个会话时，其视频推流到MCU（多媒体控制单元）中，之后MCU将视频分发至两路，一路直接发到与caller直接互动的callee处（此时MCU相当于中继），而另一路则将多个帧打包成一个chunk（大约包含5秒的内容），再讲chunk发送到CDN处。而CDN再进行重分发，分发至其他用户（其他用户对实时性要求可能略低）。收集数据集时主要收集MCU充当中继的那一路实时session数据。</p>
 <p>收集过程关注的是caller-to-MCU这一路，因为通常情况下此路上行带宽（通常受第一跳链路带宽制约）会低于MCU-to-callee这一路的下行带宽，从而成为瓶颈链路。此会话中，caller的客户端负责记录编码器比特率、GCC带宽估计值，以每3秒间隙log一次均值。会话结束时会将log结果发送给MCU，同时MCU也会记录吞吐量、丢包率和时延等数据，以每1秒间隙记录一次。</p>
-<p><img src="concerto-pic/1.png" alt="1.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/1.png" alt="1.png" /></p>
 <p>最终的数据集多样性体现在下面两图中，从全球用户获取长达1348548小时的会话数据，且无线通信模式多样。</p>
-<p><img src="concerto-pic/2.png" alt="2.png" /></p>
-<p><img src="concerto-pic/3.png" alt="3.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/2.png" alt="2.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/3.png" alt="3.png" /></p>
 <h2 id="现有问题"><a class="markdownIt-Anchor" href="#现有问题"></a> 现有问题</h2>
 <p>根据ITU G.114标准，视频通话中合理的QoE水平体现在：端到端丢包率小于1%，且RTT小于300ms。基于此，可以有PSR（poor session ratio）指标来量化：</p>
 <p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>P</mi><mi>S</mi><mi>R</mi><mo>=</mo><mfrac><mrow><mi mathvariant="normal">#</mi><mi>s</mi><mi>e</mi><mi>s</mi><mi>s</mi><mi>i</mi><mi>o</mi><mi>n</mi><mi>s</mi><mtext> </mtext><mi>w</mi><mi>i</mi><mi>t</mi><mi>h</mi><mtext> </mtext><mi>R</mi><mi>T</mi><mi>T</mi><mtext> </mtext><mo>&gt;</mo><mtext> </mtext><mn>300</mn><mi>m</mi><mi>s</mi><mtext> </mtext><mi>o</mi><mi>r</mi><mtext> </mtext><mi>p</mi><mi>a</mi><mi>c</mi><mi>k</mi><mi>e</mi><mi>t</mi><mtext> </mtext><mi>l</mi><mi>o</mi><mi>s</mi><mi>s</mi><mtext> </mtext><mo>&gt;</mo><mtext> </mtext><mn>1</mn><mi mathvariant="normal">%</mi></mrow><mrow><mi mathvariant="normal">#</mi><mi>a</mi><mi>l</mi><mi>l</mi><mtext> </mtext><mi>s</mi><mi>e</mi><mi>s</mi><mi>s</mi><mi>i</mi><mi>o</mi><mi>n</mi><mi>s</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">PSR=\frac{\#sessions\ with\ RTT\ &gt;\ 300ms\ or\ packet\ loss\ &gt;\ 1\%}{\#all\ sessions}
@@ -431,7 +431,7 @@
 <li>
 <p><strong>空间分布特点</strong>：</p>
 <p>将拥有大于2000个session的地区视作主要地区，统计此类地区session的PSR。这样的session中80.6%是国内通话（这个国内不局限在中国），其余为国际通话。</p>
-<p><img src="concerto-pic/4.png" alt="4.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/4.png" alt="4.png" /></p>
 <p>发现所有地区的PSR，都至少是12%，而且超过一般的地区的PSR都达到了20%。也就是说，每5个会话中的一个就在经历较差用户体验的视频通话。</p>
 </li>
 <li>
@@ -443,37 +443,37 @@
 </li>
 <li>
 <p>即使流量负载下降（即session数减少），PSR也没有显著降低。这表明WebRTC的码率适应策略并没有充分利用整体变好的网络环境，而是受限于短暂的拥塞状况。</p>
-<p><img src="concerto-pic/5.png" alt="5.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/5.png" alt="5.png" /></p>
 </li>
 </ol>
 </li>
 <li>
 <p>无线接入类型特点：</p>
 <p>淘宝LIve的用户主要通过三种方式接入互联网：WiFi（大多数采用WiFi，占全部session的73%）、4G、3G。其中WiFI的PSR（18%）远好于后两者。</p>
-<p><img src="concerto-pic/6.png" alt="6.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/6.png" alt="6.png" /></p>
 <p>有研究表明，可能是3G/4G蜂窝网络中普遍存在的bufferbloat现象导致了这一问题，bufferbloadt可以减少丢包并能缓解带宽变化带来的影响，却带来了更大时延。</p>
 <blockquote>
 <p>bufferbloat：缓存膨胀到过大的状态。</p>
 </blockquote>
 </li>
 </ul>
-<p><img src="concerto-pic/7.png" alt="7.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/7.png" alt="7.png" /></p>
 <p>总结上述对数据集的分析，可以发现，无论何种时间段、无论何种地域、无论何种网络接入方式，低QoE在由WebRTC构建的视频通话系统中，都是普遍存在的，而且占比不少。因此，改善低性能的问题迫在眉睫，需要从数据中寻找到造成此类现象的答案。</p>
 <h2 id="原因分析"><a class="markdownIt-Anchor" href="#原因分析"></a> 原因分析</h2>
 <p>作者发现的，造成WebRTC普遍低QoE现象的原因在于淘宝Live中传输控制和编码器的协作程度还不够。证据在于，如果单独使用GCC传输不需编码的文件，可以发现GCC在码率估计方面的能力是很强的，其有能力可以保证较低时延和较低丢包率（近似为0的丢包率），但一般涉及了编码，性能就会严重恶化。问题不在于编码器，而在于GCC和编码器的步调不一致，是结构的问题。</p>
 <h3 id="单独gcc-vs-视频通话"><a class="markdownIt-Anchor" href="#单独gcc-vs-视频通话"></a> 单独GCC vs 视频通话</h3>
 <p>为了能够提高实验速度，作者团队实现了一个网络模拟器，相比于现实网络可以加速400倍的运行。可以直接读取数据集中的trace，并得到和实际情况相当的网络动态变化。</p>
 <p>从数据集中随机选取了1000个会话，共763小时。将这些会话的throughput充当模拟器里的变化带宽，从而记录单独GCC传文件和视频通话这两种情况下，吞吐量、丢包率、时延等信息。结果如下：</p>
-<p><img src="concerto-pic/8.png" alt="8.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/8.png" alt="8.png" /></p>
 <p>可以发现，视频通话的吞吐量明显低于纯GCC，然而其丢包率和时延又显著高于纯GCC。这是一种反常现象，按理说相同的网络环境下，更低的吞吐量更不容易导致拥塞（更少的网络负载），因此也应该丢包和时延更低。那么这样的反常现象又该如何解释？进一步分析可以发现，这个现象是又两个因素导致的：（下图随机取一个session演示）</p>
-<p><img src="concerto-pic/9.png" alt="9.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/9.png" alt="9.png" /></p>
 <ol>
 <li>
 <p>快速下降：以M1，M2这两个点为例，在这两个位置RTT和丢包均出现峰值，那么本来追踪带宽还不错的两个方案，均选择了下调吞吐率。但是此时，相比于纯GCC，视频通话下降的幅度更大。（GCC分别下降44.9%和25.8%，而视频通话下降了83.6%和58.5%）这表明视频通话遭遇了更严重的网络拥塞，正如上面中、右两张图。</p>
 </li>
 <li>
 <p>缓慢恢复：拥塞结束后，视频通话将耗费更多的时间来恢复其比特率，如上面M3标记所示。</p>
-<p><img src="concerto-pic/10.png" alt="10.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/10.png" alt="10.png" /></p>
 </li>
 </ol>
 <p>两因素的进一步佐证</p>
@@ -483,17 +483,17 @@
 <li>
 <p><strong>视频编码器不能生成完美匹配GCC估计值的比特率</strong>：</p>
 <p>长期的平均比特率也许能够匹配目标，但是瞬时的变化（比如比特率突然飙到了平均值的两倍）会带来拥塞。</p>
-<p><img src="concerto-pic/11.png" alt="11.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/11.png" alt="11.png" /></p>
 </li>
 <li>
 <p><strong>编码器滞后于GCC</strong>：</p>
 <p>编码器需要至少1秒来近似出目标码率，但是此时的网络条件可能已经变了。</p>
-<p><img src="concerto-pic/12.png" alt="12.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/12.png" alt="12.png" /></p>
 </li>
 <li>
 <p>间歇性的视频流量模式影响了GCC带宽估计：</p>
 <p>视频并不会像文件一样连续发送。一般是一帧编码后才会突发一系列的包，而其余时间链路处于空闲状态。但GCC每接收到ACK才开始估计带宽。也就是说，ACK到达得越不频繁，带宽估计的更新也会越慢，那么码率调整也将慢下来。（视频通话更新码率的次数比纯GCC足足少了50%）</p>
-<p><img src="concerto-pic/13.png" alt="13.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/13.png" alt="13.png" /></p>
 </li>
 </ul>
 <p>事实上，通过对反常现象的分析，进一步验证了之前推断的正确性：传输与编码的配合能力弱，导致了普遍存在的WebRTC低QoE问题。（前两个原因导致了更为严重的拥塞，后一个原因导致了更慢的恢复）</p>
@@ -501,7 +501,7 @@
 <h1 id="算法设计"><a class="markdownIt-Anchor" href="#算法设计"></a> 算法设计</h1>
 <p>文章作者希望提出一个算法，在不严重改变WebRTC结构的前提下，能够替代GCC。也就是如下图，其以传输层信息（丢包率、包时延间隔）和编码器信息（发送端编码器比特率、接收端吞吐率）作为输入，输出一个目标码率，用于下一个时隙的pace和编码（设定时隙长度为1s，因为太短编码器用不了，太长的话对网络拥塞的反应能力会降低）。</p>
 <p>输出的目标码率B应当是一个由两部分协同确定的数值，兼顾到传输控制和视频编码在当前网络下的特征，成为匹配这些特征的最优决策。比如当网络动态变化过于剧烈，Concerto应该偏向保守的B，而当发现拥塞已过时，应该能够快速提升码率。</p>
-<p><img src="concerto-pic/14.png" alt="14.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/14.png" alt="14.png" /></p>
 <p>Concento算法并没有采用学界目前RTC算法占主导地位的强化学习，而是使用了模仿学习方式。</p>
 <blockquote>
 <p>文章中认为强化学习的劣势：</p>
@@ -523,7 +523,7 @@
 </li>
 <li>
 <p><strong>网络结构</strong>：</p>
-<p><img src="concerto-pic/15.png" alt="15.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/15.png" alt="15.png" /></p>
 <p>状态中的每个元素向量，并不是一维的，是二维的。因丢包序列为例，每个1s时间内，会获得多个RTCP包（默认15个），而每个RTCP包对应多个RTP包（默认4个），每个RTP包带来了一个丢包率数值。因此丢包率元素是一个15x4的二维矩阵。</p>
 </li>
 <li>
@@ -568,17 +568,17 @@
 <ul>
 <li>
 <p>仿真：</p>
-<p><img src="concerto-pic/16.png" alt="16.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/16.png" alt="16.png" /></p>
 <p>仿真器由三部分组成。frame handler会从真正的视频中提取帧，交由ffmpeg编码，以模拟出间歇性流量；控制单元部署算法；传输单元会将每一帧包装为RTP包，经由仿真的网络链路（服从trace的链路变化）。</p>
 </li>
 <li>
 <p>实验室testbed：</p>
-<p><img src="concerto-pic/17.png" alt="17.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/17.png" alt="17.png" /></p>
 <p>三台运行ubuntu1604的电脑，其中的router使用tc来控制网络条件，来服从数据集的trace的变化。</p>
 </li>
 <li>
 <p>实际部署：</p>
-<p><img src="concerto-pic/18.png" alt="18.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/18.png" alt="18.png" /></p>
 <p>直接将concerto集成进淘宝app中（仅限ios），编译后的模型17.2MB，运行时开销可忽略不计（iphone7中仅需几毫秒做出比特率决策，足够1s的更新周期使用）。</p>
 </li>
 </ul>
@@ -586,21 +586,21 @@
 <li>
 <p>QoE metric：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mi>o</mi><mi>E</mi><mo>=</mo><mi>a</mi><mo>×</mo><mi>D</mi><mi>e</mi><mi>l</mi><mi>a</mi><mi>y</mi><mo>+</mo><mi>b</mi><mo>×</mo><mi>P</mi><mi>Q</mi><mo>+</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">QoE=a\times Delay+b\times PQ+c</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">Q</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mord mathnormal">Q</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">c</span></span></span></span></p>
 <p>其中Delay是是平均时延、PQ是picture quality，abc是用于量化的系数。<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mi>o</mi><msub><mi>E</mi><mi>p</mi></msub></mrow><annotation encoding="application/x-tex">QoE_p</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord mathnormal">Q</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">p</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>表示侧重画质（比如直播带货），<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mi>o</mi><msub><mi>E</mi><mi>d</mi></msub></mrow><annotation encoding="application/x-tex">QoE_d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">Q</span><span class="mord mathnormal">o</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">d</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>表示侧重视频的时延（比如交互式通话）。</p>
-<p><img src="concerto-pic/19.png" alt="19.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/19.png" alt="19.png" /></p>
 </li>
 </ul>
 <h2 id="性能对比"><a class="markdownIt-Anchor" href="#性能对比"></a> 性能对比</h2>
-<p><img src="concerto-pic/20.png" alt="20.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/20.png" alt="20.png" /></p>
 <p>Concerto在所有网络接入方式下的QoE都远高于其他基线方法。</p>
-<p><img src="concerto-pic/21.png" alt="21.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/21.png" alt="21.png" /></p>
 <p>WebRTC相比于WebRTC，会有更大的吞吐量增益（因此会有比较好的画质提升）。</p>
-<p><img src="concerto-pic/22.png" alt="22.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/22.png" alt="22.png" /></p>
 <p>为了观察为什么会有这样的吞吐量增益，以一个200s的会话为例。可以发现，Concerto对带宽的追踪能力最强，然而WebRTC却在遭受large reduction和slow recovery这两个因素的制约。这也是Concerto相比于WebRTC有所提升的原因。</p>
 <h2 id="concerto各模块作用"><a class="markdownIt-Anchor" href="#concerto各模块作用"></a> Concerto各模块作用</h2>
 <ul>
 <li>
 <p>兼顾编码器、损失函数：</p>
-<p><img src="concerto-pic/23.png" alt="23.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/23.png" alt="23.png" /></p>
 </li>
 </ul>
 <p>Concerto相比于WebRTC的主要改进在于在做码率决策时，不仅考虑网络状态，同时还兼顾了编码器特性。为了验证这样做可以带来正向增益，将模仿学习输入参数中的去掉，此时的状态称为2-state，再训练推理以观察效果。事实上可以看到，相比于4-state，QoE会有18%的下降。</p>
@@ -609,13 +609,13 @@
 <ul>
 <li>
 <p>神经网络参数：</p>
-<p><img src="concerto-pic/24.png" alt="24.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/24.png" alt="24.png" /></p>
 </li>
 </ul>
 <h2 id="实际部署"><a class="markdownIt-Anchor" href="#实际部署"></a> 实际部署</h2>
 <p>团队将concerto部署在淘宝app的淘宝Live中，征募了6名志愿者在大量的地区（家、办公室、教学楼、超市、逛街、开车）游走，大部分室内接入的是WiFi，而室外接入的是4G。全部实验总共300个会话，共计69个小时。每位志愿者拿两部手机，分别运行WebRTC的淘宝和集成了concerto的淘宝，以保证在相同的网络环境下测试两种方案。</p>
 <p>WebRTC和Concerto的对比如表所示：</p>
-<p><img src="concerto-pic/25.png" alt="25.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/concerto/25.png" alt="25.png" /></p>
 <p>1）Concerto会有略低一点的吞吐率，但是却能显著降低卡顿时间；</p>
 <p>2）对于WebRTC而言，4G情况下，移动速度越快，QoE越差；</p>
 <p>3）WebRTC在WiFi场景下是可以取得比较好表现的。</p>
