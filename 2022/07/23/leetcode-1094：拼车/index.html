@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.2","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="刷题记录--开会和开车">
+<meta property="og:type" content="article">
+<meta property="og:title" content="leetcode-1094：拼车">
+<meta property="og:url" content="http://example.com/2022/07/23/leetcode-1094%EF%BC%9A%E6%8B%BC%E8%BD%A6/index.html">
+<meta property="og:site_name" content="OliverPai">
+<meta property="og:description" content="刷题记录--开会和开车">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-23T13:42:42.840Z">
+<meta property="article:modified_time" content="2022-07-23T13:52:30.170Z">
+<meta property="article:author" content="OliverPai">
+<meta property="article:tag" content="刷题">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2022/07/23/leetcode-1094%EF%BC%9A%E6%8B%BC%E8%BD%A6/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/07/23/leetcode-1094%EF%BC%9A%E6%8B%BC%E8%BD%A6/","path":"2022/07/23/leetcode-1094：拼车/","title":"leetcode-1094：拼车"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>leetcode-1094：拼车 | OliverPai</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="OliverPai" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">OliverPai</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">落叶本就是假的</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#leetcode1094%E6%8B%BC%E8%BD%A6"><span class="nav-number">1.</span> <span class="nav-text"> leetcode#1094：拼车</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%B3%95%E4%B8%80%E5%B0%8F%E6%A0%B9%E5%A0%86"><span class="nav-number">1.1.</span> <span class="nav-text"> 解法一：小根堆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%B3%95%E4%BA%8C%E5%B7%AE%E5%88%86"><span class="nav-number">1.2.</span> <span class="nav-text"> 解法二：差分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E4%BC%BC%E9%A2%98leetcode253%E4%BC%9A%E8%AE%AE%E5%AE%A42"><span class="nav-number">1.3.</span> <span class="nav-text"> 相似题：leetcode#253：会议室2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%B3%95"><span class="nav-number">1.3.1.</span> <span class="nav-text"> 解法</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="OliverPai"
+      src="/images/avatar-star.png">
+  <p class="site-author-name" itemprop="name">OliverPai</p>
+  <div class="site-description" itemprop="description">求索与记录</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OliverPai" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OliverPai" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/23/leetcode-1094%EF%BC%9A%E6%8B%BC%E8%BD%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-star.png">
+      <meta itemprop="name" content="OliverPai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="OliverPai">
+      <meta itemprop="description" content="求索与记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="leetcode-1094：拼车 | OliverPai">
+      <meta itemprop="description" content="刷题记录--开会和开车">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          leetcode-1094：拼车
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-07-23 21:42:42 / 修改时间：21:52:30" itemprop="dateCreated datePublished" datetime="2022-07-23T21:42:42+08:00">2022-07-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">刷题记录--开会和开车</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="leetcode1094拼车"><a class="markdownIt-Anchor" href="#leetcode1094拼车"></a> leetcode#1094：拼车</h1>
+<p>车上最初有 <code>capacity</code> 个空座位。车 <strong>只能</strong> 向一个方向行驶（也就是说，<strong>不允许掉头或改变方向</strong>）</p>
+<p>给定整数 <code>capacity</code> 和一个数组 <code>trips</code> ,  <code>trip[i] = [numPassengers_i, from_i, to_i]</code> 表示第 <code>i </code>次旅行有 <code>numPassengers_i</code> 乘客，接他们和放他们的位置分别是 <code>from_i</code> 和 <code>to_i</code>。这些位置是从汽车的初始位置向东的公里数。</p>
+<p>当且仅当你可以在所有给定的行程中接送所有乘客时，返回 <code>true</code>，否则请返回 <code>false</code>。</p>
+<p><strong>示例1</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：trips = [[2,1,5],[3,3,7]]</span><br><span class="line">     capacity = 4</span><br><span class="line">输出：false</span><br></pre></td></tr></table></figure>
+<p><strong>示例2</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：trips = [[2,1,5],[3,3,7]]</span><br><span class="line">     capacity = 5</span><br><span class="line">输出：true</span><br></pre></td></tr></table></figure>
+<h2 id="解法一小根堆"><a class="markdownIt-Anchor" href="#解法一小根堆"></a> 解法一：小根堆</h2>
+<p>首先将trips按起点站（即trips[i][1]）升序排序，这样遍历trips时，就可以按上车站点的顺序来遍历，方便上车人数的累加。</p>
+<p>同时，也希望能够按终点站进行降序排序，这样每次就能找到对于当前时刻，最早要下车的那批人，这批人可能来自不同的起点，但在同一个终点下车。起点站遍历到 最早下车的人所要下车的站，就可以进行人员交替：先下车，再上车。人员交替后，看剩余人数是否超过了capacity，判断能否接送所有乘客。</p>
+<p>那么如何既对起点站升序，又对终点站降序呢？解决方案就是先排序，后在遍历时用小根堆。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">carPooling</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; trips, <span class="type">int</span> capacity)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//按起点站排序</span></span><br><span class="line">    <span class="built_in">sort</span>(trips.<span class="built_in">begin</span>(), trips.<span class="built_in">end</span>(), [](vector&lt;<span class="type">int</span>&gt;&amp;a, vector&lt;<span class="type">int</span>&gt;&amp; b)&#123;</span><br><span class="line">        <span class="keyword">return</span> a[<span class="number">1</span>] &lt; b[<span class="number">1</span>];</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//以终点站进行比较的小根堆，可用堆顶找出最早要下车的那批人</span></span><br><span class="line">    <span class="keyword">auto</span> cmp = [](vector&lt;<span class="type">int</span>&gt;&amp; a, vector&lt;<span class="type">int</span>&gt;&amp; b)&#123;</span><br><span class="line">        <span class="keyword">return</span> a[<span class="number">2</span>] &gt; b[<span class="number">2</span>];</span><br><span class="line">    &#125;;</span><br><span class="line">    priority_queue&lt;vector&lt;<span class="type">int</span>&gt;, vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;, <span class="keyword">decltype</span>(cmp)&gt; <span class="built_in">heap</span>(cmp);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//遍历trips</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; trips.<span class="built_in">size</span>(); ++i)&#123;</span><br><span class="line">        <span class="comment">//先下车</span></span><br><span class="line">        <span class="keyword">while</span>(!heap.<span class="built_in">empty</span>())&#123;</span><br><span class="line">            vector&lt;<span class="type">int</span>&gt; tmp_top = heap.<span class="built_in">top</span>();</span><br><span class="line">            <span class="keyword">if</span>(tmp_top[<span class="number">2</span>] &lt;= trips[i][<span class="number">1</span>])&#123;<span class="comment">//要下车的人到站或者坐过站了</span></span><br><span class="line">                cnt -= tmp_top[<span class="number">0</span>];</span><br><span class="line">                heap.<span class="built_in">pop</span>();</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//再上车</span></span><br><span class="line">        cnt += trips[i][<span class="number">0</span>];</span><br><span class="line">        heap.<span class="built_in">push</span>(trips[i]);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(cnt &gt; capacity)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="解法二差分"><a class="markdownIt-Anchor" href="#解法二差分"></a> 解法二：差分</h2>
+<p>差分用到了逆向思维，需要以一种增量的方式来理解。构建一个包含全部站点的数组，上车就是在这站对应的索引上增加人数，下车就是在此站索引减少人数。而根据“差分数组的前缀和是原数组”，求一遍前缀和，就可以得到每一站的实际人数，比较实际人数与capacity，就能判断出问题答案。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">carPooling</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; trips, <span class="type">int</span> capacity)</span> </span>&#123;</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">d</span><span class="params">(<span class="number">1002</span>)</span></span>;                  <span class="comment">//差分数组，包含所有站点</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; item : trips)&#123;</span><br><span class="line">        d[item[<span class="number">1</span>]] += item[<span class="number">0</span>];            <span class="comment">//在item[1]这站上车--增量</span></span><br><span class="line">        d[item[<span class="number">2</span>]] -= item[<span class="number">0</span>];            <span class="comment">//在item[2]这站下车--减量</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt;= <span class="number">1000</span>; i++)&#123;</span><br><span class="line">        cnt += d[i];                      <span class="comment">//cnt来表示这一站的实际人数</span></span><br><span class="line">        <span class="keyword">if</span>(cnt &gt; capacity) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="相似题leetcode253会议室2"><a class="markdownIt-Anchor" href="#相似题leetcode253会议室2"></a> 相似题：leetcode#253：会议室2</h2>
+<p>给你一个会议时间安排的数组 <code>intervals</code> ，每个会议时间都会包括开始和结束的时间 <code>intervals[i] = [starti, endi]</code> ，返回 <em>所需会议室的最小数量</em> 。</p>
+<p><strong>示例1</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：intervals = [[0,30],[5,10],[15,20]]</span><br><span class="line">输出：2</span><br></pre></td></tr></table></figure>
+<p><strong>示例2</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：intervals = [[7,10],[2,4]]</span><br><span class="line">输出：1</span><br></pre></td></tr></table></figure>
+<h3 id="解法"><a class="markdownIt-Anchor" href="#解法"></a> 解法</h3>
+<p>此题与上一题很类似，解题也可以用相同的思路：先排序，再小根堆。</p>
+<p>首先按会议开始的时间排序，这样在遍历时可以保证当前遍历到的会议，是剩下的所有会议中最早开始的。</p>
+<p>同时遍历的时候按会议的结束时间构建小根堆，那么堆顶就是已经开了的会议中最早结束的。</p>
+<p>那么遍历过程中，就需要判断：当前遍历到的会议，其开始时间与 现有会议中最早结束的会议 的结束时间是否相冲突，如果不冲突就可以共用一个会议室，否则就需要新开一个会议室。</p>
+<p>新开一个会议室就加1，按这样的流程，最终将得到会议室的最小值。</p>
+<p>但是这种思路不容易证明其正确性，此处我进行不严谨的、直觉性的证明。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-------------------------------</span><br><span class="line">| |-------|                   |         -------------------------------</span><br><span class="line">|                      |--|   |         | |-------| |-----|    |--|   |</span><br><span class="line">| |---|                       |--------&gt;| |---| |-------|  |--------| |</span><br><span class="line">|                  |--------| |         -------------------------------</span><br><span class="line">|           |-----|           |</span><br><span class="line">|       |-------|             |</span><br><span class="line">-------------------------------</span><br></pre></td></tr></table></figure>
+<p>如上图，表示所有会议的排列情况，左图就是所有会议到单独占用一个会议室的情况。<code>|—-|</code>表示一场会议。外部的矩形，高度表示会议室的数量，宽度表示时间，每场会议左边的<code>|</code>是其开始时间，右边的<code>|</code>是其结束时间。</p>
+<p>所以外面的矩形，可以表示所有会议的全部时空占用，最小化会议室的数量，也就是尽可能提高会议室的利用效率，换言之就是<strong>最大化时空利用率</strong>。也就是希望有限大小的外部矩形可以包含所有会议，而且要尽可能压缩外面的大矩形的面积。但是外部矩形的宽度已经确定了，不能更改，就只能减少高度以压缩。</p>
+<p>而为了尽可能压缩外部矩形面积，就需要减少<code>|—-|</code>之间的空隙。这就转化成了等价问题：最小化所有会议间的间隙之和，等价于最小化外部矩形面积。这个间隙就是一个会议的开启时间，与它前面的会议的结束时间之差。（但是间隙不能为负，即<code>|—-|</code>之间不能重合）</p>
+<p>而这种解法，就在采用贪心的思路来解决这个等价问题。遍历过程中，遍历到的会议是接下来最早开始的会议，而堆顶的会议是现有会议中最早结束的会议。前者的起始时间-后者的结束时间，就是现有情况下的最小“间隙”。每次遍历时，都是现有情况下的最小“间隙”，那么遍历结束后，累加的就是全局的最短间隙，如此便会最小化外部矩形面积，也就是最小化会议室数量。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">minMeetingRooms</span><span class="params">(vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;&amp; intervals)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">sort</span>(intervals.<span class="built_in">begin</span>(), intervals.<span class="built_in">end</span>(), [](vector&lt;<span class="type">int</span>&gt;&amp; a, vector&lt;<span class="type">int</span>&gt;&amp; b)&#123;</span><br><span class="line">        <span class="keyword">return</span> a[<span class="number">0</span>] &lt; b[<span class="number">0</span>];</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">auto</span> cmp = [](vector&lt;<span class="type">int</span>&gt;&amp; a, vector&lt;<span class="type">int</span>&gt;&amp; b)&#123;</span><br><span class="line">        <span class="keyword">return</span> a[<span class="number">1</span>] &gt; b[<span class="number">1</span>];</span><br><span class="line">    &#125;;</span><br><span class="line">    priority_queue&lt;vector&lt;<span class="type">int</span>&gt;, vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;, <span class="keyword">decltype</span>(cmp)&gt; <span class="built_in">heap</span>(cmp);</span><br><span class="line">    <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span> ; i &lt; intervals.<span class="built_in">size</span>(); i++)&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//沿用旧会议室</span></span><br><span class="line">        <span class="keyword">if</span>(!heap.<span class="built_in">empty</span>() &amp;&amp; heap.<span class="built_in">top</span>()[<span class="number">1</span>] &lt;= intervals[i][<span class="number">0</span>]) <span class="comment">//新开的会议晚于最早结束的会议</span></span><br><span class="line">            heap.<span class="built_in">pop</span>();</span><br><span class="line">        <span class="comment">//启用新会议室</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            ++cnt;</span><br><span class="line"></span><br><span class="line">        heap.<span class="built_in">push</span>(intervals[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> cnt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%88%B7%E9%A2%98/" rel="tag"># 刷题</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/07/12/WebRTC%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%EF%BC%9ASalsify/" rel="prev" title="WebRTC替代方案：Salsify">
+                  <i class="fa fa-chevron-left"></i> WebRTC替代方案：Salsify
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">OliverPai</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.0/katex.min.css" integrity="sha256-uik/hNqHWZldXh/0K35nqOSCff9F61/ZOFReqNOBgB0=" crossorigin="anonymous">
+
+
+
+</body>
+</html>
