@@ -27,18 +27,18 @@
 <meta property="og:site_name" content="OliverPai">
 <meta property="og:description" content="记录Go语言的基础语法知识">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2019/12/21/Golang/Golang/image/image_-v0q2QWlX3.png">
-<meta property="og:image" content="http://example.com/2019/12/21/Golang/Golang/image/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86_tZ5L5K7RyB.jpg">
-<meta property="og:image" content="http://example.com/2019/12/21/Golang/Golang/image/image_klHnHNaXk-.png">
-<meta property="og:image" content="http://example.com/2019/12/21/Golang/Golang/image/image_Rjj_29L3So.png">
-<meta property="og:image" content="http://example.com/2019/12/21/Golang/Golang/image/image_xlY7fDYo9I.png">
-<meta property="og:image" content="http://example.com/2019/12/21/Golang/Golang/image/image__3aWsdTgIN.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/image_-v0q2QWlX3.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86_tZ5L5K7RyB.jpg">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/image_klHnHNaXk-.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/image_Rjj_29L3So.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/image_xlY7fDYo9I.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/image__3aWsdTgIN.png">
 <meta property="article:published_time" content="2019-12-21T05:22:57.000Z">
-<meta property="article:modified_time" content="2022-07-10T13:23:24.404Z">
+<meta property="article:modified_time" content="2022-07-23T12:40:20.807Z">
 <meta property="article:author" content="OliverPai">
 <meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2019/12/21/Golang/Golang/image/image_-v0q2QWlX3.png">
+<meta name="twitter:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/image_-v0q2QWlX3.png">
 
 
 <link rel="canonical" href="http://example.com/2019/12/21/Golang/Golang/">
@@ -231,7 +231,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-07-10 21:23:24" itemprop="dateModified" datetime="2022-07-10T21:23:24+08:00">2022-07-10</time>
+      <time title="修改时间：2022-07-23 20:40:20" itemprop="dateModified" datetime="2022-07-23T20:40:20+08:00">2022-07-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -533,7 +533,7 @@ B代码： func Do1（参数）<br />
 <li>静态编译语言在编译时，会将变量转换成内存地址，关于变量的信息将消失不见，也无从获取；</li>
 </ul>
 <p>但是go语言引入了反射机制，可以将变量的信息(变量名、变量类型等)整合到可执行文件中，从而能够实现在程序运行时对变量信息的访问。采用reflect包的API进行反射操作！</p>
-<p><img src="image/image_-v0q2QWlX3.png" alt="" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/image_-v0q2QWlX3.png" alt="" /></p>
 <ul>
 <li>reflect.TypeOf()：获取变量类型</li>
 </ul>
@@ -809,7 +809,7 @@ i := 0<br />
 u := user{}</p>
 </blockquote>
 <h2 id="内存分配"><a class="markdownIt-Anchor" href="#内存分配"></a> 内存分配</h2>
-<p><img src="image/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86_tZ5L5K7RyB.jpg" alt="" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86_tZ5L5K7RyB.jpg" alt="" /></p>
 <h2 id="垃圾回收"><a class="markdownIt-Anchor" href="#垃圾回收"></a> 垃圾回收</h2>
 <blockquote>
 <p>📌<strong>为什么需要垃圾回收？</strong><br />
@@ -832,18 +832,18 @@ u := user{}</p>
 <h3 id="go执行垃圾回收具体流程"><a class="markdownIt-Anchor" href="#go执行垃圾回收具体流程"></a> Go执行垃圾回收具体流程：</h3>
 <h2 id="defer"><a class="markdownIt-Anchor" href="#defer"></a> defer</h2>
 <h3 id="defer的执行顺序"><a class="markdownIt-Anchor" href="#defer的执行顺序"></a> defer的执行顺序</h3>
-<p><img src="image/image_klHnHNaXk-.png" alt="" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/image_klHnHNaXk-.png" alt="" /></p>
 <p>栈：先进后出</p>
 <h3 id="函数的返回值初始化"><a class="markdownIt-Anchor" href="#函数的返回值初始化"></a> 函数的返回值初始化</h3>
-<p><img src="image/image_Rjj_29L3So.png" alt="" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/image_Rjj_29L3So.png" alt="" /></p>
 <p>只要函数返回值有名字（例子中为t），这个<code>t</code>会在函数起始处被初始化为对应类型的零值并且作用域为整个函数。</p>
 <h3 id="return和defer谁先谁后-有名函数返回值遇见defer情况"><a class="markdownIt-Anchor" href="#return和defer谁先谁后-有名函数返回值遇见defer情况"></a> return和defer谁先谁后 &amp; 有名函数返回值遇见defer情况</h3>
-<p><img src="image/image_xlY7fDYo9I.png" alt="" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/image_xlY7fDYo9I.png" alt="" /></p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">returnButDefer</span><span class="params">()</span></span> (t <span class="type">int</span>) &#123;  <span class="comment">//t初始化0， 并且作用域为该函数全域</span></span><br><span class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        t = t * <span class="number">10</span></span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(returnButDefer())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ go run test.go</span><br><span class="line">10</span><br></pre></td></tr></table></figure>
 <p>本应返回1，但是return后进入了defer，所以<code>t=t*10</code>被执行，因此最后返回给main的结果为10。</p>
 <h3 id="defer遇见panic"><a class="markdownIt-Anchor" href="#defer遇见panic"></a> defer遇见panic</h3>
-<p><img src="image/image__3aWsdTgIN.png" alt="" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/golang-basic/image__3aWsdTgIN.png" alt="" /></p>
 <h3 id="defer中包含panic"><a class="markdownIt-Anchor" href="#defer中包含panic"></a> defer中包含panic</h3>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>  &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">       <span class="keyword">if</span> err := <span class="built_in">recover</span>(); err != <span class="literal">nil</span>&#123;</span><br><span class="line">           fmt.Println(err)</span><br><span class="line">       &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">           fmt.Println(<span class="string">&quot;fatal&quot;</span>)</span><br><span class="line">       &#125;</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(<span class="string">&quot;defer panic&quot;</span>)</span><br><span class="line">    &#125;()</span><br><span class="line"></span><br><span class="line">    <span class="built_in">panic</span>(<span class="string">&quot;panic&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输出结果：</span><br><span class="line">defer panic</span><br></pre></td></tr></table></figure>

@@ -27,32 +27,32 @@
 <meta property="og:site_name" content="OliverPai">
 <meta property="og:description" content="WebRTC的QoS策略在弱网环境下仍然存在若干问题，本文记录业界和学术界针对这些问题所做的优化工作。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/qos-overview.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/rtcp.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/nack.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/pacer.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/buffer.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/mindpic.jpeg">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/loss1.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/loss2.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/jitter1.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/jitter2.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/jitter3.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/bandw.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/rongyun.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/mailing.jpeg">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/tencent.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/jigou1.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/jigou2.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/jigou3.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/baidu1.png">
-<meta property="og:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/baidu2.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/qos-overview.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/rtcp.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/nack.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/pacer.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/buffer.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/mindpic.jpeg">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/loss1.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/loss2.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/jitter1.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/jitter2.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/jitter3.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/bandw.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/rongyun.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/mailing.jpeg">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/tencent.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/jigou1.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/jigou2.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/jigou3.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/baidu1.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/baidu2.png">
 <meta property="article:published_time" content="2022-07-08T16:00:49.000Z">
-<meta property="article:modified_time" content="2022-07-12T16:16:30.783Z">
+<meta property="article:modified_time" content="2022-07-23T10:47:06.680Z">
 <meta property="article:author" content="OliverPai">
 <meta property="article:tag" content="WebRTC">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/opti-pic/qos-overview.png">
+<meta name="twitter:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/qos-overview.png">
 
 
 <link rel="canonical" href="http://example.com/2022/07/09/WebRTC%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AD%96%E7%95%A5%E6%94%B9%E8%BF%9B%E8%B0%83%E7%A0%94/">
@@ -245,7 +245,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-07-13 00:16:30" itemprop="dateModified" datetime="2022-07-13T00:16:30+08:00">2022-07-13</time>
+      <time title="修改时间：2022-07-23 18:47:06" itemprop="dateModified" datetime="2022-07-23T18:47:06+08:00">2022-07-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -272,11 +272,11 @@
 <p>随着新政策的引导及资本市场的追捧，直播行业首先在娱乐、游戏直播等行业经历了一次大规模增长，2020年后，疫情爆发进一步促进了直播行业高速发展，正在全面赋能电商、旅游、文化传播等众多领域。基于WebRTC的超低延时技术应运而生。WebRTC已被纳入万维网联盟的W3C推荐标准，且被腾讯云、阿里云等公司广泛应用于会议、云游戏等场景。然而，虽然WebRTC对直播服务质量提供了一定程度的优化，根据众多企业（如阿里、声网等）的测试，其在弱网环境中的效果仍然存在带宽利用率低、延时较高、恢复能力较弱等不足等问题（弱网阶段主要体现在用户接入最后一公里网络质量）。此类问题导致<strong>弱网中WebRTC性能不佳的情况普遍存在</strong>，字节跳动火山引擎数据显示，接近40%的直播产品用户处于弱网状态。同时根据淘宝Live的统计数据，国内至少有12%的用户承受着WebRTC中的低QoE（Quality of Experience）问题，且大部分地区有20%的用户QoE较低。</p>
 <p>通过在WebRTC中引入弱网抗性优化策略，在弱网环境下改善传输性能的问题已迫在眉睫。本文档旨在调研业界改良WebRTC传输的解决方案，从中获取启发。</p>
 <h1 id="webrtc现有策略"><a class="markdownIt-Anchor" href="#webrtc现有策略"></a> WebRTC现有策略</h1>
-<p><img src="opti-pic/qos-overview.png" alt="qos-overview.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/qos-overview.png" alt="qos-overview.png" /></p>
 <ul>
 <li>
 <p>RTCP协议与NACK：</p>
-<p><img src="opti-pic/rtcp.png" alt="rtcp.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/rtcp.png" alt="rtcp.png" /></p>
 <p>RTCP报文头部</p>
 <p>RTP协议和RTCP协议通常搭配使用，RTP包负责数据传输，而RTCP包可以承载传输过程中的信息，比如包的端到端延迟等，可认为RTP侧重数据，RTCP侧重控制。当PT设置为205时，表示当前的RTCP报文属于RTPFB（RTP Feedback），即RTP反馈报文，用于反馈过去一段时间RTP包的传输情况。</p>
 <p>当RTCP报文类型为RTPFB，且此时FMT字段设置为1，表示NACK报文。此报文由数据接收端回传给数据发送端，通知发送端过去时间内有哪些包丢失。NACK报文包含两个字段：PID和BLP。PID标识从哪个包（填充该包的序列号）开始丢包，而BLP标识从PID开始，接下来16个RTP包的丢失情况。</p>
@@ -284,7 +284,7 @@
 <li>
 <p>RTX：</p>
 <p>发送端收到NACK报文后，着手开展所丢包的重传工作。重传流为RTX流（区别于原始码流，重传的包有不同的头部：PT、SSRC、序列号等）</p>
-<p><img src="opti-pic/nack.png" alt="nack.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/nack.png" alt="nack.png" /></p>
 <p>媒体协商阶段已开始将原始码流与RTX流绑定</p>
 </li>
 </ul>
@@ -297,7 +297,7 @@
 </li>
 <li>
 <p>Pacer：</p>
-<p><img src="opti-pic/pacer.png" alt="pacer.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/pacer.png" alt="pacer.png" /></p>
 <p>码率估计后，会驱动编码器和pacer控制传输速率。更具体地，音视频编码器控制输出码流的大小，pacer控制码流发送的速率。一帧视频可能很大，远大于以太网的1500byte，需要分别封装在几个RTP报文中，若这些视频帧RTP报文一起发送到网络上，必然会导致网络瞬间拥塞，产生丢包抖动等异常。再者，包之间的大小可能有显著差异，比如I、P、B帧间的长度相差非常大，直接发送网络波动幅度很大。因此在通过编码器控制流速后，仍需要pacer进行平滑发包，从而能够让数据包有条不紊地在网络中传输且不造成波动和拥塞。</p>
 <p>组好的包会进入pace queue中，此队列并不是FIFO，在入队时会将各个数据包排出优先级（比如I帧的包肯定要优先于B、P帧的包），高优先级在发送时会先出队列。发送线程每隔5ms（timer）从pace queue中取出数据包以发送。发送的数据量由Budget计算：待发送字节数=（当前时间-上次send时间）*目标码率+8。为确保在定时时间内可以把数据包都发出去，可以修改参数（max_pacing_delay，发送时延上限）以调整目标码率。当队列中数据发完，下一时刻未到，会发padding包。</p>
 </li>
@@ -311,7 +311,7 @@
 <li>
 <p>JitterBuffer：</p>
 <p>网络抖动会造成包到达乱序，比如104号包到了，但是103号包没到，那么就无法组帧。为了避免乱序造成的丢包，需要引入buffer专门对抗jitter。当103号包到达时，根据对序列号的计算，将其插入到buffer的合适位置，即可交给组帧模块进一步处理。然而buffer大小不应该是一成不变的，当抖动小的时候就该小（降低延时），当抖动大的时候就需要大（提高包乱序容错能力）。</p>
-<p><img src="opti-pic/buffer.png" alt="buffer.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/buffer.png" alt="buffer.png" /></p>
 <p>WebRTC利用卡尔曼滤波来适应抖动，调整JitterBuffer大小。（算法与Goog-REMB比较像）</p>
 </li>
 <li>
@@ -328,22 +328,22 @@
 </li>
 </ul>
 <p>对上述内容进行总结的话，可归纳出如下思维导图：</p>
-<p><img src="opti-pic/mindpic.jpeg" alt="mindpic.jpeg" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/mindpic.jpeg" alt="mindpic.jpeg" /></p>
 <h1 id="现有问题"><a class="markdownIt-Anchor" href="#现有问题"></a> 现有问题</h1>
 <h2 id="1-一蹶不振对丢包敏感"><a class="markdownIt-Anchor" href="#1-一蹶不振对丢包敏感"></a> 1 一蹶不振：对丢包敏感</h2>
-<p><img src="opti-pic/loss1.png" alt="loss1.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/loss1.png" alt="loss1.png" /></p>
 <p>当多于10%的丢包率时，WebRTC会一蹶不振</p>
 <p>GCC中，如果丢包率小于2%，允许速率上升，如果丢包率介于2%~10%，速率控制不变。</p>
 <p>实验现象中，当丢包率大于等于10%时，数据率收敛到50Kbps，相当于只在传输音频数据（音频因其速率要求低，故在WebRTC中不会被限制）。</p>
 <p>即使在事先建立好数据通路再提高丢包率，来到20%后依然会有数据率急剧下降的情况出现。</p>
-<p><img src="opti-pic/loss2.png" alt="loss2.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/loss2.png" alt="loss2.png" /></p>
 <h2 id="2-对抖动敏感-反应迟钝"><a class="markdownIt-Anchor" href="#2-对抖动敏感-反应迟钝"></a> 2 对抖动敏感 &amp; 反应迟钝</h2>
-<img src="opti-pic/jitter1.png" title="" alt="jitter1.png" width="420">
-<img src="opti-pic/jitter2.png" title="" alt="jitter2.png" width="415">
+<img title="" src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/jitter1.png" alt="jitter1.png" width="420">
+<img title="" src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/jitter2.png" alt="jitter2.png" width="415">
 <p>且由于TCC依托于接收端反馈的信息，当处于高延时环境下，TCC无法及时更新，从而导致传输性能差。高延时场景尤其体现在4G/3G蜂窝网络条件下，蜂窝网络中会有bufferbloat问题，即缓存膨胀到过大的状态。bufferbloadt可以减少丢包并能缓解带宽变化带来的影响，却带来了更大时延。</p>
-<img src="opti-pic/jitter3.png" title="" alt="jitter3.png" width="419">
+<img title="" src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/jitter3.png" alt="jitter3.png" width="419">
 <h2 id="3-带宽利用率低快下降与慢恢复"><a class="markdownIt-Anchor" href="#3-带宽利用率低快下降与慢恢复"></a> 3 带宽利用率低：快下降与慢恢复</h2>
-<p><img src="opti-pic/bandw.png" alt="bandw.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/bandw.png" alt="bandw.png" /></p>
 <ol>
 <li>
 <p>快速下降：以M1，M2这两个点为例，在这两个位置RTT和丢包均出现峰值，那么本来追踪带宽还不错的两个方案，均选择了下调吞吐率。但是此时，相比于纯GCC，视频通话下降的幅度更大。（GCC分别下降44.9%和25.8%，而视频通话下降了83.6%和58.5%）这表明视频通话遭遇了更严重的网络拥塞，正如上面中、右两张图。</p>
@@ -402,7 +402,7 @@
 </li>
 </ul>
 <p>下图是在一定场景下的 FEC 与 ARQ 配合示意图，RTT 在 20ms 内，如果传输延时要求在 100ms 以内，在丢包 30% 的弱网链路上，则 ARQ 可以将丢包率降低到 1% 以下，由 ARQ 负责丢包修复。而随着 RTT 的上涨，FEC 的保护占比增加，最终由 FEC 单独负责丢包修复。</p>
-<img src="opti-pic/rongyun.png" title="" alt="rongyun.png" width="555">
+<img title="" src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/rongyun.png" alt="rongyun.png" width="555">
 <ul>
 <li>
 <p><strong>抖动问题</strong>：<br />
@@ -433,7 +433,7 @@ WebRTC的JitterBuffer机制中，针对视频分别采用了基于卡尔曼滤�
 <p>（但是并没有说明是如何实现的）</p>
 <p>迈聆会议给出了GCC、BBR、PCC这三种已经在WebRTC新版本中集成的拥塞控制算法的测试和优缺点说明，阐述了自研拥塞控制算法的需求。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">○ 带宽限制: 500kbps  1mbps  2mbps</span><br><span class="line">○ 丢包限制: 10%         20%</span><br><span class="line">○ 延时限制:  100ms     200ms</span><br><span class="line">○ 抖动限制:   100ms    200ms</span><br><span class="line">○ 混合网损模拟A: 1mbps+10%+100ms延时</span><br><span class="line">○ 混合网损模拟B:  10%+100ms延时+100ms抖动</span><br></pre></td></tr></table></figure>
-<p><img src="opti-pic/mailing.jpeg" alt="mailing.jpeg" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/mailing.jpeg" alt="mailing.jpeg" /></p>
 <h3 id="腾讯"><a class="markdownIt-Anchor" href="#腾讯"></a> 腾讯</h3>
 <p>腾讯发布超低延时直播白皮书，其中腾讯认为原生WebRTC的音视频编码格式受限，音频不支持AAC，视频不支持H.265和B帧，不支持私有数据的透传，不支持可选加密限制了其在大规模直播场景的应用。且重传较为激进（为保证低延迟），这带来了大量的带宽浪费。因此腾讯基于WebRTC在适配低延迟直播方面进行了大量的优化升级。</p>
 <p>1、编码改造：</p>
@@ -456,7 +456,7 @@ WebRTC的JitterBuffer机制中，针对视频分别采用了基于卡尔曼滤�
 <li>
 <p>柔性分级传输：直播场景下主播和观众是1对多模型，个别观众的网络问题无法调整主播推流码率，因此采用柔性分级丢帧的传输策略来渐进式减低码率。</p>
 <p>net_score=1 / exp(k1 * rtt / rtt_max + k2 * loss_rate + k3 * retrans_rate) * 100</p>
-<p><img src="opti-pic/tencent.png" alt="tencent.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/tencent.png" alt="tencent.png" /></p>
 </li>
 <li>
 <p>自适应码率：扩展RTCP作为切流信令，服务端通过渐进式的超发来探测网络的承载能力作为切流决策依据</p>
@@ -474,14 +474,14 @@ WebRTC的JitterBuffer机制中，针对视频分别采用了基于卡尔曼滤�
 <h3 id="即构科技"><a class="markdownIt-Anchor" href="#即构科技"></a> 即构科技</h3>
 <p>如何实现70%丢包下音视频的高可用：<a target="_blank" rel="noopener" href="https://blog.csdn.net/zego_0616/article/details/118763442?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165519040216781685310839%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&amp;request_id=165519040216781685310839&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-118763442-null-null.nonecase&amp;utm_term=%E9%AB%98%E5%8F%AF%E7%94%A8&amp;spm=1018.2226.3001.4450">信令篇</a>、<a target="_blank" rel="noopener" href="https://blog.csdn.net/zego_0616/article/details/118897182?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165519040216781685310839%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&amp;request_id=165519040216781685310839&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-2-118897182-null-null.nonecase&amp;utm_term=%E9%AB%98%E5%8F%AF%E7%94%A8&amp;spm=1018.2226.3001.4450">数据篇</a></p>
 <p>与融云相似，即构也在<strong>融合ARQ和FEC</strong>方面发力。ARQ和FEC各有优劣，适用于不同的场景。</p>
-<p><img src="opti-pic/jigou1.png" alt="jigou1.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/jigou1.png" alt="jigou1.png" /></p>
 <p>混合ARQ与FEC的智能策略应当充分考虑网络情况，根据RTT和丢包率来智能地决定使用FEC还是ARQ，以及二者都使用时各自的比例。</p>
-<p><img src="opti-pic/jigou2.png" alt="jigou2.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/jigou2.png" alt="jigou2.png" /></p>
 <p>此外，当GCC估计出带宽后，仍需要进行<strong>合理的带宽分配</strong>。发送端需要把带宽分配给原始数据包、FEC校验包、ARQ重传包，而分配的依据则是网络情况（包括RTT和丢包率等因素）。</p>
 <p>冗余数据包的带宽分配得越多，纠错能力就越强，然而原始数据包就相应分配得越少，实时视频的质量就会降低；</p>
 <p>冗余数据包的带宽分配得越少，纠错能力越弱，但原始数据包的带宽分配也更多，质量得到了保障。</p>
 <p>合理的带宽分配就是在视频质量和纠错能力之间寻找平衡点：</p>
-<p><img src="opti-pic/jigou3.png" alt="jigou3.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/jigou3.png" alt="jigou3.png" /></p>
 <h3 id="百度智能云"><a class="markdownIt-Anchor" href="#百度智能云"></a> 百度智能云</h3>
 <p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040794703">百度智能云抗弱网技术</a></p>
 <p>百度智能云总结了Transport-cc的设计不足，并在抗弱网方面给出了自己的实践解决方案。其优化策略与上述公司存在很多重合之处。</p>
@@ -511,13 +511,13 @@ WebRTC的JitterBuffer机制中，针对视频分别采用了基于卡尔曼滤�
 </li>
 <li>
 <p>增强丢包抗性：</p>
-<p><img src="opti-pic/baidu1.png" alt="baidu1.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/baidu1.png" alt="baidu1.png" /></p>
 <p>将丢包的情况分类为：拥塞丢包、非拥塞丢包和偶发丢包。</p>
 <p>非拥塞丢包场景下，个体的避让对整体信号质量的影响有限，为了保证视频的流畅，我们不能降低带宽，需要发送更多的数据包，将带宽分配给纠错部分。目前，还很难解决拥塞丢包问题。偶发丢包问题可能是非持续的网络信号抖动，无需通过降低带宽来优化。</p>
 </li>
 <li>
 <p>增强乱序抖动抗性：</p>
-<p><img src="opti-pic/baidu2.png" alt="baidu2.png" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/rtc-improve/baidu2.png" alt="baidu2.png" /></p>
 <p>带宽估计对乱序抖动的适应性较差。为此，我们需要避免将乱序误判为丢包。在存在一定丢包的情况下，也应该考虑对乱序和延时的估计，提升对弱网的适应性。</p>
 </li>
 <li>
