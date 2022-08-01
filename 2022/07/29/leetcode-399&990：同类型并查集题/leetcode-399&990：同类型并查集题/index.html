@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.2","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="记录两道使用并查集解决的题目">
+<meta property="og:type" content="article">
+<meta property="og:title" content="leetcode-399&amp;990：同类型并查集题">
+<meta property="og:url" content="http://example.com/2022/07/29/leetcode-399&990%EF%BC%9A%E5%90%8C%E7%B1%BB%E5%9E%8B%E5%B9%B6%E6%9F%A5%E9%9B%86%E9%A2%98/leetcode-399&990%EF%BC%9A%E5%90%8C%E7%B1%BB%E5%9E%8B%E5%B9%B6%E6%9F%A5%E9%9B%86%E9%A2%98/index.html">
+<meta property="og:site_name" content="OliverPai">
+<meta property="og:description" content="记录两道使用并查集解决的题目">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/leetcode399/image_uyPLxy8f72.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/leetcode399/image__2sIpnBWIy.png">
+<meta property="article:published_time" content="2022-07-29T14:35:57.000Z">
+<meta property="article:modified_time" content="2022-08-01T08:53:20.170Z">
+<meta property="article:author" content="OliverPai">
+<meta property="article:tag" content="刷题">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/leetcode399/image_uyPLxy8f72.png">
+
+
+<link rel="canonical" href="http://example.com/2022/07/29/leetcode-399&990%EF%BC%9A%E5%90%8C%E7%B1%BB%E5%9E%8B%E5%B9%B6%E6%9F%A5%E9%9B%86%E9%A2%98/leetcode-399&990%EF%BC%9A%E5%90%8C%E7%B1%BB%E5%9E%8B%E5%B9%B6%E6%9F%A5%E9%9B%86%E9%A2%98/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/07/29/leetcode-399&990%EF%BC%9A%E5%90%8C%E7%B1%BB%E5%9E%8B%E5%B9%B6%E6%9F%A5%E9%9B%86%E9%A2%98/leetcode-399&990%EF%BC%9A%E5%90%8C%E7%B1%BB%E5%9E%8B%E5%B9%B6%E6%9F%A5%E9%9B%86%E9%A2%98/","path":"2022/07/29/leetcode-399&990：同类型并查集题/leetcode-399&990：同类型并查集题/","title":"leetcode-399&990：同类型并查集题"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>leetcode-399&990：同类型并查集题 | OliverPai</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="OliverPai" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">OliverPai</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">落叶本就是假的</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B1%82%E8%A7%A3%E6%80%9D%E8%B7%AF%E5%B9%B6%E6%9F%A5%E9%9B%86"><span class="nav-number">1.</span> <span class="nav-text"> 求解思路：并查集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B6%E6%9F%A5%E9%9B%86%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.1.</span> <span class="nav-text"> 并查集简要介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%B9%B6%E6%9F%A5%E9%9B%86%E8%A7%A3%E5%86%B3%E6%9C%AC%E9%A2%98"><span class="nav-number">1.2.</span> <span class="nav-text"> 使用并查集解决本题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E4%BC%BC%E9%A2%98leetcode990%E7%AD%89%E5%BC%8F%E6%96%B9%E7%A8%8B%E7%9A%84%E5%8F%AF%E6%BB%A1%E8%B6%B3%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text"> 相似题：leetcode#990–等式方程的可满足性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF%E5%B9%B6%E6%9F%A5%E9%9B%86"><span class="nav-number">2.1.</span> <span class="nav-text"> 思路：并查集</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="OliverPai"
+      src="/images/avatar-star.png">
+  <p class="site-author-name" itemprop="name">OliverPai</p>
+  <div class="site-description" itemprop="description">求索与记录</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OliverPai" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OliverPai" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/29/leetcode-399&990%EF%BC%9A%E5%90%8C%E7%B1%BB%E5%9E%8B%E5%B9%B6%E6%9F%A5%E9%9B%86%E9%A2%98/leetcode-399&990%EF%BC%9A%E5%90%8C%E7%B1%BB%E5%9E%8B%E5%B9%B6%E6%9F%A5%E9%9B%86%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-star.png">
+      <meta itemprop="name" content="OliverPai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="OliverPai">
+      <meta itemprop="description" content="求索与记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="leetcode-399&990：同类型并查集题 | OliverPai">
+      <meta itemprop="description" content="记录两道使用并查集解决的题目">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          leetcode-399&990：同类型并查集题
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-07-29 22:35:57" itemprop="dateCreated datePublished" datetime="2022-07-29T22:35:57+08:00">2022-07-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-08-01 16:53:20" itemprop="dateModified" datetime="2022-08-01T16:53:20+08:00">2022-08-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">算法与数据结构</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">记录两道使用并查集解决的题目</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>给你一个变量对数组 <code>equations</code>和一个实数值数组 <code>values</code> 作为已知条件，其中 <code>equations[i] = [Ai, Bi]</code> 和 <code>values[i]</code> 共同表示等式 <code>Ai / Bi = values[i]</code> 。每个 <code>Ai</code> 或 <code>Bi</code> 是一个表示单个变量的字符串。</p>
+<p>另有一些以数组 <code>queries</code> 表示的问题，其中 <code>queries[j] = [Cj, Dj]</code> 表示第 <code>j</code> 个问题，请你根据已知条件找出 <code>Cj / Dj = ?</code> 的结果作为答案。</p>
+<p>返回 <strong>所有问题的答案</strong> 。如果存在某个无法确定的答案，则用 <code>-1.0</code>替代这个答案。如果问题中出现了给定的已知条件中没有出现的字符串，也需要用 <code>-1.0</code> 替代这个答案。</p>
+<p><strong>注意</strong>：输入总是有效的。你可以假设除法运算中不会出现除数为 0 的情况，且不存在任何矛盾的结果。</p>
+<p><strong>示例1</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">输入：equations = [[&quot;a&quot;,&quot;b&quot;],[&quot;b&quot;,&quot;c&quot;]], values = [2.0,3.0]</span><br><span class="line">     queries = [[&quot;a&quot;,&quot;c&quot;],[&quot;b&quot;,&quot;a&quot;],[&quot;a&quot;,&quot;e&quot;],[&quot;a&quot;,&quot;a&quot;],[&quot;x&quot;,&quot;x&quot;]]</span><br><span class="line">输出：[6.00000,0.50000,-1.00000,1.00000,-1.00000]</span><br><span class="line">解释：</span><br><span class="line">条件：a / b = 2.0, b / c = 3.0</span><br><span class="line">问题：a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ?</span><br><span class="line">结果：[6.0, 0.5, -1.0, 1.0, -1.0 ]</span><br></pre></td></tr></table></figure>
+<p><strong>示例2</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：equations = [[&quot;a&quot;,&quot;b&quot;],[&quot;b&quot;,&quot;c&quot;],[&quot;bc&quot;,&quot;cd&quot;]], values = [1.5,2.5,5.0]</span><br><span class="line">     queries = [[&quot;a&quot;,&quot;c&quot;],[&quot;c&quot;,&quot;b&quot;],[&quot;bc&quot;,&quot;cd&quot;],[&quot;cd&quot;,&quot;bc&quot;]]</span><br><span class="line">输出：[3.75000,0.40000,5.00000,0.20000]</span><br></pre></td></tr></table></figure>
+<p><strong>示例3</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：equations = [[&quot;a&quot;,&quot;b&quot;]], values = [0.5]</span><br><span class="line">     queries = [[&quot;a&quot;,&quot;b&quot;],[&quot;b&quot;,&quot;a&quot;],[&quot;a&quot;,&quot;c&quot;],[&quot;x&quot;,&quot;y&quot;]]</span><br><span class="line">输出：[0.50000,2.00000,-1.00000,-1.00000]</span><br></pre></td></tr></table></figure>
+<h2 id="求解思路并查集"><a class="markdownIt-Anchor" href="#求解思路并查集"></a> 求解思路：并查集</h2>
+<p>equations中每次输入的变量都可以看做是，输入进了两个节点，而values相对应的值就是两个节点间的权重。以上面的示例1为例，可以构建下面这样的图结构：</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/leetcode399/image_uyPLxy8f72.png" alt="" /></p>
+<p>左边的图很容易构建，而其等价于右边，如果能够得到右边的图，a/c就好算了：a→b的权值乘上b→c的权值。因此，最重要的一点在于：从左边的图转化到右边的图，而这也就是不同小图合并到一张图的过程，也是<strong>不同集合合并到一个集合</strong>的过程，因此可以考虑利用并查集完成题目。</p>
+<h3 id="并查集简要介绍"><a class="markdownIt-Anchor" href="#并查集简要介绍"></a> 并查集简要介绍</h3>
+<p>并查集本质是每个集合都是一棵树，树根的编号即为整个集合的编号，每个节点存储其父节点，比如p[x]表示x的父节点。并查集的基本操作为：</p>
+<ol>
+<li>
+<p><strong>初始化</strong>：每个节点都作为自己的根<code>for all x : p[x]=x</code></p>
+</li>
+<li>
+<p><strong>判断节点是否为树根</strong>（能判断出来，就可以知道所有子节点都属于哪个集合）：<code>if(p[x]==x)</code></p>
+</li>
+<li>
+<p><strong>合并集合</strong>：比如px是x所在的集合编号，而py是y所在的集合编号，那么将两集合合并–<code>p[px]=py</code></p>
+</li>
+<li>
+<p><strong>查询与路径压缩优化</strong>：当一个很深的节点，想查询其集合编号时，会走很远的路才能查到树根，这导致查询和集合合并的效率较低。路径压缩就是，当这个节点查询一遍后，它、它原来的父节点、它原来的祖父节点等等，全都将父节点指向树根，即查询一遍后，这些节点都p[x]=树根。这样再次查询时，之前的O(N)时间复杂度降为了O(1)。如下图为路径压缩的演示：</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/leetcode399/image__2sIpnBWIy.png" alt="" /></p>
+<p>体现到代码上，就是：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">find</span><span class="params">(<span class="type">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (p[x] != x) p[x] = <span class="built_in">find</span>(p[x]);<span class="comment">//找到编号的同时做了路径压缩</span></span><br><span class="line">    <span class="keyword">return</span> p[x];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>递归实现了在查询x的集合树根节点时，x的父节点、祖父节点等，都将p[x]更新为集合的树根节点。</p>
+<p>实现了边查询，边做路径压缩。</p>
+</li>
+</ol>
+<p>而在本题中，那么还是以示例1为例，最开始无相关之间的关系，三个元素abc各自为根。之后构建了a→b这颗树，此时<code>p[a]=b,p[b]=b</code>，两个节点归属到同一个集合中。那么遍历到b→c时，由于目前<code>p[b]=b,p[c]=c</code>不在一个集合内，values的值又显示它们应当在一个集合里，这时就要把两个集合（树根为b和树根为c的集合）合并：<code>p[b]=p[c]</code>，至此abc三个节点进入一张图。之后再对a的集合编号进行查询时，由于路径压缩，p[a]会被更新为c。</p>
+<h3 id="使用并查集解决本题"><a class="markdownIt-Anchor" href="#使用并查集解决本题"></a> 使用并查集解决本题</h3>
+<p>前面提到，values对应的就是两个节点间，边的权重，因此除了parent数组（p[x]），记录每个节点的父节点，还需要一个weight数组，记录每个节点与其父节点之间，边的权重。由于在初始化阶段，各节点各自为根，因此，每个节点的<code>weight[x]=1</code>。但在合并过程中，还需要更新权重<code>weight[x]</code>。为了推出权重的更新公式，考虑以下几种情况：</p>
+<ol>
+<li>
+<p>当单纯路径压缩时：<code>weight[x] = weight[x] * 其上面所有权重之积</code>；</p>
+</li>
+<li>
+<p>当合并x和y所在集合时：先<code>px = find(x), py = find(y)</code>，此时查询的过程中已经执行了路径压缩，px是x集合的树根，py也是y集合的树根，执行合并操作<code>p[px]=py</code></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">               weight[px]</span><br><span class="line">           px ---------&gt; py</span><br><span class="line">           ^             ^</span><br><span class="line">weight[x] /             / weight[y]</span><br><span class="line">         /  values[i]  /</span><br><span class="line">        x ------------&gt;y </span><br></pre></td></tr></table></figure>
+<p><code>weight[x]</code>仍是x到px之间的权重，目前还没有对其路径压缩，而<code>weight[y]</code>仍是y到py之间的权重，但是<code>weight[px]</code>却变了，为了计算<code>weight[px]</code>可以参考上图，由于<code>values[i]</code>刻画了x→y的比值，因此从x到py有两条路可走：x→px→py和x→y→py，所以<code>weights[x]*weight[px] == values[i]*weight[y]</code>，那么便可以推导出这种情况下的权重更新公式：</p>
+<p><code>weight[px] = values[i] * weight[y] / weight[x];</code></p>
+</li>
+</ol>
+<p>两种情况体现在代码上就是：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">pfind</span><span class="params">(<span class="type">int</span> x)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(p[x]!=x) &#123;</span><br><span class="line">        <span class="type">int</span> tmp_head = <span class="built_in">pfind</span>(p[x]);</span><br><span class="line">        weight[x] *= weight[p[x]];</span><br><span class="line">        p[x] = tmp_head;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> p[x];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">........</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> px = <span class="built_in">pfind</span>(x), py = <span class="built_in">pfind</span>(y);</span><br><span class="line"><span class="keyword">if</span>(px != py) &#123;</span><br><span class="line">    p[px] = py;</span><br><span class="line">    weight[px] = values[i]*weight[y] / weight[x];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样，当所有equations的元素都遍历完了，该合并的集合就已经合并完了。此时可能会存在多个集合，多个集合间绝对是没有交集的。</p>
+<p>因此在query的时候，如果queries中某元素的两个节点都在一个集合内，比如<code>p[m] == p[n]</code>，那么它们之间的比值就是(m/树根)/(n/树根)=<code>weights[m]/weights[n]</code>；如果两节点不在一个集合内，无法计算它们之间的比值，输出-1。</p>
+<p><strong>代码：</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;<span class="type">double</span>&gt; weight;</span><br><span class="line">  vector&lt;<span class="type">double</span>&gt; p;</span><br><span class="line">  <span class="function"><span class="type">int</span> <span class="title">pfind</span><span class="params">(<span class="type">int</span> x)</span></span>&#123;</span><br><span class="line">      <span class="keyword">if</span>(p[x]!=x) &#123;</span><br><span class="line">          <span class="type">int</span> tmp_head = <span class="built_in">pfind</span>(p[x]);</span><br><span class="line">          weight[x] *= weight[p[x]];</span><br><span class="line">          p[x] = tmp_head;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> p[x];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function">vector&lt;<span class="type">double</span>&gt; <span class="title">calcEquation</span><span class="params">(vector&lt;vector&lt;string&gt;&gt;&amp; equations, vector&lt;<span class="type">double</span>&gt;&amp; values,</span></span></span><br><span class="line"><span class="params"><span class="function">                              vector&lt;vector&lt;string&gt;&gt;&amp; queries)</span> </span>&#123;</span><br><span class="line">      unordered_set&lt;string&gt; names;</span><br><span class="line">      unordered_map&lt;string, <span class="type">int</span>&gt; names_idx;</span><br><span class="line">      vector&lt;<span class="type">double</span>&gt; res;</span><br><span class="line">      <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; x : equations) &#123;</span><br><span class="line">          names.<span class="built_in">insert</span>(x[<span class="number">0</span>]);</span><br><span class="line">          names.<span class="built_in">insert</span>(x[<span class="number">1</span>]);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="type">int</span> n = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; x : names) names_idx[x] = ++n;</span><br><span class="line">      p.<span class="built_in">resize</span>(n+<span class="number">1</span>);</span><br><span class="line">      weight.<span class="built_in">resize</span>(n+<span class="number">1</span>);</span><br><span class="line">      <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">          p[i] = i;</span><br><span class="line">          weight[i] = <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; equations.<span class="built_in">size</span>(); ++i)&#123;</span><br><span class="line">          <span class="type">int</span> x = names_idx[equations[i][<span class="number">0</span>]], y = names_idx[equations[i][<span class="number">1</span>]];</span><br><span class="line">          <span class="type">int</span> px = <span class="built_in">pfind</span>(x), py = <span class="built_in">pfind</span>(y);</span><br><span class="line">          <span class="keyword">if</span>(px != py) &#123;</span><br><span class="line">              p[px] = py;</span><br><span class="line">              weight[px] = values[i]*weight[y] / weight[x];</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; query : queries)&#123;</span><br><span class="line">          <span class="keyword">if</span>(names.<span class="built_in">count</span>(query[<span class="number">0</span>]) &amp;&amp; names.<span class="built_in">count</span>(query[<span class="number">1</span>])) &#123;</span><br><span class="line">              <span class="type">int</span> x = names_idx[query[<span class="number">0</span>]], y = names_idx[query[<span class="number">1</span>]];</span><br><span class="line">              <span class="keyword">if</span>(<span class="built_in">pfind</span>(x) != <span class="built_in">pfind</span>(y)) res.<span class="built_in">push_back</span>(<span class="number">-1</span>);</span><br><span class="line">              <span class="keyword">else</span> res.<span class="built_in">push_back</span>(weight[x]/weight[y]);</span><br><span class="line">          &#125; <span class="keyword">else</span> res.<span class="built_in">push_back</span>(<span class="number">-1</span>); </span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> res;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="相似题leetcode990等式方程的可满足性"><a class="markdownIt-Anchor" href="#相似题leetcode990等式方程的可满足性"></a> 相似题：leetcode#990–等式方程的可满足性</h2>
+<p>给定一个由表示变量之间关系的字符串方程组成的数组，每个字符串方程 <code>equations[i]</code> 的长度为 4，并采用两种不同的形式之一：<code>&quot;a==b&quot;</code> 或 <code>&quot;a!=b&quot;</code>。在这里，a 和 b 是小写字母（不一定不同），表示单字母变量名。</p>
+<p>只有当可以将整数分配给变量名，以便满足所有给定的方程时才返回 <code>true</code>，否则返回 <code>false</code>。</p>
+<p><strong>示例1</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">输入：[&quot;a==b&quot;,&quot;b!=a&quot;]</span><br><span class="line">输出：false</span><br><span class="line">解释：如果我们指定，a = 1 且 b = 1，那么可以满足第一个方程，但无法满足第二个方程。</span><br><span class="line">     没有办法分配变量同时满足这两个方程。</span><br></pre></td></tr></table></figure>
+<p><strong>示例2</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：[&quot;b==a&quot;,&quot;a==b&quot;]</span><br><span class="line">输出：true</span><br><span class="line">解释：我们可以指定 a = 1 且 b = 1 以满足满足这两个方程。</span><br></pre></td></tr></table></figure>
+<p><strong>示例3</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：[&quot;a==b&quot;,&quot;b==c&quot;,&quot;a==c&quot;]</span><br><span class="line">输出：true</span><br></pre></td></tr></table></figure>
+<p><strong>示例4</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：[&quot;a==b&quot;,&quot;b!=c&quot;,&quot;c==a&quot;]</span><br><span class="line">输出：false</span><br></pre></td></tr></table></figure>
+<h3 id="思路并查集"><a class="markdownIt-Anchor" href="#思路并查集"></a> 思路：并查集</h3>
+<p>此题是上一道题的简化版，当equations的元素描述的是相等关系，那么就可以将这两者归于同一个集合中，否则不应该在一个集合里。需要注意的是，需要先对equations排个序，让描述<mark>的元素排在前面，描述≠的元素排在后面。当遍历到</mark>时，将左右两边节点的集合合并；当遍历到 ≠时，如果发现左右两边的节点，此时处于同一个集合中，就说明方程组是前后矛盾，不成立的。</p>
+<p><strong>代码</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;<span class="type">int</span>&gt; p;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">pfind</span><span class="params">(<span class="type">int</span> x)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(x != p[x]) p[x] = <span class="built_in">pfind</span>(p[x]);</span><br><span class="line">    <span class="keyword">return</span> p[x];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">equationsPossible</span><span class="params">(vector&lt;string&gt;&amp; equations)</span> </span>&#123;</span><br><span class="line">    unordered_set&lt;<span class="type">char</span>&gt; names;</span><br><span class="line">    unordered_map&lt;<span class="type">char</span>, <span class="type">int</span>&gt; names_idx;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; item : equations) &#123;</span><br><span class="line">        names.<span class="built_in">insert</span>(item[<span class="number">0</span>]);</span><br><span class="line">        names.<span class="built_in">insert</span>(item[<span class="number">3</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> n = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; name : names) names_idx[name] = ++n;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt;= n; ++i) p.<span class="built_in">push_back</span>(i);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">sort</span>(equations.<span class="built_in">begin</span>(), equations.<span class="built_in">end</span>(), [](string a, string b)&#123;</span><br><span class="line">        <span class="keyword">if</span>(a[<span class="number">1</span>]==<span class="string">&#x27;=&#x27;</span> &amp;&amp; b[<span class="number">1</span>]==<span class="string">&#x27;!&#x27;</span>) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; item : equations)&#123;</span><br><span class="line">        <span class="type">int</span> x = names_idx[item[<span class="number">0</span>]], y = names_idx[item[<span class="number">3</span>]];</span><br><span class="line">        <span class="keyword">if</span>(item[<span class="number">1</span>] == <span class="string">&#x27;=&#x27;</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span>(<span class="built_in">pfind</span>(x)!=<span class="built_in">pfind</span>(y)) p[<span class="built_in">pfind</span>(x)] = <span class="built_in">pfind</span>(y);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span>(<span class="built_in">pfind</span>(x) == <span class="built_in">pfind</span>(y)) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%88%B7%E9%A2%98/" rel="tag"># 刷题</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/07/23/leetcode-1094%EF%BC%9A%E6%8B%BC%E8%BD%A6/" rel="prev" title="leetcode-1094：拼车">
+                  <i class="fa fa-chevron-left"></i> leetcode-1094：拼车
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/08/01/leetcode-42&84&85%EF%BC%9A%E4%B8%89%E9%81%93%E5%8D%95%E8%B0%83%E6%A0%88%E7%9A%84%E9%A2%98/leetcode-42&84&85%EF%BC%9A%E4%B8%89%E9%81%93%E5%8D%95%E8%B0%83%E6%A0%88%E7%9A%84%E9%A2%98/" rel="next" title="leetcode-42&84&85：三道单调栈的题">
+                  leetcode-42&84&85：三道单调栈的题 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">OliverPai</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.0/katex.min.css" integrity="sha256-uik/hNqHWZldXh/0K35nqOSCff9F61/ZOFReqNOBgB0=" crossorigin="anonymous">
+
+
+
+</body>
+</html>
