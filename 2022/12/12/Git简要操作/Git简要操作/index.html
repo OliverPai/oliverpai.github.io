@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico">
+  <link rel="mask-icon" href="/images/favicon.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.2","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Wolai版笔记：https:&#x2F;&#x2F;www.wolai.com&#x2F;mHB57JR5GoAfZaDX8zXMVC 。主要介绍一些Git的常用用法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git简要介绍">
+<meta property="og:url" content="http://example.com/2022/12/12/Git%E7%AE%80%E8%A6%81%E6%93%8D%E4%BD%9C/Git%E7%AE%80%E8%A6%81%E6%93%8D%E4%BD%9C/index.html">
+<meta property="og:site_name" content="OliverPai">
+<meta property="og:description" content="Wolai版笔记：https:&#x2F;&#x2F;www.wolai.com&#x2F;mHB57JR5GoAfZaDX8zXMVC 。主要介绍一些Git的常用用法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/git.jpg">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image-20221212230334640.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_WBhRTdA5wa.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_zX0dvz30Pd.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_cP0mbsbVoW.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_-ISIELvUU2.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_B-vlmb7hhR.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_Q_FRe2oQxI.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_zjMG0GwXkZ.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_epvEc9NuY3.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_WQU-LgqMHx.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_6GvPMgFrG_.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image__BluZkfpne.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_CXXzbfyWTu.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_RZ9mD7WKJo.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_X6-9qp6aKc.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_NGlVRZdsTg.png">
+<meta property="og:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_A9jG2PsKYW.png">
+<meta property="article:published_time" content="2022-12-12T14:54:00.000Z">
+<meta property="article:modified_time" content="2022-12-12T15:05:08.526Z">
+<meta property="article:author" content="OliverPai">
+<meta property="article:tag" content="工具">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/git.jpg">
+
+
+<link rel="canonical" href="http://example.com/2022/12/12/Git%E7%AE%80%E8%A6%81%E6%93%8D%E4%BD%9C/Git%E7%AE%80%E8%A6%81%E6%93%8D%E4%BD%9C/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/12/12/Git%E7%AE%80%E8%A6%81%E6%93%8D%E4%BD%9C/Git%E7%AE%80%E8%A6%81%E6%93%8D%E4%BD%9C/","path":"2022/12/12/Git简要操作/Git简要操作/","title":"Git简要介绍"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Git简要介绍 | OliverPai</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="OliverPai" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">OliverPai</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">落叶本就是假的</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%90%E4%BA%A4"><span class="nav-number">1.</span> <span class="nav-text"> 提交</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9E%E6%BB%9A"><span class="nav-number">2.</span> <span class="nav-text"> 回滚</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E6%94%AF"><span class="nav-number">3.</span> <span class="nav-text"> 分支</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93"><span class="nav-number">4.</span> <span class="nav-text"> 远程仓库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%87%E7%AD%BE"><span class="nav-number">5.</span> <span class="nav-text"> 标签</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="OliverPai"
+      src="/images/avatar-star.png">
+  <p class="site-author-name" itemprop="name">OliverPai</p>
+  <div class="site-description" itemprop="description">求索与记录</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/OliverPai" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;OliverPai" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/12/Git%E7%AE%80%E8%A6%81%E6%93%8D%E4%BD%9C/Git%E7%AE%80%E8%A6%81%E6%93%8D%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar-star.png">
+      <meta itemprop="name" content="OliverPai">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="OliverPai">
+      <meta itemprop="description" content="求索与记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Git简要介绍 | OliverPai">
+      <meta itemprop="description" content="Wolai版笔记：https://www.wolai.com/mHB57JR5GoAfZaDX8zXMVC 。主要介绍一些Git的常用用法。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Git简要介绍
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-12-12 22:54:00 / 修改时间：23:05:08" itemprop="dateCreated datePublished" datetime="2022-12-12T22:54:00+08:00">2022-12-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">Wolai版笔记：https://www.wolai.com/mHB57JR5GoAfZaDX8zXMVC 。主要介绍一些Git的常用用法。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>参考：B站up主“冯雨”的<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1db4y1d79C/?spm_id_from=333.999.0.0&amp;vd_source=9c16706f7b5875153903faf53062a899" title="视频">视频</a>，vscode的图形化git要安装扩展：GitLens<br />
+                          “叼烟写单测”的<a target="_blank" rel="noopener" href="https://space.bilibili.com/35894086/search/video?keyword=git">视频</a><br />
+“太极图形”的<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1xG4y1V7K1/?spm_id_from=333.999.0.0&amp;vd_source=9c16706f7b5875153903faf53062a899" title="视频">视频</a><br />
+            廖雪峰的<a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/896043488029600" title="Git教程">Git教程</a></p>
+</blockquote>
+<p>本文思维导图：</p>
+<img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/git.jpg" alt="git"  />
+<h1 id="提交"><a class="markdownIt-Anchor" href="#提交"></a> 提交</h1>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image-20221212230334640.png" alt="image-20221212230334640" /></p>
+<ul>
+<li>
+<p>在准备用作仓库的文件夹中<code>git init</code></p>
+<p>若无初始化，<code>git status</code>时会提示当前文件夹不是仓库</p>
+</li>
+<li>
+<p>提交：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add -A <span class="comment"># -A表示把文件夹中的所有文件添加进暂存区(staging area)</span></span><br><span class="line"><span class="comment"># 若想单独将文件放入暂存区：git add &lt;file&gt;</span></span><br><span class="line">git commit -m <span class="string">&quot;提交信息&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_WBhRTdA5wa.png" alt="" /></p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_zX0dvz30Pd.png" alt="" /></p>
+<p>点击vscode的这个图标，会出现两个目录：更改和暂存的更改。改动了源码但是add执行前会放入“更改”，add后进入暂存的更改。</p>
+<ul>
+<li>
+<p>查看历史：<code>git log —stat</code></p>
+<p>每一次commit都会产生一个哈希值（commit号），用来标志这次提交（如果只想查看刚刚commit的状态，可以通过<code>git show</code>命令完成）</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_cP0mbsbVoW.png" alt="" /></p>
+<p>同样地，vscode也有图形化处理，在commit之后就会出现“commit”目录，里面有每一次commit：</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_-ISIELvUU2.png" alt="" /></p>
+</li>
+<li>
+<p>避免追踪一些文件</p>
+<p>一个文件夹中往往并不是所有文件都要被追踪更改、被加入暂存区。比如深度学习的项目中会有很多图片文件做训练集，它们是没必要被追踪的。这时可以利用.gitignore文件，其负责告诉git有哪些文件不必被追踪。如执行<code>nano .gitignore</code>后，添加</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*.png</span><br></pre></td></tr></table></figure>
+<p>那么文件夹中所有png文件都不会被追踪。（前提是.gitignore文件已被commit过）</p>
+</li>
+<li>
+<p>删除文件</p>
+<p>当想在文件夹中删除文件时，不要简单地使用<code>rm</code>命令，因为会导致工作区与暂存区不一致。所以需要：用命令<code>git rm</code>删掉，并且<code>git commit</code>。</p>
+<p>如果已经<code>rm</code>了，依然可以继续<code>git rm</code>和<code>git commit</code>，只要有<code>git rm</code>就不会出问题。</p>
+</li>
+</ul>
+<h1 id="回滚"><a class="markdownIt-Anchor" href="#回滚"></a> 回滚</h1>
+<ul>
+<li>
+<p>git版CTRL-Z：</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_B-vlmb7hhR.png" alt="" /></p>
+<p><code>git checkout &lt;file&gt;</code>等同于上面的第二个符号，用于在add前的回滚（工作区回滚，回到上一个版本）</p>
+</li>
+</ul>
+<p>如果已经commit了还要回滚，需要用<code>git reset HEAD^1</code>来进行回滚。HEAD表示当前分支上最近一次提交记录，即当前的commit。若要回到上一次commit，用HEAD<sup>1，其中</sup>1表示前一次的commit。</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_Q_FRe2oQxI.png" alt="" /></p>
+<p>→</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_zjMG0GwXkZ.png" alt="" /></p>
+<p>vscode中实现reset，当前在code里打开某文件。点击commit中的对应commit，右键undo commit。之后文件从仓库回到暂存区，点击减号退出暂存区，再到“更改”目录点击工作区回滚对应符号，对相应文件的回滚完成。</p>
+<p>如果想回滚到半年前的版本，自己的记忆又没有那么深刻，那么可以利用vscode的file history，上面具有commit的时间信息，点击对应的commit可以进行文件的今昔对比。</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_epvEc9NuY3.png" alt="" /></p>
+<h1 id="分支"><a class="markdownIt-Anchor" href="#分支"></a> 分支</h1>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b &lt;branchname&gt; <span class="comment"># 以当前分支为基础新建分支并切</span></span><br><span class="line">git branch                   <span class="comment"># 列举所有分支</span></span><br><span class="line">git checkout &lt;branchname&gt;    <span class="comment"># 单纯地切换到某个分支，等同于git switch &lt;branch&gt;</span></span><br><span class="line">git branch -D &lt;branchname&gt;   <span class="comment"># 删掉特定的分支</span></span><br><span class="line">git merge &lt;branchname&gt;       <span class="comment"># 合并branchname分支到当前分支中</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>📌master主分支应该是其他各分支的基础，所以在执行<code>git checkout -b &lt;branchname&gt;</code>时，当前分支应该提前切换到master分支，以主分支为根建分支。<br />
+比如a和b都是以master为基础新建的分支，那么修改a分支和b分支时，二者互不影响。</p>
+</blockquote>
+<p>但是在合并分支时很有可能出现<strong>合并冲突</strong>的情况，比如a分支和b分支都以master为基础，均做了修改，a向master合并了，这时b再合并，a和b就有了冲突的代码，vscode的源代码管理也会出现“合并更改”目录，包含存在冲突的文件。</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_WQU-LgqMHx.png" alt="" /></p>
+<p>这时候会有选项，Accept Current Change之类的，就可以选择是保存哪个分支的修改，抑或两个分支的修改都保留。</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_6GvPMgFrG_.png" alt="" /></p>
+<p>命令行实现上面的功能，用<code>git diff &lt;filename&gt; &lt;branch1&gt; &lt;branch2&gt;</code>查看不同分支对某一文件的修改区别。</p>
+<p>如果涉及冲突的文件特别多，那么vscode提供选项，可选全部采用哪种版本的修改。</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image__BluZkfpne.png" alt="" /></p>
+<p>当遇到自己没法判断的冲突时，需要<code>git merge --abort</code>放弃合并，再找能够解决问题的同事来分析。</p>
+<ul>
+<li>
+<p>查看分支历史：<code>git graph</code></p>
+<p>比如下面可以看到当前处于main分支，此外还有一个feature分支，在feature分支上做了两次提交：commit5和commit6。</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_CXXzbfyWTu.png" alt="" /></p>
+</li>
+<li>
+<p><code>merge</code> vs <code>rebase</code>（变基）：</p>
+<p>以下图为例，有两个分支：main和my_feature。my_feature建立分支后有三个commit，同时main也有了三个新commit。如果执行merge命令，git会尝试将两个分支的最新commit进行合并；而rebase的话（<code>git switch my_feature; git rebase main</code>），会执行一次回放操作：把my_feature的三个commit，尝试合并到main最新commit，抹除my_feature分支。</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_RZ9mD7WKJo.png" alt="" /></p>
+<ul>
+<li>merge的问题：加入了很多没有太大意义的merge commit，显得结构混乱，而rebase则使工作历史更加干净。</li>
+<li>merge的优点：没有触碰merge前的所有历史，而rebase修改了历史。那么多人协作若要回滚，merge更加有迹可循，知道是哪个分支的哪次commit造成的修改</li>
+</ul>
+<blockquote>
+<p>📌rebase需要解决过去历史中的conflict才可成功进行。</p>
+</blockquote>
+<ul>
+<li>黄金准则：不要rebase一个和别人共同工作的branch</li>
+</ul>
+</li>
+<li>
+<p>commit维度的合并：</p>
+<p>上面的merge和rebase都是以分支为维度进行合并，但是可能会需要仅合并某条分支上的某几个commit，比如下面的b分支，只想将b分支的4号commit合并到a分支，产生新的commit 4’。此时可以利用<code>git cherry-pick 4号commit</code>。此外cherry-pick还提供了几种操作。</p>
+</li>
+</ul>
+<img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_X6-9qp6aKc.png" style="zoom:50%;" />
+<ul>
+<li>
+<p>合并多个commit：如左图，执行下述命令，就会将b分支的4号和8号合并到a分支。（合并后的commit号是新的）</p>
+<p><code>git cherry-pick 4号commit 8号commit</code></p>
+</li>
+<li>
+<p>合并左开右闭区间的commit：b分支的6、8合并到a分支</p>
+<p><code>git cherry-pick 4号commit..8号commit</code></p>
+</li>
+<li>
+<p>合并闭区间的commit：b分支的4、6、8合并到a分支</p>
+<p><code>git cherry-pick 4号commit^..8号commit</code></p>
+</li>
+</ul>
+<p>用cherry-pick合并的过程也不可避免会有合并冲突，可以有两种解决方案：</p>
+<ol>
+<li>解决冲突：代码冲突解决后，<code>git add &lt;file&gt;</code>+<code>git cherry-pick --continue</code></li>
+<li>放弃合并，回滚：<code>git cherry-pick --abort</code></li>
+</ol>
+<ul>
+<li>
+<p>在不同分支间切来切去：</p>
+<p>比如正在dev分支上做修改，还没有修改完成，就被叫上去修改feature分支的内容了，这时又不能将dev上修改的内容直接提交。那么这个文件如果已经被add（可被追踪），就需要先执行<code>git stash</code>，表示将修改的内容进行缓存（压栈），且修改内容移除。之后便可跳到feature分支。</p>
+<p>当把feature分支的工作完成后，回到dev分支时，可以执行<code>git stash pop</code>，那么刚刚所作的修改就又回来了。</p>
+<blockquote>
+<p>📌<code>git stash</code>和<code>git stash save</code>是一样的。</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="远程仓库"><a class="markdownIt-Anchor" href="#远程仓库"></a> 远程仓库</h1>
+<ul>
+<li>
+<p><code>git remote add origin https://github.com/username/repo-name.git</code>：</p>
+<p>将github上的远程仓库绑定，以origin为名在本地标记，相当于一个新分支。添加好远程仓库后，就可以用<code>git remote -v</code>查看有哪些远程仓库的标记。</p>
+<p>若要解除某个remote的绑定，比如origin，则：<code>git remote rm origin</code></p>
+</li>
+<li>
+<p><code>git branch -M main</code>：因为人权运动，github上不再有master分支，需改名为main</p>
+</li>
+<li>
+<p><code>git push -u origin main</code>：将本地main分支的内容push到远程仓库（origin）的main/master分支。只有第一次推送时才需要<code>-u</code>参数。</p>
+</li>
+</ul>
+<blockquote>
+<p>📌上面是将本地的代码第一次提交到远程仓库的步骤。如果是将已有的远程仓库克隆下来再修改，<code>git clone</code>自动会让文件夹为仓库且有名为origin的远程仓库标记，直接push/pull即可。</p>
+</blockquote>
+<ol>
+<li>
+<p>origin的含义：</p>
+<p>origin表示远程仓库在本地的一个指针，通过此指针对远程仓库进行push/pull，也就是origin实际上指向origin/main这个远程分支。</p>
+<p>github指导用户添加远程仓库时，命名为origin，并且执行<code>git clone</code>的时候其实git自动将clone的远程仓库指针命名为origin。</p>
+<p><code>git merge origin master</code>并不是直接将远程仓库代码合并到本地的master，而是可以感性地理解为将本地的origin分支合并到本地的master。</p>
+<p>但是，对于github上开源项目的维护，一般并不是直接提交到origin/master，因为没有权限。即使有权限，直接提交到origin/master也是一项危险的操作。所以往往会创建一个新remote，并在本地建立一个新分支，详情在后面的“多人协作”。</p>
+</li>
+<li>
+<p>pull和fetch的区别：</p>
+<ul>
+<li>fetch：仅下载远程repo，即更新origin/master（或其他remote）的最新commit</li>
+<li>pull：下载远程repo并合并，即pull=fetch+merge<br />
+相比之下，fetch是一个更为保险的操作。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git fetch                    <span class="comment"># fetch all branches</span></span><br><span class="line">git fetch &lt;remote&gt; &lt;branch&gt;  <span class="comment"># fetch one branch</span></span><br><span class="line">git pull 或 git pull &lt;remote&gt; &lt;branch&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>push时的合并冲突：</p>
+<p>在push的时候可能也会出现合并冲突。因为在本地修改的时候，可能远程仓库已经被其他人提交了更改，这时要尽可能保持与最新版本代码的一致。需要<strong>先pull，再修改，再push</strong>（要求push的必须是已经领先于远程的）</p>
+<p>那么为了避免上述合并冲突情况的发生，所以一般建议在修改前更新本地代码：<code>git branch -u origin/master</code></p>
+</li>
+<li>
+<p>fork仓拉取：</p>
+<ul>
+<li>
+<p>自己是主仓，拉取fork仓的内容：</p>
+<p>在提交到远程仓库后，该仓库作为主仓，可被其他用户来fork，这时在拉取的时候既可以拉取自己的主仓，也可以拉取其他人的fork仓。可以直接按他人的仓库地址新建remote，拉取即可。</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_NGlVRZdsTg.png" alt="" /></p>
+</li>
+<li>
+<p>自己是fork仓，拉取主仓的内容：</p>
+<p>自己在fork时，仓库除了有默认的remote origin外，还有一个remote: upstream，来绑定上游仓库，主仓就是自己的上游仓库。</p>
+<p>此时的git pull或git pull origin master是将远程的fork仓拉到本地，而非上游仓库，若要将上游仓库拉到本地，需要用<code>git pull upstream master</code>。</p>
+<p>若要同步远程的fork仓，将拉取后的内容合并到仓库：<code>git merge upstream/master</code></p>
+<blockquote>
+<p>📌如果上游仓库的地址出现了变更，比如从ssh://变成https://，可以：<br />
+<code>git remote remove upstream ssh://...</code>移除上游仓库地址，再<br />
+<code>git remote add upstream https://...</code>重新添加正确地址。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>
+<p>多人协作规范（以github为例）：</p>
+<p>对于一个大型开源项目而言，前面说到直接push到origin/master不现实而且风险比较大。 如果要对大型项目进行更改，并且提交到上游：</p>
+<ol>
+<li>
+<p><code>git clone 主仓</code>，同时fork主仓x，得到自己的仓y；</p>
+</li>
+<li>
+<p>添加新remote，并且禁用remote origin的push权限：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git remote add 新remote名 y的地址</span><br><span class="line">git remote set-url --push origin no-push <span class="comment">#禁用origin的push权限</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>在本地开一个新branch，在此branch中而非master分支去修改代码；</p>
+</li>
+<li>
+<p>修改后commit，再<code>git push 新remote名 本地新branch名</code>推到y仓；</p>
+</li>
+<li>
+<p>命令行出现提交PR的网页链接，进入页面，描述问题后，提交PR</p>
+<p><img src="https://oliverpai-post-pics.oss-cn-hangzhou.aliyuncs.com/image/git-tutorial/image_A9jG2PsKYW.png" alt="" /></p>
+</li>
+<li>
+<p>等待项目管理者code review，管理者可能会提出修改意见，此时根据意见再在本地修改。修改完成后仍执行<code>git push 新remote名 本地新branch名</code>，已开启的PR也会更新。如果管理者认可了修改，会在github上跑该项目预先的测试用例（CITest, Continuous Integration，持续集成测试），一般只有全部测试通过，才会被merge进主仓x。</p>
+</li>
+</ol>
+<blockquote>
+<p>📌太极图形的Github开发建议：<br />
+1. 不要在master分支直接进行操作，先开个branch<br />
+2. 一个PR尽量只包含一个commit，清楚的写明干了啥（一件事）<br />
+3. 提交PR的人应该优先考虑如何让review变得简单且快速<br />
+    “为什么要提这个PR，这个PR干了什么，怎么干的，还剩什么没干”</p>
+</blockquote>
+</li>
+</ol>
+<h1 id="标签"><a class="markdownIt-Anchor" href="#标签"></a> 标签</h1>
+<p>实际使用中，当发布一个版本时，通常会给这个commit打一个标签，将标签与commit绑定，赋予commit意义的同时易于寻找。比如commit号是6a5819e很难记，但是他正巧是发布的v1.2版本，那么就可以给这个commit打标签：v1.2。之后按照tag v1.2寻找此commit即可。</p>
+<ul>
+<li>创建标签：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git tag v1.0         <span class="comment"># 当前分支的最新commit标签为v1.0</span></span><br><span class="line">git tag              <span class="comment"># 查看所有标签</span></span><br><span class="line">git tag v0.9 f52c633 <span class="comment"># 将commit号为f52c633的commit，打标签v0.9</span></span><br><span class="line">git show v0.9        <span class="comment"># 显示标签信息</span></span><br><span class="line"><span class="comment"># -a指定标签名，-m指定说明文字</span></span><br><span class="line">git tag -a v0.1 -m <span class="string">&quot;version 0.1 released&quot;</span> 1094adb </span><br></pre></td></tr></table></figure>
+</li>
+<li>推送标签到远程：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git push origin &lt;tagname&gt;</span><br><span class="line">git push origin --tags <span class="comment"># 一次性推送全部尚未推送到远程的本地标签</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>删除标签：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git tag -d v0.1</span><br></pre></td></tr></table></figure>
+上述命令可以删除本地的标签，但是标签可能已经被推送到远程，还需要执行下面命令<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin :refs/tags/v0.1</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag"># 工具</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/11/17/%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%BB%A4%E6%B3%A2%E5%92%8C%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2/" rel="prev" title="贝叶斯滤波与卡尔曼滤波">
+                  <i class="fa fa-chevron-left"></i> 贝叶斯滤波与卡尔曼滤波
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">OliverPai</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+  <script class="next-config" data-name="pdf" type="application/json">{"object_url":{"url":"https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.8/pdfobject.min.js","integrity":"sha256-tu9j5pBilBQrWSDePOOajCUdz6hWsid/lBNzK4KgEPM="},"url":"/lib/pdf/web/viewer.html"}</script>
+  <script src="/js/third-party/tags/pdf.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.0/katex.min.css" integrity="sha256-uik/hNqHWZldXh/0K35nqOSCff9F61/ZOFReqNOBgB0=" crossorigin="anonymous">
+
+
+
+</body>
+</html>
